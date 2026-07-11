@@ -258,7 +258,7 @@ const MenuManager = {
     const tituloMenu = document.getElementById("offcanvasDarkNavbarLabel");
 
     if (tituloMenu) {
-      tituloMenu.innerHTML = `<i class="bi bi-person-circle me-2"></i> NOVA ENVIOS`;
+      tituloMenu.innerHTML = `<i class="bi bi-person-circle me-2"></i> TALLY`;
       tituloMenu.style.fontSize = "1.1rem";
       tituloMenu.style.letterSpacing = "1px";
     }
@@ -268,7 +268,7 @@ const MenuManager = {
     const textUser = document.getElementById("textUser");
     if (textUser) {
       // Si hay nombre lo ponemos, si no, dejamos el nombre de la app
-      textUser.innerHTML = `<i class="bi bi-building-fill me-2"></i> NOVA ENVIOS`;
+      textUser.innerHTML = `<i class="bi bi-building-fill me-2"></i> TALLY`;
       textUser.style.fontSize = "1.1rem";
       textUser.style.letterSpacing = "1px";
     }
