@@ -43,14 +43,57 @@
     <!-- Tu JS -->
     <script type="module" src="componentes/index.js"></script>
     <link rel="manifest" href="manifest.json" />
+
+    <!-- Paleta de colores estilo Treinta inyectada directamente -->
+    <style>
+      :root {
+        --treinta-yellow: #fbc02d; /* El amarillo vibrante característico */
+        --treinta-bg: #f8f9fa; /* Fondo gris claro muy limpio */
+      }
+      body {
+        background-color: var(--treinta-bg);
+      }
+      /* Forzamos que la navbar tenga el fondo amarillo y texto oscuro */
+      .navbar-treinta {
+        background-color: var(--treinta-yellow) !important;
+      }
+      .navbar-treinta .navbar-brand {
+        color: #000000 !important;
+        font-weight: 700;
+      }
+      /* Estilo del botón de hamburguesa para fondo amarillo */
+      .navbar-treinta .navbar-toggler {
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      .navbar-treinta .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+      }
+      /* Sidebar (Offcanvas) en blanco limpio con header amarillo */
+      .offcanvas-treinta {
+        background-color: #ffffff !important;
+        color: #333333 !important;
+        border-right: none !important;
+      }
+      .offcanvas-treinta .offcanvas-header {
+        background-color: var(--treinta-yellow);
+        color: #000000;
+      }
+    </style>
   </head>
 
   <body>
     <section id="header">
-      <nav class="navbar navbar-dark bg-dark fixed-top">
+      <!-- Cambiado de navbar-dark bg-dark a nuestra clase personalizada navbar-treinta -->
+      <nav class="navbar navbar-treinta fixed-top shadow-sm">
         <div class="container-fluid">
-          <a class="navbar-brand" id="textUser" href="#"></a
-          ><!--Aqui va el nombre del usuario logueado-->
+          <a
+            class="navbar-brand text-uppercase d-flex align-items-center"
+            id="textUser"
+            href="#"
+          >
+            <i class="bi bi-person-circle me-2"></i> TALLY
+          </a>
+          <!-- Cambiado el botón para interactuar correctamente con el nuevo estilo claro -->
           <button
             class="navbar-toggler"
             type="button"
@@ -61,26 +104,33 @@
           >
             <span class="navbar-toggler-icon"></span>
           </button>
+
+          <!-- Cambiado de text-bg-dark a offcanvas-treinta para volver el menú lateral limpio y claro -->
           <div
-            class="offcanvas offcanvas-start text-bg-dark"
+            class="offcanvas offcanvas-start offcanvas-treinta"
             tabindex="-1"
             id="offcanvasDarkNavbar"
             aria-labelledby="offcanvasDarkNavbarLabel"
           >
-            <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel"></h5>
+            <div class="offcanvas-header shadow-sm">
+              <h5 class="offcanvas-title fw-bold" id="offcanvasDarkNavbarLabel">
+                Menú Principal
+              </h5>
+              <!-- Cambiado a btn-close normal (oscuro) para fondo claro -->
               <button
                 type="button"
-                class="btn-close btn-close-white"
+                class="btn-close"
                 data-bs-dismiss="offcanvas"
                 aria-label="Close"
               ></button>
             </div>
-            <div class="offcanvas-body"></div>
-            <!-- Aquí se inyectarán los menús según el rol -->
+            <div class="offcanvas-body">
+              <!-- Aquí se inyectarán los menús según el rol -->
+            </div>
           </div>
         </div>
       </nav>
+
       <!-- Login Modal -->
       <div
         class="modal fade"
@@ -91,8 +141,13 @@
       >
         <div class="modal-dialog">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="loginModalLabel">Iniciar Sesión</h5>
+            <div
+              class="modal-header"
+              style="background-color: var(--treinta-yellow)"
+            >
+              <h5 class="modal-title fw-bold text-dark" id="loginModalLabel">
+                Iniciar Sesión
+              </h5>
               <button
                 type="button"
                 class="btn-close"
@@ -103,7 +158,9 @@
             <div class="modal-body">
               <form id="loginForm">
                 <div class="mb-3">
-                  <label for="username" class="form-label">Usuario</label>
+                  <label for="username" class="form-label fw-semibold"
+                    >Usuario</label
+                  >
                   <input
                     type="text"
                     class="form-control"
@@ -112,7 +169,9 @@
                   />
                 </div>
                 <div class="mb-3">
-                  <label for="password" class="form-label">Contraseña</label>
+                  <label for="password" class="form-label fw-semibold"
+                    >Contraseña</label
+                  >
                   <input
                     type="password"
                     class="form-control"
@@ -120,9 +179,11 @@
                     required
                   />
                 </div>
+                <!-- Botón adaptado a color amarillo de acción -->
                 <button
                   type="button"
-                  class="btn btn-primary w-100"
+                  class="btn btn-warning w-100 fw-bold shadow-sm"
+                  style="background-color: var(--treinta-yellow); border: none"
                   onclick="authenticateUser()"
                 >
                   Iniciar Sesión
@@ -143,8 +204,14 @@
       >
         <div class="modal-dialog">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="changePasswordModalLabel">
+            <div
+              class="modal-header"
+              style="background-color: var(--treinta-yellow)"
+            >
+              <h5
+                class="modal-title fw-bold text-dark"
+                id="changePasswordModalLabel"
+              >
                 Cambiar Contraseña
               </h5>
               <button
@@ -157,7 +224,7 @@
             <div class="modal-body">
               <form id="changePasswordForm">
                 <div class="mb-3">
-                  <label for="newPassword" class="form-label"
+                  <label for="newPassword" class="form-label fw-semibold"
                     >Nueva clave</label
                   >
                   <input
@@ -168,7 +235,7 @@
                   />
                 </div>
                 <div class="mb-3">
-                  <label for="confirmNewPassword" class="form-label"
+                  <label for="confirmNewPassword" class="form-label fw-semibold"
                     >Confirmar clave</label
                   >
                   <input
@@ -180,7 +247,8 @@
                 </div>
                 <button
                   type="button"
-                  class="btn btn-primary w-100"
+                  class="btn btn-warning w-100 fw-bold shadow-sm"
+                  style="background-color: var(--treinta-yellow); border: none"
                   onclick="updatePassword()"
                 >
                   Actualizar Contraseña
@@ -200,9 +268,12 @@
           aria-live="assertive"
           aria-atomic="true"
         >
-          <div class="toast-header bg-primary">
-            <i class="bi bi-chat-left-text"></i>
-            <strong class="me-auto"></strong>
+          <div
+            class="toast-header text-dark"
+            style="background-color: var(--treinta-yellow)"
+          >
+            <i class="bi bi-chat-left-text me-2"></i>
+            <strong class="me-auto">Notificación</strong>
             <button
               type="button"
               class="btn-close"
@@ -215,7 +286,7 @@
       </div>
     </section>
 
-    <main class="container-fluid p-0 m-0 text-center mt-5 pt-3" id="App"></main>
+    <main class="container-fluid p-0 m-0 text-center mt-5 pt-4" id="App"></main>
     <script src="js/main.js"></script>
 
     <script>
@@ -265,6 +336,10 @@
             sessionStorage.setItem("userRol", rol);
             sessionStorage.setItem("personaId", persona_id || "");
 
+            // Se fuerza el texto superior a tener el nombre del negocio o usuario
+            document.getElementById("textUser").innerHTML =
+              `<i class="bi bi-person-circle me-2"></i> ${nombre || "TALLY"}`;
+
             NovaMenu.mostrarMenuPorRol(rol, nombre);
           }
         } catch (error) {
@@ -276,12 +351,10 @@
         const modalElement = document.getElementById(modalId);
         if (!modalElement) return;
 
-        // 1. Quitamos el foco del elemento actual (como el botón 'X')
         if (document.activeElement) {
           document.activeElement.blur();
         }
 
-        // 2. Obtenemos la instancia y la ocultamos
         const modal = bootstrap.Modal.getInstance(modalElement);
         if (modal) {
           modal.hide();
@@ -302,9 +375,6 @@
         ).show();
       }
 
-      // ============================
-      // LOGIN
-      // ============================
       async function authenticateUser() {
         const usuario = document.getElementById("username").value.trim();
         const clave = document.getElementById("password").value.trim();
@@ -315,7 +385,6 @@
         }
 
         try {
-          // 1. Autenticación básica
           const { data: authData, error: authError } =
             await supabaseClient.auth.signInWithPassword({
               email: `${usuario}@novaenvios.com`,
@@ -327,7 +396,6 @@
             return;
           }
 
-          // 2. Obtener perfil detallado desde Edge Function
           const response = await fetch(
             `${SUPABASE_URL}/functions/v1/novaenvios_authUser`,
             {
@@ -345,15 +413,15 @@
           if (data.status === "success") {
             const { nombre, rol, persona_id, empresa_id } = data;
 
-            //Habilitar Menu
             NovaMenu.mostrarMenuPorRol(rol, nombre);
 
-            // GUARDAR DATOS CLAVE PARA EL RESTO DE LA APP
             sessionStorage.setItem("nombreUsuario", nombre);
             sessionStorage.setItem("userRol", rol);
-            sessionStorage.setItem("personaId", persona_id || ""); // Para registros de beneficios
+            sessionStorage.setItem("personaId", persona_id || "");
 
-            // Cerrar modal y redirigir
+            document.getElementById("textUser").innerHTML =
+              `<i class="bi bi-person-circle me-2"></i> ${nombre}`;
+
             safeHideModal("loginModal");
 
             getHome();
@@ -365,16 +433,12 @@
         }
       }
 
-      // ============================
-      // ACTUALIZAR CONTRASEÑA
-      // ============================
       async function updatePassword() {
         const claveNueva = document.getElementById("newPassword").value.trim();
         const confirmacionClave = document
           .getElementById("confirmNewPassword")
           .value.trim();
 
-        // 1. Validaciones básicas de cliente
         if (claveNueva !== confirmacionClave) {
           alertSMS("Las claves no coinciden");
           return;
@@ -386,7 +450,6 @@
         }
 
         try {
-          // 2. Obtener la sesión actual para extraer el Token (JWT)
           const {
             data: { session },
           } = await supabaseClient.auth.getSession();
@@ -396,8 +459,6 @@
             return;
           }
 
-          // 3. Llamada a la Edge Function
-          // Dentro de tu función updatePassword() en el HTML:
           const response = await fetch(
             `${SUPABASE_URL}/functions/v1/novaenvios_authUser`,
             {
@@ -407,8 +468,8 @@
                 Authorization: `Bearer ${session.access_token}`,
               },
               body: JSON.stringify({
-                action: "updatePassword", // Coincide con el if en la Edge Function
-                claveNueva: claveNueva, // Coincide con la variable en la Edge Function
+                action: "updatePassword",
+                claveNueva: claveNueva,
               }),
             },
           );
@@ -416,7 +477,6 @@
           const data = await response.json();
 
           if (data.status === "success") {
-            // 4. Limpiar y cerrar modales
             document.getElementById("newPassword").value = "";
             document.getElementById("confirmNewPassword").value = "";
 
@@ -437,29 +497,24 @@
           alertSMS("Error en la conexión al servidor");
         }
       }
-      // ============================
-      // CERRAR SESIÓN
-      // ============================
+
       async function logout() {
         try {
-          // 1. Cerrar sesión en el servidor de Supabase (Invalida el JWT )
           const { error } = await supabaseClient.auth.signOut();
           if (error)
             console.error("Error al cerrar sesión en Supabase:", error.message);
 
-          // 2. Limpieza TOTAL del almacenamiento de sesión
-          // Esto borra nombreUsuario, userRol, personaId y empresaId de un golpe
-          // 2. Limpieza TOTAL
           sessionStorage.clear();
 
-          // 3. Valores de seguridad para que la App no "explote" al leerlos
           sessionStorage.setItem("userRol", "0");
           sessionStorage.setItem("nombreUsuario", "");
           sessionStorage.setItem("personaId", "");
 
+          document.getElementById("textUser").innerHTML =
+            `<i class="bi bi-person-circle me-2"></i> TALLY`;
+
           NovaMenu.mostrarMenuInvitado();
 
-          // 5. Limpiar campos físicos de los formularios de login/password
           const fields = [
             "username",
             "password",
@@ -471,34 +526,26 @@
             if (el) el.value = "";
           });
 
-          // 6. Colapsar el menú de Bootstrap si está abierto
           const navbarCollapse = document.getElementById("navbarText");
           if (navbarCollapse) {
             const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
             if (bsCollapse) bsCollapse.hide();
           }
 
-          NovaMenu.mostrarMenuInvitado();
-
-          // 7. Redirigir al Home y notificar
           if (typeof getHome === "function") getHome();
           alertSMS("Sesión cerrada correctamente");
         } catch (err) {
           console.error("Error crítico en logout:", err);
         }
       }
-
-      // ============================
     </script>
 
     <script>
       window.addEventListener("load", async () => {
-        // 🔹 Verificar sesión al cargar la página
         if (typeof verificarSesion === "function") {
           await verificarSesion();
         }
 
-        // 🔹 Registrar Service Worker
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker
             .register("./service-worker.js")
