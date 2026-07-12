@@ -3,7 +3,7 @@ export const MENUS = {
   DEFAULT: `
     <ul class="navbar-nav flex-grow-1 pe-3">
       <li class="nav-item">
-        <a class="nav-link active" href="#" onclick="NovaMenu.ejecutarAccion(getHome)">
+        <a class="nav-link active" href="#" onclick="PpalMenu.ejecutarAccion(getHome)">
           <i class="bi bi-house"></i> Inicio
         </a>
       </li>
@@ -19,19 +19,19 @@ export const MENUS = {
   EMPRESA: `
     <ul class="navbar-nav flex-grow-1 pe-3 custom-menu">
       <li class="nav-item mb-2">
-        <a class="nav-link active d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(getHome)">
+        <a class="nav-link active d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(getHome)">
           <i class="bi bi-house-door text-primary"></i> <span>Inicio</span>
         </a>
       </li>
       <li class="nav-item mb-3">
-        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(registrarPersona)">
+        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(registrarPersona)">
           <i class="bi bi-people"></i> <span>Gestión de Mensajeros</span>
         </a>
       </li>
 
       <li class="nav-item menu-section">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
-          href="javascript:void(0)" onclick="NovaMenu.toggleSubMenu('catZonificar', event)">
+          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catZonificar', event)">
           <span class="d-flex align-items-center gap-2">
             <i class="bi bi-geo-alt-fill text-info"></i> Zonificar
           </span>
@@ -39,14 +39,14 @@ export const MENUS = {
         </a>
         <div class="collapse" id="catZonificar">
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(zonificarGuias)">Zonificar Guías</a></li>            
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(zonificarGuias)">Zonificar Guías</a></li>            
           </ul>
         </div>
       </li>
 
       <li class="nav-item menu-section mt-2">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
-          href="javascript:void(0)" onclick="NovaMenu.toggleSubMenu('catOperaciones', event)">
+          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catOperaciones', event)">
           <span class="d-flex align-items-center gap-2">
             <i class="bi bi-truck"></i> Gestión de Rutas
           </span>
@@ -54,18 +54,18 @@ export const MENUS = {
         </a>
         <div class="collapse" id="catOperaciones">
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(crearPlanilla)">Crear Planilla</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(consultarPlanilla)">Consultar Planilla</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(consultarPlanillas)">Consultar Planillas</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(excluirGuias)">Excluir Guías</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(reporteMensajeros)">Control del reparto</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(crearPlanilla)">Crear Planilla</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(consultarPlanilla)">Consultar Planilla</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(consultarPlanillas)">Consultar Planillas</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(excluirGuias)">Excluir Guías</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(reporteMensajeros)">Control del reparto</a></li>
           </ul>
         </div>
       </li>
 
       <li class="nav-item menu-section mt-2">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
-          href="javascript:void(0)" onclick="NovaMenu.toggleSubMenu('catDevoluciones', event)">
+          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catDevoluciones', event)">
           <span class="d-flex align-items-center gap-2">
             <i class="bi bi-arrow-left-right"></i> Devoluciones
           </span>
@@ -73,15 +73,15 @@ export const MENUS = {
         </a>
         <div class="collapse" id="catDevoluciones">
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(crearPlanillaDevolucion)">Crear Planilla</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(entregarDevoluciones)">Entregar Planilla</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(crearPlanillaDevolucion)">Crear Planilla</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(entregarDevoluciones)">Entregar Planilla</a></li>
           </ul>
         </div>
       </li>
 
       <li class="nav-item menu-section mt-2">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
-          href="javascript:void(0)" onclick="NovaMenu.toggleSubMenu('catCierre', event)">
+          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catCierre', event)">
           <span class="d-flex align-items-center gap-2">
             <i class="bi bi-check2-circle"></i> Cierres y Control
           </span>
@@ -89,14 +89,14 @@ export const MENUS = {
         </a>
         <div class="collapse" id="catCierre">
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(cerrarPlanilla)">Cierre de planilla</a></li>
-            <li><a class="nav-link text-danger-emphasis" href="#" onclick="NovaMenu.ejecutarAccion(anularPlanilla)">Anular Planilla</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(cerrarPlanilla)">Cierre de planilla</a></li>
+            <li><a class="nav-link text-danger-emphasis" href="#" onclick="PpalMenu.ejecutarAccion(anularPlanilla)">Anular Planilla</a></li>
           </ul>
         </div>
       </li>
 
       <li class="nav-item mt-4 border-top border-secondary pt-3">
-        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(showChangePasswordModal)">
+        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(showChangePasswordModal)">
           <i class="bi bi-shield-lock"></i> Seguridad
         </a>
       </li>
@@ -111,27 +111,27 @@ export const MENUS = {
   MENSAJERO: `
     <ul class="navbar-nav flex-grow-1 pe-3 custom-menu">
       <li class="nav-item mb-2">
-        <a class="nav-link active d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(getHome)">
+        <a class="nav-link active d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(getHome)">
           <i class="bi bi-house-door"></i> <span>Inicio</span>
         </a>
       </li>
       <li class="nav-item mb-2">
-        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(getPlanillasMensajero)">
+        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(getPlanillasMensajero)">
           <i class="bi bi-search"></i> <span>Consultar Planillas</span>
         </a>
       </li>
       <li class="nav-item mb-2">
-        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(efectividadMensajero)">
+        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(efectividadMensajero)">
           <i class="bi bi-search"></i> <span>Efectividad reparto</span>
         </a>
       </li>
       <li class="nav-item mb-2">
-        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(geolocalizar)">
+        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(geolocalizar)">
           <i class="bi bi-pin-map"></i> <span>Geolocalizar barrios</span>
         </a>
       </li>
       <li class="nav-item mt-4 border-top border-secondary pt-3">
-        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(showChangePasswordModal)">
+        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(showChangePasswordModal)">
           <i class="bi bi-key"></i> <span>Cambiar Clave</span>
         </a>
       </li>
@@ -146,13 +146,13 @@ export const MENUS = {
   ADMIN: `
     <ul class="navbar-nav flex-grow-1 pe-3 custom-menu">
       <li class="nav-item mb-2">
-        <a class="nav-link active d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(getHome)">
+        <a class="nav-link active d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(getHome)">
           <i class="bi bi-shield-check text-success"></i> <span>Inicio (Panel Admin)</span>
         </a>
       </li>
       <li class="nav-item menu-section">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
-           href="javascript:void(0)" onclick="NovaMenu.toggleSubMenu('catAdminConfig', event)">
+           href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catAdminConfig', event)">
           <span class="d-flex align-items-center gap-2">
             <i class="bi bi-gear-fill"></i> Configuración
           </span>
@@ -160,15 +160,15 @@ export const MENUS = {
         </a>
         <div class="collapse" id="catAdminConfig">
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(gestionarEmpresas)">Gestionar Empresas</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(configurarTarifas)">Maestro de Tarifas</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(gestionarZonas)">Zonas y Cobertura</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(gestionarEmpresas)">Gestionar Empresas</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(configurarTarifas)">Maestro de Tarifas</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(gestionarZonas)">Zonas y Cobertura</a></li>
           </ul>
         </div>
       </li>
       <li class="nav-item menu-section mt-2">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
-           href="javascript:void(0)" onclick="NovaMenu.toggleSubMenu('catAdminAudit', event)">
+           href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catAdminAudit', event)">
           <span class="d-flex align-items-center gap-2">
             <i class="bi bi-journal-text"></i> Auditoría Global
           </span>
@@ -176,13 +176,13 @@ export const MENUS = {
         </a>
         <div class="collapse" id="catAdminAudit">
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(verLogsSistema)">Logs del Sistema</a></li>
-            <li><a class="nav-link" href="#" onclick="NovaMenu.ejecutarAccion(reporteGeneralVentas)">Reporte Consolidado</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(verLogsSistema)">Logs del Sistema</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(reporteGeneralVentas)">Reporte Consolidado</a></li>
           </ul>
         </div>
       </li>
       <li class="nav-item mt-4 border-top border-secondary pt-3">
-        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="NovaMenu.ejecutarAccion(showChangePasswordModal)">
+        <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(showChangePasswordModal)">
           <i class="bi bi-lock"></i> Seguridad Admin
         </a>
       </li>
@@ -276,4 +276,4 @@ const MenuManager = {
 };
 
 // EXPOSICIÓN GLOBAL
-window.NovaMenu = MenuManager;
+window.PpalMenu = MenuManager;

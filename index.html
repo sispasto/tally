@@ -28,11 +28,7 @@
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="css/home.css" />
     <link rel="stylesheet" href="css/loader.css" />
-    <link
-      rel="icon"
-      href="/novaenvios/assets/favicon.ico"
-      type="image/x-icon"
-    />
+    <link rel="icon" href="/tally/assets/favicon.ico" type="image/x-icon" />
 
     <!-- Bootstrap JS bundle (incluye Popper) -->
     <script
@@ -243,7 +239,7 @@
         } = await supabaseClient.auth.getSession();
 
         if (!session) {
-          NovaMenu.mostrarMenuInvitado();
+          PpalMenu.mostrarMenuInvitado();
           return;
         }
 
@@ -269,7 +265,7 @@
             sessionStorage.setItem("userRol", rol);
             sessionStorage.setItem("personaId", persona_id || "");
 
-            NovaMenu.mostrarMenuPorRol(rol, nombre);
+            PpalMenu.mostrarMenuPorRol(rol, nombre);
           }
         } catch (error) {
           console.error("Error verificando sesión:", error);
@@ -322,7 +318,7 @@
           // 1. Autenticación básica
           const { data: authData, error: authError } =
             await supabaseClient.auth.signInWithPassword({
-              email: `${usuario}@novaenvios.com`,
+              email: `${usuario}@tally.com`,
               password: clave,
             });
 
@@ -333,7 +329,7 @@
 
           // 2. Obtener perfil detallado desde Edge Function
           const response = await fetch(
-            `${SUPABASE_URL}/functions/v1/novaenvios_authUser`,
+            `${SUPABASE_URL}/functions/v1/tally_authUser`,
             {
               method: "POST",
               headers: {
@@ -350,7 +346,7 @@
             const { nombre, rol, persona_id, empresa_id } = data;
 
             //Habilitar Menu
-            NovaMenu.mostrarMenuPorRol(rol, nombre);
+            PpalMenu.mostrarMenuPorRol(rol, nombre);
 
             // GUARDAR DATOS CLAVE PARA EL RESTO DE LA APP
             sessionStorage.setItem("nombreUsuario", nombre);
@@ -461,7 +457,7 @@
           sessionStorage.setItem("nombreUsuario", "");
           sessionStorage.setItem("personaId", "");
 
-          NovaMenu.mostrarMenuInvitado();
+          PpalMenu.mostrarMenuInvitado();
 
           // 5. Limpiar campos físicos de los formularios de login/password
           const fields = [
@@ -482,7 +478,7 @@
             if (bsCollapse) bsCollapse.hide();
           }
 
-          NovaMenu.mostrarMenuInvitado();
+          PpalMenu.mostrarMenuInvitado();
 
           // 7. Redirigir al Home y notificar
           if (typeof getHome === "function") getHome();
