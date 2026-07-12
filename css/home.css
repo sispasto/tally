@@ -51,7 +51,7 @@ body {
 }
 
 /* ==========================================================================
-   ESTILO PROFESIONAL ORIGINAL OSCURO - DETALLES PRO & HOVER CÁLIDO
+   ESTILO PROFESIONAL ORIGINAL OSCURO - HOVER LIGHT GRAY CLEAN
    ========================================================================== */
 
 /* Contenedor Offcanvas para unificar todo el fondo oscuro */
@@ -80,7 +80,7 @@ body {
 .section-header {
   font-size: 0.8rem !important;
   letter-spacing: 0.8px;
-  color: #94a3b8 !important; /* Gris azulado más limpio */
+  color: #94a3b8 !important; /* Gris azulado nítido */
   text-transform: uppercase;
   font-weight: 700 !important;
   padding: 14px 15px 6px 15px !important;
@@ -89,16 +89,16 @@ body {
   align-items: center;
 }
 
-/* Iconos de cabecera Pro: Ámbar cálido premium */
+/* Iconos de cabecera Pro: Azul nítido corporativo para destacar */
 .section-header i {
-  color: #f59e0b !important;
+  color: #3b82f6 !important;
   font-size: 0.9rem !important;
 }
 
 /* Enlaces principales del menú */
 #offcanvasDarkNavbar .nav-linkInput,
 #offcanvasDarkNavbar .nav-link:not(.section-header) {
-  color: #cbd5e1 !important; /* Blanco suave legible */
+  color: #94a3b8 !important; /* Gris claro de base para que resalte al activarse */
   font-weight: 500;
   padding: 10px 16px !important;
   margin: 2px 10px !important;
@@ -106,32 +106,33 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: all 0.25s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Iconos de las opciones (Crear, Consultar) -> Gris Pro que cambia con el mouse */
+/* Iconos de las opciones (Crear, Consultar) */
 #offcanvasDarkNavbar .nav-link:not(.section-header) i {
-  color: #94a3b8 !important;
+  color: #64748b !important;
+  font-size: 0.95rem;
   transition: color 0.2s ease;
 }
 
-/* EFECTO MOUSE OVER (HOVER) Y ACTIVO - ILUMINACIÓN ÁMBAR CÁLIDA */
+/* NUEVO EFECTO MOUSE OVER (HOVER) Y ACTIVO - LIGHT GRAY PREMIUM */
 #offcanvasDarkNavbar .nav-link:not(.section-header):hover,
 #offcanvasDarkNavbar .nav-link.active {
   background-color: rgba(
-    245,
-    158,
-    11,
-    0.12
-  ) !important; /* Pastilla translúcida ámbar muy cálida */
-  color: #f59e0b !important; /* Texto se ilumina en el color de la marca */
-  padding-left: 20px !important; /* Micro-interacción fluida */
+    255,
+    255,
+    255,
+    0.08
+  ) !important; /* Pastilla gris clara translúcida limpia */
+  color: #ffffff !important; /* El texto pasa a blanco puro impecable */
+  padding-left: 20px !important; /* Sutil desplazamiento dinámico */
 }
 
-/* Iconos se iluminan en naranja/amarillo cálido al pasar el mouse */
+/* Los iconos se iluminan en blanco nítido al pasar el mouse */
 #offcanvasDarkNavbar .nav-link:not(.section-header):hover i,
 #offcanvasDarkNavbar .nav-link.active i {
-  color: #ffbe2e !important;
+  color: #ffffff !important;
 }
 
 /* Submenús Desplegados */
@@ -145,19 +146,19 @@ body {
 .submenu-list .nav-link {
   font-size: 0.85rem !important;
   padding: 8px 16px !important;
-  color: #94a3b8 !important;
+  color: #64748b !important;
 }
 
-/* Hover cálido en submenús */
+/* Hover light gray en los submenús */
 .submenu-list .nav-link:hover {
-  background-color: rgba(245, 158, 11, 0.08) !important;
-  color: #ffbe2e !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
 }
 
 /* Animación del Chevron */
 .section-header[aria-expanded="true"] .chevron-icon {
   transform: rotate(90deg);
-  color: #ffbe2e !important;
+  color: #ffffff !important;
 }
 
 .chevron-icon {
@@ -168,7 +169,7 @@ body {
 
 /* Enlaces especiales (Seguridad / Salir) */
 #offcanvasDarkNavbar .text-danger {
-  color: #cbd5e1 !important;
+  color: #94a3b8 !important;
 }
 #offcanvasDarkNavbar .text-danger:hover {
   background-color: rgba(239, 68, 68, 0.1) !important;
@@ -176,25 +177,4 @@ body {
 }
 #offcanvasDarkNavbar .text-danger:hover i {
   color: #ef4444 !important;
-}
-
-/* Comportamiento Mobile */
-@media (max-width: 576px) {
-  .position-fixed.bottom-0.end-0 {
-    width: 100%;
-    padding: 10px !important;
-    display: flex;
-    justify-content: center;
-  }
-
-  #liveToast {
-    width: 90%;
-    margin-bottom: 20px;
-  }
-}
-
-/* Icono de usuario barra superior con tono ámbar cálido corporativo */
-#textUser i {
-  color: #ffbe2e;
-  font-size: 1.1rem;
 }
