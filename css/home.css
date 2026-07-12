@@ -1,13 +1,13 @@
 /* ==========================================================================
    ESTILOS GENERALES Y CONFIGURACIÓN
    ========================================================================== */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
 
 html,
 body {
   height: auto;
   overflow-y: auto;
-  font-family: "Poppins", sans-serif; /* Aplicando la fuente cargada */
+  font-family: "Poppins", sans-serif;
 }
 
 /* ==========================================================================
@@ -20,7 +20,7 @@ body {
 #loginModal .modal-content,
 #changePasswordModal .modal-content {
   border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .modal-body form {
@@ -51,37 +51,45 @@ body {
 }
 
 /* ==========================================================================
-   BARRA LATERAL (OFFCANVAS) PREMIUM - TALLY
+   BARRA LATERAL (OFFCANVAS) PREMIUM CLARA - TALLY
    ========================================================================== */
 
-/* 1. Contenedor principal con Degradado Azul Profundo */
+/* 1. Contenedor principal con fondo gris ultra suave */
 #offcanvasDarkNavbar.offcanvas {
-  background: linear-gradient(180deg, #111827 0%, #1f2937 100%) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.3) !important;
+  background-color: #f8f9fa !important; /* Gris claro premium */
+  border-right: 1px solid #e9ecef !important; /* Línea divisoria suave */
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05) !important;
 }
 
 /* Ajuste del cuerpo del offcanvas */
 .offcanvas-body {
   padding-top: 1rem !important;
-  background: transparent !important; /* Para que herede el degradado del contenedor */
+  background: transparent !important;
 }
 
 /* 2. Encabezado del Menú (Donde sale el Nombre del Usuario) */
 #offcanvasDarkNavbar .offcanvas-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid #e9ecef !important;
   padding: 20px 24px !important;
+  background-color: #ffffff; /* Contraste blanco para el header */
 }
 
 #offcanvasDarkNavbar .offcanvas-title {
-  color: #ffffff !important;
+  color: #212529 !important; /* Texto oscuro legible */
   font-weight: 600 !important;
 }
 
-/* 3. Títulos de las Secciones (COTIZACIONES, FACTURAS, CONFIGURACIÓN) */
+/* Forzar que el botón de cerrar 'X' sea oscuro y visible */
+#offcanvasDarkNavbar .btn-close-white {
+  filter: invert(
+    1
+  ) !important; /* Cambia la 'X' blanca a negra de forma nativa */
+}
+
+/* 3. Títulos de las Secciones (COTIZACIONES, FACTURAS) */
 #offcanvasDarkNavbar .section-header {
-  color: #9ca3af !important; /* Gris elegante */
-  font-size: 0.78rem !important;
+  color: #6c757d !important; /* Gris corporativo */
+  font-size: 0.75rem !important;
   font-weight: 700 !important;
   letter-spacing: 1.2px !important;
   padding: 14px 16px !important;
@@ -91,7 +99,7 @@ body {
   align-items: center;
 }
 
-/* Forzar que los iconos decorativos iniciales adopten el amarillo Tally */
+/* Los iconos decorativos de sección adoptan tu amarillo característico */
 #offcanvasDarkNavbar .section-header i:first-child {
   color: #ffbe2e !important;
 }
@@ -103,7 +111,7 @@ body {
 
 .chevron-icon {
   transition: transform 0.3s ease;
-  color: #6b7280 !important;
+  color: #adb5bd !important;
 }
 
 /* 4. Enlaces de los Submenús y Links Generales */
@@ -115,37 +123,38 @@ body {
 
 /* Links que no son cabeceras de sección */
 #offcanvasDarkNavbar .nav-link:not(.section-header) {
-  color: #d1d5db !important; /* Blanco suave */
+  color: #495057 !important; /* Gris oscuro para el texto */
   font-size: 0.88rem !important;
   padding: 8px 16px !important;
   margin: 2px 10px !important;
   border-radius: 8px !important;
 }
 
-/* Efecto Hover: Desplazamiento sutil e iluminación */
+/* Efecto Hover claro al pasar el mouse */
 #offcanvasDarkNavbar .nav-link:not(.section-header):hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #ffffff !important;
-  padding-left: 20px !important; /* Micro-interacción de empuje */
+  background-color: #ffffff !important; /* Destaca sobre el fondo gris claro */
+  color: #ffbe2e !important; /* El texto vira al amarillo corporativo */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02) !important;
+  padding-left: 20px !important;
 }
 
-/* 5. Estado Activo (Resaltado con el Amarillo Tally) */
+/* 5. Estado Activo (Resaltado elegante con Amarillo Tally) */
 #offcanvasDarkNavbar .nav-link.active {
   background-color: rgba(
     255,
     190,
     46,
-    0.12
-  ) !important; /* Amarillo translúcido */
-  color: #ffbe2e !important; /* Texto amarillo */
+    0.15
+  ) !important; /* Fondo amarillo suave translúcido */
+  color: #dca00c !important; /* Texto amarillo oscuro para asegurar buen contraste de lectura */
   font-weight: 600 !important;
-  border-left: 3px solid #ffbe2e !important;
+  border-left: 4px solid #ffbe2e !important;
   border-radius: 0 8px 8px 0 !important;
 }
 
 /* 6. Línea e Indentación de los Submenús desplegables */
 #offcanvasDarkNavbar .submenu-list {
-  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-left: 1px solid #dee2e6 !important;
   margin-bottom: 10px !important;
   padding-left: 0.5rem !important;
 }
@@ -156,14 +165,14 @@ body {
 
 /* 7. Botón Especial para Finalizar Sesión (Salir) */
 #offcanvasDarkNavbar .text-danger {
-  color: #f87171 !important; /* Rojo pastel moderno */
+  color: #dc3545 !important;
   font-weight: 600 !important;
   margin-top: 8px !important;
 }
 
 #offcanvasDarkNavbar .text-danger:hover {
-  background-color: rgba(248, 113, 113, 0.08) !important;
-  color: #ef4444 !important;
+  background-color: rgba(220, 53, 69, 0.08) !important;
+  color: #bd2130 !important;
 }
 
 /* ==========================================================================
@@ -171,20 +180,20 @@ body {
    ========================================================================== */
 @media (max-width: 576px) {
   .position-fixed.bottom-0.end-0 {
-    width: 100%; /* Ocupa todo el ancho */
+    width: 100%;
     padding: 10px !important;
     display: flex;
-    justify-content: center; /* Centra el mensaje en el celular */
+    justify-content: center;
   }
 
   #liveToast {
-    width: 90%; /* Que no toque los bordes laterales */
+    width: 90%;
     margin-bottom: 20px;
   }
 }
 
 /* Icono de usuario en la barra superior */
 #textUser i {
-  color: #ffbe2e; /* Seteado a tu amarillo corporativo para mantener armonía */
+  color: #ffbe2e;
   font-size: 1.1rem;
 }
