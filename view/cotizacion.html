@@ -1,0 +1,395 @@
+<style>
+  .tabla-cotizacion {
+    font-size: 0.95rem;
+    color: #ffffff;
+  }
+
+  /* Paleta Estilo Treinta / Tally Dark */
+  .bg-tally-dark {
+    background-color: #1e1e24 !important; /* Fondo de tarjetas */
+  }
+
+  .text-tally-yellow {
+    color: #fbc02d !important; /* Amarillo Treinta */
+  }
+
+  .btn-tally-yellow {
+    background-color: #fbc02d !important;
+    color: #121212 !important;
+    font-weight: 600;
+    border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-tally-yellow:hover {
+    background-color: #f5b01d !important;
+    opacity: 0.9;
+  }
+
+  /* Entradas de texto estilo Dark Premium */
+  .form-tally-control {
+    background-color: #121212 !important;
+    border: 1px solid #2d2d35 !important;
+    color: #ffffff !important;
+  }
+
+  .form-tally-control:focus {
+    border-color: #fbc02d !important;
+    box-shadow: 0 0 0 0.25rem rgba(251, 192, 45, 0.15) !important;
+  }
+
+  .form-tally-control::placeholder {
+    color: #6c757d !important;
+  }
+
+  /* --- AJUSTES PARA PC Y TABLET --- */
+  @media (min-width: 992px) {
+    .container-fluid {
+      padding: 2rem 5rem;
+    }
+  }
+
+  /* --- AJUSTES PARA MÓVIL --- */
+  @media (max-width: 768px) {
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 10px;
+    }
+
+    .tabla-cotizacion {
+      font-size: 0.85rem;
+    }
+
+    .tabla-cotizacion td,
+    .tabla-cotizacion th {
+      padding: 8px 4px !important;
+    }
+  }
+
+  /* Hover sutil sobre filas oscuras */
+  .tabla-cotizacion tbody tr:hover {
+    background-color: rgba(251, 192, 45, 0.04) !important;
+  }
+</style>
+
+<div class="container-fluid mt-3">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+      <div class="card shadow bg-tally-dark border-0">
+        <div
+          class="card-header bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center py-3"
+        >
+          <h5 class="mb-0 fw-bold text-white">
+            <i class="bi bi-file-earmark-text text-tally-yellow me-2"></i>Nueva
+            Cotización
+          </h5>
+          <span
+            class="badge bg-black text-tally-yellow border border-secondary px-3 py-2 fs-6"
+            id="cotNumero"
+          >
+            No. 0001
+          </span>
+        </div>
+
+        <div class="card-body p-4 text-white">
+          <div id="alertaCotizacion"></div>
+
+          <div class="mb-4">
+            <h6
+              class="text-tally-yellow text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-person me-1"></i> Datos del Cliente
+            </h6>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-semibold text-secondary"
+                  >NOMBRE / RAZÓN SOCIAL</label
+                >
+                <input
+                  type="text"
+                  id="cotClienteNombre"
+                  class="form-control form-control-sm form-tally-control"
+                  placeholder="Ej. Cliente Particular"
+                />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label small fw-semibold text-secondary"
+                  >DIRECCIÓN</label
+                >
+                <input
+                  type="text"
+                  id="cotClienteDireccion"
+                  class="form-control form-control-sm form-tally-control"
+                  placeholder="Dirección de correspondencia"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h6
+              class="text-tally-yellow text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-box-seam me-1"></i> Agregar Productos o Servicios
+            </h6>
+            <div class="row g-2 align-items-end">
+              <div class="col-12 col-md-5">
+                <label class="form-label small fw-semibold text-secondary"
+                  >DESCRIPCIÓN DEL ÍTEM</label
+                >
+                <input
+                  type="text"
+                  id="itemDescripcion"
+                  class="form-control form-control-sm form-tally-control"
+                  placeholder="Ej. Camiseta Polo Premium"
+                />
+              </div>
+              <div class="col-6 col-md-2">
+                <label
+                  class="form-label small fw-semibold text-secondary text-center d-block"
+                  >CANT.</label
+                >
+                <input
+                  type="number"
+                  id="itemCantidad"
+                  class="form-control form-control-sm form-tally-control text-center"
+                  min="1"
+                  value="1"
+                />
+              </div>
+              <div class="col-6 col-md-3">
+                <label
+                  class="form-label small fw-semibold text-secondary text-end d-block"
+                  >PRECIO UND ($)</label
+                >
+                <input
+                  type="number"
+                  id="itemPrecio"
+                  class="form-control form-control-sm form-tally-control text-end"
+                  placeholder="0"
+                />
+              </div>
+              <div class="col-12 col-md-2">
+                <button
+                  type="button"
+                  class="btn btn-tally-yellow btn-sm w-100"
+                  onclick="nsCrearCotizacion.agregarItem()"
+                >
+                  <i class="bi bi-plus-lg me-1"></i> Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive rounded-2 border border-secondary mb-4">
+            <table class="table table-hover table-dark mb-0 tabla-cotizacion">
+              <thead class="table-black border-bottom border-secondary">
+                <tr
+                  class="text-secondary"
+                  style="font-size: 0.8rem; font-weight: 700"
+                >
+                  <th class="ps-3 text-uppercase" style="width: 45%">
+                    Descripción
+                  </th>
+                  <th class="text-center text-uppercase" style="width: 15%">
+                    Cantidad
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Precio Und
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Total
+                  </th>
+                  <th class="text-center" style="width: 5%"></th>
+                </tr>
+              </thead>
+              <tbody id="tbodyCotizacionItems" class="border-0"></tbody>
+            </table>
+          </div>
+
+          <div class="row justify-content-end mb-4">
+            <div class="col-12 col-md-5">
+              <div
+                class="d-flex justify-content-between align-items-center p-3 rounded-2 bg-black border border-secondary shadow-sm"
+              >
+                <span
+                  class="text-secondary fw-bold text-uppercase"
+                  style="font-size: 0.85rem; letter-spacing: 1px"
+                  >TOTAL GENERAL</span
+                >
+                <span class="fw-bold text-tally-yellow fs-4" id="cotTxtTotal"
+                  >$ 0</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-secondary my-4" />
+
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm px-4 text-white"
+              onclick="nsCrearCotizacion.limpiarFormulario()"
+            >
+              Limpiar
+            </button>
+            <button
+              type="button"
+              class="btn btn-tally-yellow btn-sm px-4 shadow"
+              onclick="nsCrearCotizacion.guardarCotizacion()"
+            >
+              <i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar Registro
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var nsCrearCotizacion = (function () {
+    let itemsDetalle = [];
+    let totalGeneral = 0;
+
+    function calcularTotales() {
+      totalGeneral = itemsDetalle.reduce((acc, item) => acc + item.total, 0);
+      document.getElementById("cotTxtTotal").innerText =
+        `$ ${totalGeneral.toLocaleString("es-CO")}`;
+    }
+
+    function agregarItem() {
+      const desc = document.getElementById("itemDescripcion").value.trim();
+      const cant = parseInt(document.getElementById("itemCantidad").value) || 0;
+      const precio =
+        parseFloat(document.getElementById("itemPrecio").value) || 0;
+
+      if (!desc || cant <= 0 || precio <= 0) {
+        mostrarMensaje(
+          "Por favor completa los campos del producto con valores correctos.",
+          "warning",
+        );
+        return;
+      }
+
+      const nuevoItem = {
+        id: Date.now(),
+        descripcion: desc.toUpperCase(),
+        cantidad: cant,
+        precio: precio,
+        total: cant * precio,
+      };
+
+      itemsDetalle.push(nuevoItem);
+
+      document.getElementById("itemDescripcion").value = "";
+      document.getElementById("itemCantidad").value = "1";
+      document.getElementById("itemPrecio").value = "";
+
+      renderItems();
+    }
+
+    function eliminarItem(id) {
+      itemsDetalle = itemsDetalle.filter((item) => item.id !== id);
+      renderItems();
+    }
+
+    function renderItems() {
+      const tbody = document.getElementById("tbodyCotizacionItems");
+      tbody.innerHTML = "";
+
+      if (!itemsDetalle.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center text-secondary py-4" style="font-style: italic; background-color: #121212;">
+              Ningún ítem agregado a la cotización todavía.
+            </td>
+          </tr>
+        `;
+        calcularTotales();
+        return;
+      }
+
+      itemsDetalle.forEach((item) => {
+        tbody.innerHTML += `
+          <tr class="align-middle border-bottom border-secondary-subtle" style="background-color: #121212;">
+            <td class="ps-3 fw-medium text-white">${item.descripcion}</td>
+            <td class="text-center fw-bold text-tally-yellow">${item.cantidad}</td>
+            <td class="text-end text-light">$ ${item.precio.toLocaleString("es-CO")}</td>
+            <td class="text-end fw-bold text-white">$ ${item.total.toLocaleString("es-CO")}</td>
+            <td class="text-center pe-3">
+              <button class="btn btn-link btn-sm text-danger p-0" onclick="nsCrearCotizacion.eliminarItem(${item.id})">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      calcularTotales();
+    }
+
+    function guardarCotizacion() {
+      const nombre = document.getElementById("cotClienteNombre").value.trim();
+      const direccion = document
+        .getElementById("cotClienteDireccion")
+        .value.trim();
+
+      if (!nombre || !direccion) {
+        mostrarMensaje("Complete el nombre y dirección del cliente.", "danger");
+        return;
+      }
+
+      if (itemsDetalle.length === 0) {
+        mostrarMensaje("Agregue al menos un producto a la lista.", "danger");
+        return;
+      }
+
+      const payloadCotizacion = {
+        cliente_nombre: nombre,
+        cliente_direccion: direccion,
+        items: itemsDetalle,
+        total_cotizacion: totalGeneral,
+        fecha: new Date().toISOString(),
+      };
+
+      console.log("Guardando cotización en Tally DB:", payloadCotizacion);
+      mostrarMensaje(
+        "¡Cotización guardada exitosamente en el sistema!",
+        "success",
+      );
+      limpiarFormulario();
+    }
+
+    function limpiarFormulario() {
+      document.getElementById("cotClienteNombre").value = "";
+      document.getElementById("cotClienteDireccion").value = "";
+      itemsDetalle = [];
+      renderItems();
+    }
+
+    function mostrarMensaje(msg, tipo) {
+      document.getElementById("alertaCotizacion").innerHTML = `
+        <div class="alert alert-${tipo} bg-dark border-secondary text-white alert-dismissible fade show shadow-sm" role="alert">
+          <span class="${tipo === "danger" ? "text-danger" : tipo === "success" ? "text-success" : "text-warning"} fw-bold">■</span> ${msg}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      `;
+    }
+
+    return {
+      agregarItem,
+      eliminarItem,
+      guardarCotizacion,
+      limpiarFormulario,
+    };
+  })();
+
+  document.addEventListener("DOMContentLoaded", () => {
+    nsCrearCotizacion.limpiarFormulario();
+  });
+</script>

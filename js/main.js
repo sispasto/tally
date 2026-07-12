@@ -6,6 +6,14 @@ let swRegistration = null; // 🔥 referencia global
 let intervalSW = null;
 let newVersionAvailable = null;
 
+function gestionarCotizaciones() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmCotizacion = document.createElement("crear-cotizacion");
+  frmCotizacion.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmCotizacion);
+}
+
 function registrarPersona() {
   let main = document.getElementById("App");
   removeALLChilds(main);

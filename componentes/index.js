@@ -17,3 +17,4 @@ import "./reporteMensajeros.js";
 import "./efectividadMensajero.js";
 import "./zonificar.js";
 import "./gestionBarrios.js";
+import "./cotizacion.js";
