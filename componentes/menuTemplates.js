@@ -243,3 +243,5 @@ const MenuManager = {
 
 // EXPOSICIÓN GLOBAL UNIFICADA
 window.PpalMenu = MenuManager;
+
+//El estilo de este menu se realiza desde el archivo css/home.css
