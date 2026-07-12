@@ -1,126 +1,125 @@
 /* ==========================================================================
-   BARRA LATERAL (OFFCANVAS) PREMIUM GRAFITO - TALLY
+   BARRA LATERAL (OFFCANVAS) MINIMALIST SAAS - BLANCO PREMIUM
    ========================================================================== */
 
-/* 1. Contenedor principal en Gris Pizarra / Grafito Satín */
+/* 1. Contenedor principal: Limpio, blanco y con bordes mínimos */
 #offcanvasDarkNavbar.offcanvas {
-  background-color: #262930 !important; /* Gris oscuro industrial pro */
-  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.4) !important;
+  background-color: #ffffff !important; /* Blanco puro */
+  border-right: 1px solid #f1f5f9 !important; /* Línea de división ultra suave */
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02) !important; /* Sombra casi invisible */
 }
 
-/* Ajuste del cuerpo del offcanvas */
+/* Ajuste del cuerpo */
 .offcanvas-body {
-  padding-top: 1rem !important;
-  background: transparent !important;
+  padding-top: 1.5rem !important;
+  background: #ffffff !important;
 }
 
-/* 2. Encabezado del Menú (Donde sale el Nombre del Usuario) */
+/* 2. Encabezado del Menú (Usuario) */
 #offcanvasDarkNavbar .offcanvas-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  padding: 20px 24px !important;
-  background-color: #1e2126; /* Un tono más oscuro para dar profundidad al header */
+  border-bottom: 1px solid #f1f5f9 !important;
+  padding: 24px !important;
+  background-color: #ffffff !important;
 }
 
 #offcanvasDarkNavbar .offcanvas-title {
-  color: #ffffff !important;
+  color: #1e293b !important; /* Texto oscuro suave */
   font-weight: 600 !important;
+  font-size: 1.05rem !important;
+  letter-spacing: -0.3px;
 }
 
-/* Forzar que la 'X' vuelva a ser blanca limpia */
+/* Forzar que la 'X' de cerrar sea gris tenue y elegante */
 #offcanvasDarkNavbar .btn-close-white {
-  filter: invert(0) !important;
+  filter: invert(0.4) !important;
+  opacity: 0.6;
 }
 
-/* 3. Títulos de las Secciones (COTIZACIONES, FACTURAS) */
+/* 3. Títulos de las Secciones (MAIN, SETTINGS, etc.) */
 #offcanvasDarkNavbar .section-header {
-  color: #94a3b8 !important; /* Gris azulado claro y nítido */
-  font-size: 0.75rem !important;
-  font-weight: 700 !important;
-  letter-spacing: 1.2px !important;
-  padding: 16px 16px 8px 16px !important;
+  color: #94a3b8 !important; /* Gris neutro sutil */
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.8px !important;
+  padding: 20px 20px 8px 20px !important;
   text-transform: uppercase;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Iconos principales de sección en el amarillo de tu marca */
-#offcanvasDarkNavbar .section-header i:first-child {
-  color: #ffbe2e !important;
+/* Apagamos los colores fuertes de los iconos en los títulos */
+#offcanvasDarkNavbar .section-header i {
+  color: #94a3b8 !important;
+  font-size: 0.85rem !important;
 }
 
-/* Animación del Chevron */
-.section-header[aria-expanded="true"] .chevron-icon {
-  transform: rotate(90deg);
-}
-
+/* Chevron de despliegue */
 .chevron-icon {
-  transition: transform 0.3s ease;
-  color: #64748b !important;
+  transition: transform 0.2s ease;
+  color: #cbd5e1 !important;
+  font-size: 0.75rem !important;
 }
 
-/* 4. Enlaces de los Submenús y Links Generales */
-#offcanvasDarkNavbar .nav-linkInput,
-#offcanvasDarkNavbar .nav-link {
-  font-weight: 500 !important;
-  transition: all 0.2s ease-in-out !important;
-}
-
-/* Links que no son cabeceras de sección */
+/* 4. Enlaces Generales del Menú */
 #offcanvasDarkNavbar .nav-link:not(.section-header) {
-  color: #cbd5e1 !important; /* Blanco hueso legible que no encandila */
+  color: #64748b !important; /* Gris intermedio sofisticado */
   font-size: 0.88rem !important;
-  padding: 9px 16px !important;
-  margin: 4px 12px !important;
-  border-radius: 8px !important;
+  font-weight: 500 !important;
+  padding: 10px 16px !important;
+  margin: 4px 14px !important;
+  border-radius: 10px !important; /* Esquinas bien redondeadas como la referencia */
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* Efecto Hover: Resalte sutil de fondo y texto blanco puro con micro-desplazamiento */
-#offcanvasDarkNavbar .nav-link:not(.section-header):hover {
-  background-color: rgba(255, 255, 255, 0.06) !important;
-  color: #ffffff !important;
-  padding-left: 20px !important;
+/* Iconos dentro de los links */
+#offcanvasDarkNavbar .nav-link:not(.section-header) i {
+  color: #94a3b8 !important;
+  transition: color 0.2s ease;
 }
 
-/* 5. Estado Activo (El botón seleccionado) */
+/* 5. Efecto Hover e Items Activos (La pastilla gris suave de tu imagen) */
+#offcanvasDarkNavbar .nav-link:not(.section-header):hover,
 #offcanvasDarkNavbar .nav-link.active {
-  background-color: rgba(
-    255,
-    190,
-    46,
-    0.15
-  ) !important; /* Fondo ámbar translúcido */
-  color: #ffbe2e !important; /* Texto amarillo impecable */
-  font-weight: 600 !important;
-  border-left: 4px solid #ffbe2e !important;
-  border-radius: 0 8px 8px 0 !important;
+  background-color: #f1f5f9 !important; /* Pastilla gris claro sutil */
+  color: #1e293b !important; /* Texto resalta a oscuro */
+  border-left: none !important; /* Sin líneas invasivas a los lados */
 }
 
-/* 6. Línea divisoria lateral para los submenús */
+#offcanvasDarkNavbar .nav-link:not(.section-header):hover i,
+#offcanvasDarkNavbar .nav-link.active i {
+  color: #475569 !important; /* El icono también se oscurece */
+}
+
+/* 6. Submenús Desplegables Internos */
 #offcanvasDarkNavbar .submenu-list {
-  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
-  margin-bottom: 12px !important;
-  padding-left: 0.5rem !important;
+  border-left: 1px solid #f1f5f9 !important; /* Línea guía muy delgada */
+  margin-left: 28px !important;
+  margin-bottom: 8px !important;
+  padding-left: 6px !important;
 }
 
 #offcanvasDarkNavbar .submenu-list .nav-link {
-  font-size: 0.85rem !important;
-  color: #94a3b8 !important;
+  font-size: 0.84rem !important;
+  color: #64748b !important;
+  padding: 8px 14px !important;
+  margin: 2px 4px !important;
 }
 
+/* Hover específico para los submenús */
 #offcanvasDarkNavbar .submenu-list .nav-link:hover {
-  color: #ffbe2e !important;
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
 }
 
-/* 7. Botón de Cerrar Sesión */
+/* 7. Botón Especial Salir */
 #offcanvasDarkNavbar .text-danger {
-  color: #f87171 !important; /* Rojo moderno mate */
-  font-weight: 600 !important;
-  margin-top: 12px !important;
+  color: #64748b !important; /* Por defecto se ve gris igual que el resto */
 }
 
 #offcanvasDarkNavbar .text-danger:hover {
-  background-color: rgba(248, 113, 113, 0.08) !important;
+  background-color: #fef2f2 !important; /* Solo en hover se torna rojo sutil */
   color: #ef4444 !important;
 }
