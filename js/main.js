@@ -32,6 +32,14 @@ function gestionarFacturas() {
   main.appendChild(frmFactura);
 }
 
+function consultarFacturas() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmHistorialFacturas = document.createElement("historial-facturas");
+  frmHistorialFacturas.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmHistorialFacturas);
+}
+
 /*******************************************************************************/
 function registrarPersona() {
   let main = document.getElementById("App");
