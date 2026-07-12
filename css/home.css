@@ -135,24 +135,40 @@ body {
   color: #ffffff !important;
 }
 
-/* Submenús Desplegados */
-.submenu-list {
-  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
-  margin-left: 28px !important;
-  margin-bottom: 6px !important;
-  padding-left: 4px !important;
-}
+/* ==========================================================================
+   OPTIMIZACIÓN DE SUBMENÚS (REPOSO Y MOUSE OVER)
+   ========================================================================== */
 
+/* Submenús en estado de reposo: Blanco suave/Gris claro limpio, no encandila */
 .submenu-list .nav-link {
-  font-size: 0.85rem !important;
+  font-size: 0.86rem !important;
   padding: 8px 16px !important;
-  color: #64748b !important;
+  color: #cbd5e1 !important; /* Blanco suavizado muy elegante */
+  font-weight: 400;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Hover light gray en los submenús */
+/* Iconos del submenú en reposo: Mismo tono suave */
+.submenu-list .nav-link i {
+  color: #94a3b8 !important;
+  transition: color 0.2s ease;
+}
+
+/* MOUSE OVER (HOVER) EN SUBMENÚS */
 .submenu-list .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #ffffff !important;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.08
+  ) !important; /* Tu pastilla light gray limpia */
+  color: #ffffff !important; /* El texto se ilumina a blanco puro impecable */
+  padding-left: 20px !important; /* Efecto sutil de desplazamiento pro */
+}
+
+/* El icono del submenú se ilumina con tu amarillo corporativo al pasar el mouse */
+.submenu-list .nav-link:hover i {
+  color: #ffbe2e !important;
 }
 
 /* Animación del Chevron */
