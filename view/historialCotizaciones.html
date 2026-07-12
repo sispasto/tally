@@ -350,7 +350,7 @@
           ? await respuesta.text()
           : urlSeguraPdf;
 
-        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu documento *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
         const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
 
         window.open(urlWhatsApp, "_blank");
@@ -359,7 +359,7 @@
           "Error al acortar la URL, enviando enlace original...",
           err,
         );
-        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu documento *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
         const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
         window.open(urlWhatsApp, "_blank");
       }
