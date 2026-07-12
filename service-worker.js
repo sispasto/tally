@@ -1,5 +1,5 @@
 const APP_VERSION = "1.0";
-const CACHE_NAME = `app-cache-v${APP_VERSION}`;
+const CACHE_NAME = `app-tally-v${APP_VERSION}`;
 
 self.addEventListener("install", (e) => {
   //console.log("SW instalado - versión", APP_VERSION);
