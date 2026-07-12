@@ -80,7 +80,7 @@ body {
 .section-header {
   font-size: 0.8rem !important;
   letter-spacing: 0.8px;
-  color: #94a3b8 !important; /* Gris azulado nítido */
+  color: #fbc02d !important; /* Gris azulado nítido */
   text-transform: uppercase;
   font-weight: 700 !important;
   padding: 14px 15px 6px 15px !important;
@@ -91,7 +91,7 @@ body {
 
 /* Iconos de cabecera Pro: Azul nítido corporativo para destacar */
 .section-header i {
-  color: #3b82f6 !important;
+  color: #fbc02d !important;
   font-size: 0.9rem !important;
 }
 

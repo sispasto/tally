@@ -14,7 +14,7 @@ export const MENUS = {
       </li>
     </ul>`,
 
-  // ROL EMPRESA (Restaurado a estilos oscuros originales con tus 4 nuevos módulos)
+  // ROL EMPRESA (Corregido y optimizado)
   EMPRESA: `
     <ul class="navbar-nav flex-grow-1 pe-3 custom-menu">
       <li class="nav-item mb-2">
@@ -23,6 +23,7 @@ export const MENUS = {
         </a>
       </li>
 
+      <!-- SECCIÓN COTIZACIONES -->
       <li class="nav-item menu-section">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
           href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catFinanzas', event)">
@@ -47,24 +48,25 @@ export const MENUS = {
         </div>
       </li>
 
+      <!-- SECCIÓN FACTURAS (Corregido ID a 'catFacturas' y funciones correspondientes) -->
       <li class="nav-item menu-section">
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
-          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catFinanzas', event)">
+          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catFacturas', event)">
           <span class="d-flex align-items-center gap-2">
-            <i class="bi bi-wallet2 text-success"></i> FACTURAS
+            <i class="bi bi-receipt text-info"></i> FACTURAS
           </span>
           <i class="bi bi-chevron-right chevron-icon" style="font-size: 0.7rem;"></i>
         </a>
-        <div class="collapse show" id="catFinanzas">
+        <div class="collapse show" id="catFacturas">
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
             <li>
-              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarCotizaciones)">
-                <i class="bi bi-file-earmark-text"></i> Crear Factura
+              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarFacturas)">
+                <i class="bi bi-file-earmark-plus"></i> Crear Factura
               </a>
             </li>
             <li>
-              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(consultarCotizaciones)">
-                <i class="bi bi-file-earmark-text"></i> Consultar Facturas
+              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(consultarFacturas)">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Consultar Facturas
               </a>
             </li>                      
           </ul>
@@ -243,5 +245,3 @@ const MenuManager = {
 
 // EXPOSICIÓN GLOBAL UNIFICADA
 window.PpalMenu = MenuManager;
-
-//El estilo de este menu se realiza desde el archivo css/home.css
