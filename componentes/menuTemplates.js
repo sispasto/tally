@@ -14,8 +14,7 @@ export const MENUS = {
       </li>
     </ul>`,
 
-  // ROL EMPRESA
-  // ROL EMPRESA (Corregido y Optimizado)
+  // ROL EMPRESA (Actualizado con Módulos Financieros)
   EMPRESA: `
     <ul class="navbar-nav flex-grow-1 pe-3 custom-menu">
       <li class="nav-item mb-2">
@@ -95,6 +94,24 @@ export const MENUS = {
         </div>
       </li>
 
+      <li class="nav-item menu-section mt-2">
+        <a class="nav-link section-header d-flex justify-content-between align-items-center" 
+          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catFinanzas', event)">
+          <span class="d-flex align-items-center gap-2">
+            <i class="bi bi-cash-coin text-success"></i> Módulos Financieros
+          </span>
+          <i class="bi bi-chevron-right chevron-icon" style="font-size: 0.7rem;"></i>
+        </a>
+        <div class="collapse" id="catFinanzas">
+          <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(verFacturacion)">Facturación</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(liquidarRutas)">Liquidación de Rutas</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(cuentasPorCobrar)">Cuentas por Cobrar</a></li>
+            <li><a class="nav-link" href="#" onclick="PpalMenu.ejecutarAccion(reportesFinancieros)">Reporte de Costos</a></li>
+          </ul>
+        </div>
+      </li>
+
       <li class="nav-item mt-4 border-top border-secondary pt-3">
         <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(showChangePasswordModal)">
           <i class="bi bi-shield-lock"></i> Seguridad
@@ -122,7 +139,7 @@ export const MENUS = {
       </li>
       <li class="nav-item mb-2">
         <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(efectividadMensajero)">
-          <i class="bi bi-search"></i> <span>Efectividad reparto</span>
+          <i class="bi bi-bar-chart-line"></i> <span>Efectividad reparto</span>
         </a>
       </li>
       <li class="nav-item mb-2">
@@ -195,7 +212,6 @@ export const MENUS = {
 };
 
 const MenuManager = {
-  // CORRECCIÓN: Definición limpia de funciones sin prefijos
   toggleSubMenu: (id, event) => {
     if (event) {
       event.stopPropagation();
@@ -220,54 +236,45 @@ const MenuManager = {
       "#offcanvasDarkNavbar .offcanvas-body",
     );
     const tituloMenu = document.getElementById("offcanvasDarkNavbarLabel");
-    const textUser = document.getElementById("textUser"); // <--- Seleccionamos el elemento del navbar
+    const textUser = document.getElementById("textUser");
 
     if (!contenedor) return;
 
-    // 1. Actualizar el Navbar Brand (el que querías editar)
     if (textUser) {
-      // Si hay nombre lo ponemos, si no, dejamos el nombre de la app
-      textUser.textContent = nombreUsuario || "";
       textUser.innerHTML = `<i class="bi bi-person-circle me-2"></i> ${nombreUsuario.toUpperCase()}`;
       textUser.style.fontSize = "1.1rem";
       textUser.style.letterSpacing = "1px";
     }
 
-    // 2. Actualizar el título interno del Offcanvas (opcional, por estética)
-
-    // En mostrarMenuPorRol:
     if (tituloMenu) {
       tituloMenu.innerHTML = `<i class="bi bi-person-circle me-2"></i> ${nombreUsuario.toUpperCase()}`;
       tituloMenu.style.fontSize = "1.1rem";
       tituloMenu.style.letterSpacing = "1px";
     }
 
-    // 3. Inyectar el HTML del menú según el rol
     const r = Number(rol);
     if (r === 1) contenedor.innerHTML = MENUS.EMPRESA;
     else if (r === 2) contenedor.innerHTML = MENUS.MENSAJERO;
     else if (r === 3) contenedor.innerHTML = MENUS.ADMIN;
-    else MenuManager.mostrarMenuInvitado();
+    else window.PpalMenu.mostrarMenuInvitado();
   },
 
   mostrarMenuInvitado: () => {
     const contenedor = document.querySelector(
       "#offcanvasDarkNavbar .offcanvas-body",
     );
-
     const tituloMenu = document.getElementById("offcanvasDarkNavbarLabel");
+    const textUser = document.getElementById("textUser");
 
     if (tituloMenu) {
-      tituloMenu.innerHTML = `<i class="bi bi-person-circle me-2"></i> TALLY`;
+      tituloMenu.innerHTML = `<i class="bi bi-building-fill me-2"></i> TALLY`;
       tituloMenu.style.fontSize = "1.1rem";
       tituloMenu.style.letterSpacing = "1px";
     }
 
     if (contenedor) contenedor.innerHTML = MENUS.DEFAULT;
 
-    const textUser = document.getElementById("textUser");
     if (textUser) {
-      // Si hay nombre lo ponemos, si no, dejamos el nombre de la app
       textUser.innerHTML = `<i class="bi bi-building-fill me-2"></i> TALLY`;
       textUser.style.fontSize = "1.1rem";
       textUser.style.letterSpacing = "1px";
@@ -275,5 +282,5 @@ const MenuManager = {
   },
 };
 
-// EXPOSICIÓN GLOBAL
+// EXPOSICIÓN GLOBAL UNIFICADA
 window.PpalMenu = MenuManager;
