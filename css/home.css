@@ -136,25 +136,33 @@ body {
 }
 
 /* ==========================================================================
-   OPTIMIZACIÓN DE SUBMENÚS (REPOSO Y MOUSE OVER)
+   ICONOS DE SUBMENÚS CON COLOR PROPIO
    ========================================================================== */
 
-/* Submenús en estado de reposo: Blanco suave/Gris claro limpio, no encandila */
+/* Submenús en reposo: Mantenemos tu texto en blanco suave */
 .submenu-list .nav-link {
   font-size: 0.86rem !important;
   padding: 8px 16px !important;
-  color: #cbd5e1 !important; /* Blanco suavizado muy elegante */
+  color: #cbd5e1 !important;
   font-weight: 400;
   transition: all 0.2s ease-in-out;
 }
 
-/* Iconos del submenú en reposo: Mismo tono suave */
-.submenu-list .nav-link i {
-  color: #94a3b8 !important;
-  transition: color 0.2s ease;
+/* --- COLORES PARA LOS ICONOS EN REPOSO --- */
+
+/* Iconos de Cotizaciones: Amarillo/Ámbar corporativo */
+#catFinanzas .submenu-list .nav-link i {
+  color: #ffbe2e !important;
+  transition: transform 0.2s ease;
 }
 
-/* MOUSE OVER (HOVER) EN SUBMENÚS */
+/* Iconos de Facturas: Celeste/Azul brillante nítido */
+#catFacturas .submenu-list .nav-link i {
+  color: #3b82f6 !important;
+  transition: transform 0.2s ease;
+}
+
+/* --- MOUSE OVER (HOVER) EN SUBMENÚS --- */
 .submenu-list .nav-link:hover {
   background-color: rgba(
     255,
@@ -162,13 +170,13 @@ body {
     255,
     0.08
   ) !important; /* Tu pastilla light gray limpia */
-  color: #ffffff !important; /* El texto se ilumina a blanco puro impecable */
-  padding-left: 20px !important; /* Efecto sutil de desplazamiento pro */
+  color: #ffffff !important; /* El texto cambia a blanco puro brillante */
+  padding-left: 20px !important; /* Micro desplazamiento dinámico */
 }
 
-/* El icono del submenú se ilumina con tu amarillo corporativo al pasar el mouse */
+/* Al pasar el mouse, los iconos mantienen su color pero ganan un sutil realce */
 .submenu-list .nav-link:hover i {
-  color: #ffbe2e !important;
+  transform: scale(1.1); /* Ligero crecimiento pro al pasar el cursor */
 }
 
 /* Animación del Chevron */
