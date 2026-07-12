@@ -1,11 +1,11 @@
 /* ==========================================================================
-   BARRA LATERAL (OFFCANVAS) MINIMALIST SAAS - GRIS CLARO PREMIUM
+   BARRA LATERAL (OFFCANVAS) HYBRID SAAS - HEADER NEGRO Y HOVER COLOR
    ========================================================================== */
 
-/* 1. Contenedor principal: Cambiado a un gris claro suave para romper el blanco plano */
+/* 1. Contenedor principal: Gris claro suave */
 #offcanvasDarkNavbar.offcanvas {
-  background-color: #f4f5f7 !important; /* Gris claro sedoso pro */
-  border-right: 1px solid #e2e8f0 !important; /* Línea divisoria suave */
+  background-color: #f4f5f7 !important;
+  border-right: 1px solid #e2e8f0 !important;
   box-shadow: 6px 0 20px rgba(0, 0, 0, 0.02) !important;
 }
 
@@ -15,30 +15,30 @@
   background: transparent !important;
 }
 
-/* 2. Encabezado del Menú (Usuario) */
+/* 2. Encabezado del Menú (Usuario): Igualado al negro del navbar principal */
 #offcanvasDarkNavbar .offcanvas-header {
-  border-bottom: 1px solid #e2e8f0 !important;
-  padding: 24px !important;
-  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 18px 24px !important;
+  background-color: #1a1d20 !important; /* Negro idéntico al Navbar superior */
 }
 
-/* Nombre de usuario: Gris oscuro profundo y elegante */
+/* Nombre de usuario: Blanco nítido sobre el fondo negro */
 #offcanvasDarkNavbar .offcanvas-title {
-  color: #111827 !important; /* Gris grafito fuerte */
+  color: #ffffff !important;
   font-weight: 600 !important;
   font-size: 1.05rem !important;
   letter-spacing: -0.3px;
 }
 
-/* Botón 'X' de cerrar */
+/* Botón 'X' de cerrar en blanco para resaltar sobre el fondo negro */
 #offcanvasDarkNavbar .btn-close-white {
-  filter: invert(0.2) !important; /* Gris oscuro a juego */
-  opacity: 0.7;
+  filter: invert(0) !important;
+  opacity: 0.8;
 }
 
 /* 3. Títulos de las Secciones (COTIZACIONES, FACTURAS) */
 #offcanvasDarkNavbar .section-header {
-  color: #64748b !important; /* Gris medio nítido */
+  color: #64748b !important;
   font-size: 0.72rem !important;
   font-weight: 600 !important;
   letter-spacing: 0.8px !important;
@@ -49,9 +49,9 @@
   align-items: center;
 }
 
-/* Iconos decorativos en los títulos */
+/* Iconos de las cabeceras principales en azul nítido corporativo */
 #offcanvasDarkNavbar .section-header i {
-  color: #94a3b8 !important;
+  color: #3b82f6 !important;
   font-size: 0.85rem !important;
 }
 
@@ -64,40 +64,48 @@
 
 /* 4. Enlaces Generales del Menú */
 #offcanvasDarkNavbar .nav-link:not(.section-header) {
-  color: #4b5563 !important; /* Texto gris corporativo legible */
+  color: #4b5563 !important;
   font-size: 0.88rem !important;
   font-weight: 500 !important;
   padding: 10px 16px !important;
   margin: 4px 14px !important;
-  border-radius: 10px !important; /* Esquinas redondeadas suaves */
+  border-radius: 10px !important;
   display: flex;
   align-items: center;
   gap: 10px;
   transition: all 0.2s ease;
 }
 
-/* Iconos de los enlaces */
+/* Iconos de los menús (Crear, Consultar) en un gris azulado moderno */
 #offcanvasDarkNavbar .nav-link:not(.section-header) i {
-  color: #6b7280 !important;
+  color: #475569 !important;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
 }
 
-/* 5. Efecto Hover e Items Activos: Resaltan en Blanco Puro sobre el fondo gris */
+/* 5. Efecto Hover e Items Activos: El fondo se tiñe de amarillo corporativo translúcido */
 #offcanvasDarkNavbar .nav-link:not(.section-header):hover,
 #offcanvasDarkNavbar .nav-link.active {
-  background-color: #ffffff !important; /* Pastilla blanca impecable */
-  color: #111827 !important; /* Texto se oscurece al máximo */
+  background-color: rgba(
+    255,
+    190,
+    46,
+    0.15
+  ) !important; /* Amarillo suave de fondo */
+  color: #b45309 !important; /* Texto ocre/oscuro para perfecta legibilidad */
   border-left: none !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important; /* Micro sombra que le da relieve */
+  box-shadow: 0 2px 8px rgba(255, 190, 46, 0.08) !important;
 }
 
+/* Al pasar el mouse o estar activo, los iconos brillan en amarillo sólido */
 #offcanvasDarkNavbar .nav-link:not(.section-header):hover i,
 #offcanvasDarkNavbar .nav-link.active i {
-  color: #111827 !important;
+  color: #ffbe2e !important;
 }
 
 /* 6. Submenús Desplegables Internos */
 #offcanvasDarkNavbar .submenu-list {
-  border-left: 1px solid #cbd5e1 !important; /* Línea guía delgada */
+  border-left: 1px solid #cbd5e1 !important;
   margin-left: 28px !important;
   margin-bottom: 8px !important;
   padding-left: 6px !important;
@@ -110,18 +118,22 @@
   margin: 2px 4px !important;
 }
 
-/* Hover en submenús */
+/* Hover específico para los elementos hijos desplegados */
 #offcanvasDarkNavbar .submenu-list .nav-link:hover {
-  background-color: #ffffff !important;
-  color: #111827 !important;
+  background-color: rgba(255, 190, 46, 0.12) !important;
+  color: #b45309 !important;
 }
 
-/* 7. Botón Cerrar Sesión */
+/* 7. Botón Cerrar Sesión y Seguridad */
 #offcanvasDarkNavbar .text-danger {
   color: #4b5563 !important;
 }
 
 #offcanvasDarkNavbar .text-danger:hover {
-  background-color: #fef2f2 !important; /* Rojo sutil solo al pasar el mouse */
+  background-color: #fef2f2 !important;
+  color: #dc3545 !important;
+}
+
+#offcanvasDarkNavbar .text-danger:hover i {
   color: #dc3545 !important;
 }
