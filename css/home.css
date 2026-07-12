@@ -1,10 +1,10 @@
 /* ==========================================================================
-   BARRA LATERAL (OFFCANVAS) HYBRID SAAS - HEADER NEGRO Y HOVER COLOR
+   BARRA LATERAL (OFFCANVAS) HYBRID SAAS - PLATINO #F7F7F7
    ========================================================================== */
 
-/* 1. Contenedor principal: Gris claro suave */
+/* 1. Contenedor principal: Tu gris seleccionado #F7F7F7 */
 #offcanvasDarkNavbar.offcanvas {
-  background-color: #f4f5f7 !important;
+  background-color: #f7f7f7 !important; /* Base gris platino exacta */
   border-right: 1px solid #e2e8f0 !important;
   box-shadow: 6px 0 20px rgba(0, 0, 0, 0.02) !important;
 }
@@ -15,14 +15,14 @@
   background: transparent !important;
 }
 
-/* 2. Encabezado del Menú (Usuario): Igualado al negro del navbar principal */
+/* 2. Encabezado del Menú (Usuario): Negro idéntico al Navbar superior */
 #offcanvasDarkNavbar .offcanvas-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   padding: 18px 24px !important;
-  background-color: #1a1d20 !important; /* Negro idéntico al Navbar superior */
+  background-color: #1a1d20 !important;
 }
 
-/* Nombre de usuario: Blanco nítido sobre el fondo negro */
+/* Nombre de usuario en blanco */
 #offcanvasDarkNavbar .offcanvas-title {
   color: #ffffff !important;
   font-weight: 600 !important;
@@ -30,7 +30,7 @@
   letter-spacing: -0.3px;
 }
 
-/* Botón 'X' de cerrar en blanco para resaltar sobre el fondo negro */
+/* Botón 'X' de cerrar en blanco */
 #offcanvasDarkNavbar .btn-close-white {
   filter: invert(0) !important;
   opacity: 0.8;
@@ -76,14 +76,14 @@
   transition: all 0.2s ease;
 }
 
-/* Iconos de los menús (Crear, Consultar) en un gris azulado moderno */
+/* Iconos de los menús (Crear, Consultar) en gris azulado */
 #offcanvasDarkNavbar .nav-link:not(.section-header) i {
   color: #475569 !important;
   font-size: 0.95rem;
   transition: color 0.2s ease;
 }
 
-/* 5. Efecto Hover e Items Activos: El fondo se tiñe de amarillo corporativo translúcido */
+/* 5. Efecto Hover e Items Activos con Amarillo Corporativo */
 #offcanvasDarkNavbar .nav-link:not(.section-header):hover,
 #offcanvasDarkNavbar .nav-link.active {
   background-color: rgba(
@@ -91,8 +91,8 @@
     190,
     46,
     0.15
-  ) !important; /* Amarillo suave de fondo */
-  color: #b45309 !important; /* Texto ocre/oscuro para perfecta legibilidad */
+  ) !important; /* Amarillo translúcido */
+  color: #b45309 !important; /* Texto oscuro/ocre para lectura perfecta */
   border-left: none !important;
   box-shadow: 0 2px 8px rgba(255, 190, 46, 0.08) !important;
 }
@@ -118,7 +118,7 @@
   margin: 2px 4px !important;
 }
 
-/* Hover específico para los elementos hijos desplegados */
+/* Hover específico para los elementos hijos */
 #offcanvasDarkNavbar .submenu-list .nav-link:hover {
   background-color: rgba(255, 190, 46, 0.12) !important;
   color: #b45309 !important;
