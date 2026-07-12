@@ -1,6 +1,6 @@
 {
-  "name": "novaenvios",
-  "short_name": "novaenvios",
+  "name": "tally",
+  "short_name": "tally",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
