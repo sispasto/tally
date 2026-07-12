@@ -120,7 +120,7 @@
             class="badge bg-white text-dark border px-3 py-2 fs-6"
             id="cotNumero"
           >
-            No. 0001
+            No. Siguiente
           </span>
         </div>
 
@@ -271,6 +271,7 @@
             </button>
             <button
               type="button"
+              id="btnGuardarCotizacion"
               class="btn btn-tally-yellow btn-sm px-4 shadow-sm"
               onclick="nsCrearCotizacion.guardarCotizacion()"
             >
@@ -311,7 +312,6 @@
       const nuevoItem = {
         id: Date.now(),
         descripcion: desc.toUpperCase(),
-        amount: cant,
         cantidad: cant,
         precio: precio,
         total: cant * precio,
@@ -363,7 +363,8 @@
       calcularTotales();
     }
 
-    function guardarCotizacion() {
+    async function guardarCotizacion() {
+      const btnGuardar = document.getElementById("btnGuardarCotizacion");
       const nombre = document.getElementById("cotClienteNombre").value.trim();
       const direccion = document
         .getElementById("cotClienteDireccion")
@@ -379,20 +380,67 @@
         return;
       }
 
-      const payloadCotizacion = {
-        cliente_nombre: nombre,
-        cliente_direccion: direccion,
-        items: itemsDetalle,
-        total_cotizacion: totalGeneral,
-        fecha: new Date().toISOString(),
-      };
+      try {
+        // Deshabilitar botón para evitar multi-envíos
+        btnGuardar.disabled = true;
 
-      console.log("Guardando cotización en Tally DB:", payloadCotizacion);
-      mostrarMensaje(
-        "¡Cotización guardada exitosamente en el sistema!",
-        "success",
-      );
-      limpiarFormulario();
+        // Obtener la sesión activa de Supabase
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session) throw new Error("Debe iniciar sesión en la plataforma");
+
+        // Construcción del Payload para la Edge Function
+        const payloadCotizacion = {
+          cliente_nombre: nombre,
+          cliente_direccion: direccion,
+          items: itemsDetalle,
+          total_cotizacion: totalGeneral,
+        };
+
+        // Consumo de la Edge Function tally_crearCotizacion
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/tally_crearCotizacion`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify(payloadCotizacion),
+          },
+        );
+
+        const result = await response.json();
+
+        if (!result.ok) {
+          mostrarMensaje(
+            result.error ||
+              "Ocurrió un error inesperado al procesar el guardado.",
+            "danger",
+          );
+          btnGuardar.disabled = false;
+          return;
+        }
+
+        // Actualizar el consecutivo visual en la tarjeta superior con el número retornado por la DB
+        document.getElementById("cotNumero").innerText =
+          result.numero_cotizacion;
+
+        mostrarMensaje(
+          `¡Cotización registrada de forma exitosa! Asignada con el consecutivo: ${result.numero_cotizacion}`,
+          "success",
+        );
+        limpiarFormulario();
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje(
+          err.message || "Error de conexión con el servidor",
+          "danger",
+        );
+      } finally {
+        btnGuardar.disabled = false;
+      }
     }
 
     function limpiarFormulario() {
