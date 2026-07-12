@@ -5,34 +5,43 @@ html,
 body {
   height: auto;
   overflow-y: auto;
+  font-family: "Poppins", sans-serif;
 }
+
 .modal-dialog {
   margin-top: 70px !important;
 }
-#loginModal .modal-content {
+
+#loginModal .modal-content,
+#changePasswordModal .modal-content {
   border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-#loginForm {
+#loginForm,
+.modal-body form {
   padding: 20px;
 }
 
-#loginForm .form-label {
+#loginForm .form-label,
+.modal-body .form-label {
   font-weight: bold;
 }
 
-#loginForm .form-control {
+#loginForm .form-control,
+.modal-body .form-control {
   border-radius: 8px;
 }
 
-#loginForm .btn-primary {
+#loginForm .btn-primary,
+.modal-body .btn-primary {
   background-color: black;
   border-color: black;
   border-radius: 8px;
 }
 
-#loginForm .btn-primary:hover {
+#loginForm .btn-primary:hover,
+.modal-body .btn-primary:hover {
   background-color: #333;
 }
 
@@ -41,96 +50,151 @@ body {
   transition: height 0.3s ease;
 }
 
-/* Estilos para mejorar el diseño del formulario */
-#loginModal .modal-content,
-#changePasswordModal .modal-content {
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+/* ==========================================================================
+   ESTILO PROFESIONAL ORIGINAL OSCURO - DETALLES PRO & HOVER CÁLIDO
+   ========================================================================== */
+
+/* Contenedor Offcanvas para unificar todo el fondo oscuro */
+#offcanvasDarkNavbar.offcanvas {
+  background: #1a1d20 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-.modal-body form {
-  padding: 20px;
-}
-
-.modal-body .form-label {
-  font-weight: bold;
-}
-
-.modal-body .form-control {
-  border-radius: 8px;
-}
-
-.modal-body .btn-primary {
-  background-color: black;
-  border-color: black;
-  border-radius: 8px;
-}
-
-.modal-body .btn-primary:hover {
-  background-color: #333;
-}
-
-/* Estilo Profesional para el Menú Lateral */
 .offcanvas-body {
   padding-top: 1.5rem !important;
-  background: #1a1d20; /* Un gris casi negro más suave que el negro puro */
+  background: #1a1d20 !important; /* Mantenemos tu gris casi negro original */
 }
 
-/* Encabezados de sección */
-.section-header {
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-  color: #adb5bd !important;
-  text-transform: uppercase;
+/* Encabezado donde sale Luis Almeida */
+#offcanvasDarkNavbar .offcanvas-header {
+  background: #1a1d20 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+#offcanvasDarkNavbar .offcanvas-title {
+  color: #ffffff !important;
   font-weight: 600 !important;
-  padding: 10px 15px !important;
 }
 
-/* Efecto Hover sutil */
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  color: #fff !important;
+/* Encabezados de sección (COTIZACIONES, FACTURAS) */
+.section-header {
+  font-size: 0.8rem !important;
+  letter-spacing: 0.8px;
+  color: #94a3b8 !important; /* Gris azulado más limpio */
+  text-transform: uppercase;
+  font-weight: 700 !important;
+  padding: 14px 15px 6px 15px !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Submenús */
+/* Iconos de cabecera Pro: Ámbar cálido premium */
+.section-header i {
+  color: #f59e0b !important;
+  font-size: 0.9rem !important;
+}
+
+/* Enlaces principales del menú */
+#offcanvasDarkNavbar .nav-linkInput,
+#offcanvasDarkNavbar .nav-link:not(.section-header) {
+  color: #cbd5e1 !important; /* Blanco suave legible */
+  font-weight: 500;
+  padding: 10px 16px !important;
+  margin: 2px 10px !important;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.25s ease-in-out;
+}
+
+/* Iconos de las opciones (Crear, Consultar) -> Gris Pro que cambia con el mouse */
+#offcanvasDarkNavbar .nav-link:not(.section-header) i {
+  color: #94a3b8 !important;
+  transition: color 0.2s ease;
+}
+
+/* EFECTO MOUSE OVER (HOVER) Y ACTIVO - ILUMINACIÓN ÁMBAR CÁLIDA */
+#offcanvasDarkNavbar .nav-link:not(.section-header):hover,
+#offcanvasDarkNavbar .nav-link.active {
+  background-color: rgba(
+    245,
+    158,
+    11,
+    0.12
+  ) !important; /* Pastilla translúcida ámbar muy cálida */
+  color: #f59e0b !important; /* Texto se ilumina en el color de la marca */
+  padding-left: 20px !important; /* Micro-interacción fluida */
+}
+
+/* Iconos se iluminan en naranja/amarillo cálido al pasar el mouse */
+#offcanvasDarkNavbar .nav-link:not(.section-header):hover i,
+#offcanvasDarkNavbar .nav-link.active i {
+  color: #ffbe2e !important;
+}
+
+/* Submenús Desplegados */
+.submenu-list {
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin-left: 28px !important;
+  margin-bottom: 6px !important;
+  padding-left: 4px !important;
+}
+
 .submenu-list .nav-link {
-  font-size: 0.85rem;
-  padding: 6px 20px !important;
-  color: #8c9196 !important;
-  transition: all 0.2s ease;
+  font-size: 0.85rem !important;
+  padding: 8px 16px !important;
+  color: #94a3b8 !important;
 }
 
+/* Hover cálido en submenús */
 .submenu-list .nav-link:hover {
-  color: #0d6efd !important; /* Azul sutil al pasar el mouse */
-  background: transparent;
+  background-color: rgba(245, 158, 11, 0.08) !important;
+  color: #ffbe2e !important;
 }
 
 /* Animación del Chevron */
 .section-header[aria-expanded="true"] .chevron-icon {
   transform: rotate(90deg);
+  color: #ffbe2e !important;
 }
 
 .chevron-icon {
   transition: transform 0.3s ease;
+  color: #475569 !important;
+  font-size: 0.8rem;
 }
 
+/* Enlaces especiales (Seguridad / Salir) */
+#offcanvasDarkNavbar .text-danger {
+  color: #cbd5e1 !important;
+}
+#offcanvasDarkNavbar .text-danger:hover {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
+#offcanvasDarkNavbar .text-danger:hover i {
+  color: #ef4444 !important;
+}
+
+/* Comportamiento Mobile */
 @media (max-width: 576px) {
   .position-fixed.bottom-0.end-0 {
-    width: 100%; /* Ocupa todo el ancho */
+    width: 100%;
     padding: 10px !important;
     display: flex;
-    justify-content: center; /* Centra el mensaje en el celular */
+    justify-content: center;
   }
 
   #liveToast {
-    width: 90%; /* Que no toque los bordes laterales */
+    width: 90%;
     margin-bottom: 20px;
   }
 }
 
-/* Esto hará que el icono de la empresa brille un poco más que el texto */
+/* Icono de usuario barra superior con tono ámbar cálido corporativo */
 #textUser i {
-  color: #4dabf7; /* Un azul suave profesional */
+  color: #ffbe2e;
   font-size: 1.1rem;
 }
