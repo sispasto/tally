@@ -27,7 +27,7 @@ export const MENUS = {
         <a class="nav-link section-header d-flex justify-content-between align-items-center" 
           href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catFinanzas', event)">
           <span class="d-flex align-items-center gap-2">
-            <i class="bi bi-wallet2 text-success"></i> MÓDULOS FINANCIEROS
+            <i class="bi bi-wallet2 text-success"></i> COTIZACIONES
           </span>
           <i class="bi bi-chevron-right chevron-icon" style="font-size: 0.7rem;"></i>
         </a>
@@ -35,29 +35,38 @@ export const MENUS = {
           <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
             <li>
               <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarCotizaciones)">
-                <i class="bi bi-file-earmark-text"></i> Cotizaciones
+                <i class="bi bi-file-earmark-text"></i> Crear Cotización
               </a>
             </li>
             <li>
               <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(consultarCotizaciones)">
-                <i class="bi bi-file-earmark-text"></i> Historial de Cotizaciones
+                <i class="bi bi-file-earmark-text"></i> Consultar Cotizaciones
+              </a>
+            </li>                      
+          </ul>
+        </div>
+      </li>
+
+      <li class="nav-item menu-section">
+        <a class="nav-link section-header d-flex justify-content-between align-items-center" 
+          href="javascript:void(0)" onclick="PpalMenu.toggleSubMenu('catFinanzas', event)">
+          <span class="d-flex align-items-center gap-2">
+            <i class="bi bi-wallet2 text-success"></i> FACTURAS
+          </span>
+          <i class="bi bi-chevron-right chevron-icon" style="font-size: 0.7rem;"></i>
+        </a>
+        <div class="collapse show" id="catFinanzas">
+          <ul class="list-unstyled submenu-list ms-3 border-start border-secondary-subtle">
+            <li>
+              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarCotizaciones)">
+                <i class="bi bi-file-earmark-text"></i> Crear Factura
               </a>
             </li>
             <li>
-              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarFacturas)">
-                <i class="bi bi-receipt"></i> Facturación
+              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(consultarCotizaciones)">
+                <i class="bi bi-file-earmark-text"></i> Consultar Facturas
               </a>
-            </li>
-            <li>
-              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarCuentasPorCobrar)">
-                <i class="bi bi-person-dash text-danger"></i> Cuentas por Cobrar
-              </a>
-            </li>
-            <li>
-              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarCuentasPorPagar)">
-                <i class="bi bi-person-plus text-primary"></i> Cuentas por Pagar
-              </a>
-            </li>
+            </li>                      
           </ul>
         </div>
       </li>
