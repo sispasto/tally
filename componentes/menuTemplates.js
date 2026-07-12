@@ -39,6 +39,11 @@ export const MENUS = {
               </a>
             </li>
             <li>
+              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(consultarCotizaciones)">
+                <i class="bi bi-file-earmark-text"></i> Historial de Cotizaciones
+              </a>
+            </li>
+            <li>
               <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(gestionarFacturas)">
                 <i class="bi bi-receipt"></i> Facturación
               </a>

@@ -14,6 +14,17 @@ function gestionarCotizaciones() {
   main.appendChild(frmCotizacion);
 }
 
+function consultarCotizaciones() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmHistorialCotizaciones = document.createElement(
+    "historial-cotizaciones",
+  );
+  frmHistorialCotizaciones.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmHistorialCotizaciones);
+}
+
+/*******************************************************************************/
 function registrarPersona() {
   let main = document.getElementById("App");
   removeALLChilds(main);
