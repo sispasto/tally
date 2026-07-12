@@ -1,7 +1,24 @@
 <style>
+  /* Paleta Corporativa Amarilla (Basada en la interfaz original) */
   .tally-card-historial {
     background-color: #ffffff !important;
     border: 1px solid #dee2e6 !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+  }
+  .bg-amarillo-tally {
+    background-color: #ffbe2e !important; /* Amarillo idéntico al encabezado y botones */
+    color: #1a202c !important; /* Texto oscuro de alto contraste */
+  }
+  .btn-amarillo-tally {
+    background-color: #ffbe2e !important;
+    color: #1a202c !important;
+    font-weight: 600;
+    border: none !important;
+  }
+  .btn-amarillo-tally:hover {
+    background-color: #e5ab26 !important;
+    color: #1a202c !important;
   }
   .btn-whatsapp {
     background-color: #25d366 !important;
@@ -12,20 +29,33 @@
     background-color: #1ebd56 !important;
     opacity: 0.9;
   }
+  .text-primary-tally {
+    color: #1a202c !important;
+  }
+  .page-item.active .page-link {
+    background-color: #ffbe2e !important;
+    border-color: #ffbe2e !important;
+    color: #1a202c !important;
+    font-weight: bold;
+  }
+  .page-link {
+    color: #1a202c !important;
+  }
 </style>
 
 <div class="container-fluid cotizacion-container mt-4">
   <div class="row justify-content-center">
     <div class="col-12 col-md-11 col-lg-10 col-xl-9 card-wrapper">
       <div class="card shadow-sm tally-card-historial mb-5">
+        <!-- 🟨 ENCABEZADO CON DISEÑO AMARILLO CORPORATIVO -->
         <div
-          class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3"
+          class="card-header bg-amarillo-tally d-flex justify-content-between align-items-center py-3"
         >
           <h5 class="mb-0 fw-bold">
             <i class="bi bi-clock-history me-2"></i>Historial de Cotizaciones
           </h5>
           <button
-            class="btn btn-sm btn-outline-light"
+            class="btn btn-sm btn-light fw-bold shadow-sm"
             onclick="nsHistorialCotizaciones.cargarCotizaciones()"
           >
             <i class="bi bi-arrow-clockwise"></i> Actualizar
@@ -33,6 +63,7 @@
         </div>
 
         <div class="card-body p-3 text-dark">
+          <!-- 🔍 FILTROS -->
           <div class="row g-2 mb-3">
             <div class="col-12 col-md-4">
               <div class="input-group input-group-sm">
@@ -69,6 +100,7 @@
             </div>
           </div>
 
+          <!-- 📊 TABLA -->
           <div class="table-responsive rounded-2 border">
             <table
               class="table table-hover align-middle mb-0"
@@ -76,11 +108,11 @@
             >
               <thead class="table-light">
                 <tr>
-                  <th class="ps-3">Consecutivo</th>
-                  <th>Cliente</th>
-                  <th>Fecha</th>
-                  <th class="text-end">Total</th>
-                  <th class="text-center">Acciones</th>
+                  <th class="ps-3 text-secondary">Consecutivo</th>
+                  <th class="text-secondary">Cliente</th>
+                  <th class="text-secondary">Fecha</th>
+                  <th class="text-end text-secondary">Total</th>
+                  <th class="text-center text-secondary">Acciones</th>
                 </tr>
               </thead>
               <tbody id="tbodyHistorial">
@@ -93,6 +125,7 @@
             </table>
           </div>
 
+          <!-- 🧭 PAGINACIÓN REMOTA -->
           <div class="d-flex justify-content-between align-items-center mt-3">
             <div class="text-muted small" id="infoPaginacion">
               Mostrando 0 de 0 registros
@@ -111,7 +144,7 @@
   var nsHistorialCotizaciones = (function () {
     let paginaActual = 1;
     const limite = 10;
-    let timeoutBusqueda = null; // Para evitar saturar el servidor al escribir (Debounce)
+    let timeoutBusqueda = null;
 
     async function cargarCotizaciones() {
       const tbody = document.getElementById("tbodyHistorial");
@@ -126,7 +159,6 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Debe iniciar sesión");
 
-        // Construcción dinámica de la URL con los filtros actuales
         const urlParams = new URLSearchParams({
           pagina: paginaActual,
           limite: limite,
@@ -134,7 +166,7 @@
           fecha: queryFecha,
         });
 
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2"></span>Consultando base de datos...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Consultando base de datos...</td></tr>`;
 
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_obtenerCotizaciones?${urlParams.toString()}`,
@@ -173,7 +205,6 @@
         return;
       }
 
-      // Pintar registros devueltos por el servidor
       tbody.innerHTML = "";
       cotizaciones.forEach((cot) => {
         const fechaFormateada = new Date(cot.created_at).toLocaleDateString(
@@ -183,12 +214,12 @@
 
         tbody.innerHTML += `
           <tr>
-            <td class="ps-3 fw-bold text-primary">${cot.numero_cotizacion}</td>
-            <td class="fw-medium">${cot.cliente_nombre}</td>
-            <td>${fechaFormateada}</td>
-            <td class="text-end fw-bold">$ ${cot.total_cotizacion.toLocaleString("es-CO")}</td>
+            <td class="ps-3 fw-bold text-dark">${cot.numero_cotizacion}</td>
+            <td class="fw-medium text-secondary">${cot.cliente_nombre}</td>
+            <td class="text-secondary">${fechaFormateada}</td>
+            <td class="text-end fw-bold text-dark">$ ${cot.total_cotizacion.toLocaleString("es-CO")}</td>
             <td class="text-center">
-              <a class="btn btn-sm btn-outline-danger me-1" href="${urlSeguraPdf}" target="_blank">
+              <a class="btn btn-sm btn-amarillo-tally me-1" href="${urlSeguraPdf}" target="_blank">
                 <i class="bi bi-file-pdf"></i> PDF
               </a>
               <button class="btn btn-sm btn-whatsapp" onclick="nsHistorialCotizaciones.compartirWhatsApp('${cot.cliente_nombre}', '${cot.numero_cotizacion}', '${urlSeguraPdf}')">
@@ -199,7 +230,6 @@
         `;
       });
 
-      // Calcular rangos visuales informativos
       const desdeRegistro = (paginaActual - 1) * limite + 1;
       const hastaRegistro = Math.min(
         desdeRegistro + cotizaciones.length - 1,
@@ -207,7 +237,6 @@
       );
       infoPaginacion.innerText = `Mostrando del ${desdeRegistro} al ${hastaRegistro} de ${totalRegistros} registros`;
 
-      // Armar controles de paginación fija de base de datos
       ulPaginacion.innerHTML = `
         <li class="page-item ${paginaActual === 1 ? "disabled" : ""}">
           <a class="page-link" href="#" onclick="nsHistorialCotizaciones.cambiarPagina(${paginaActual - 1}); return false;">Anterior</a>
@@ -229,7 +258,6 @@
       `;
     }
 
-    // Evita lanzar peticiones por cada letra que presione el usuario (Espera 400ms a que termine de escribir)
     function ejecutarBusquedaConRetraso() {
       clearTimeout(timeoutBusqueda);
       timeoutBusqueda = setTimeout(() => {
@@ -238,7 +266,7 @@
     }
 
     function dispararFiltro() {
-      paginaActual = 1; // Al filtrar siempre volvemos a la página 1
+      paginaActual = 1;
       cargarCotizaciones();
     }
 
