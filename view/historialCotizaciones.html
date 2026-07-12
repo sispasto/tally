@@ -1,5 +1,5 @@
 <style>
-  /* Paleta Corporativa Amarilla (Basada en la interfaz original) */
+  /* Paleta Corporativa Amarilla */
   .tally-card-historial {
     background-color: #ffffff !important;
     border: 1px solid #dee2e6 !important;
@@ -7,8 +7,8 @@
     overflow: hidden;
   }
   .bg-amarillo-tally {
-    background-color: #ffbe2e !important; /* Amarillo idéntico al encabezado y botones */
-    color: #1a202c !important; /* Texto oscuro de alto contraste */
+    background-color: #ffbe2e !important;
+    color: #1a202c !important;
   }
   .btn-amarillo-tally {
     background-color: #ffbe2e !important;
@@ -29,9 +29,6 @@
     background-color: #1ebd56 !important;
     opacity: 0.9;
   }
-  .text-primary-tally {
-    color: #1a202c !important;
-  }
   .page-item.active .page-link {
     background-color: #ffbe2e !important;
     border-color: #ffbe2e !important;
@@ -41,18 +38,74 @@
   .page-link {
     color: #1a202c !important;
   }
+
+  /* 📱 OPTIMIZACIÓN RESPONSIVA PARA CELULARES (VISTA VERTICAL) */
+  @media (max-width: 767.98px) {
+    /* Ocultar la cabecera real de la tabla */
+    #tablaHistorial thead {
+      display: none;
+    }
+
+    /* Transformar las filas de la tabla en tarjetas flotantes */
+    #tablaHistorial tr {
+      display: block;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Transformar las celdas en bloques con etiquetas descriptivas */
+    #tablaHistorial td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0 !important;
+      border: none !important;
+      text-align: right !important;
+      width: 100% !important;
+    }
+
+    /* Inyectar los títulos de cada dato dinámicamente a la izquierda */
+    #tablaHistorial td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #718096;
+      text-align: left;
+      font-size: 0.85rem;
+      padding-right: 10px;
+    }
+
+    /* Ajustar el contenedor de acciones para que ocupe todo el ancho inferior */
+    #tablaHistorial td:last-child {
+      justify-content: center !important;
+      border-top: 1px solid #edf2f7 !important;
+      margin-top: 8px;
+      padding-top: 10px !important;
+    }
+
+    #tablaHistorial td:last-child::before {
+      display: none; /* Quitar la etiqueta de "Acciones" en móvil */
+    }
+
+    .btn-movil-bloque {
+      flex: 1;
+      text-align: center;
+    }
+  }
 </style>
 
-<div class="container-fluid cotizacion-container mt-4">
+<div class="container-fluid cotizacion-container mt-3">
   <div class="row justify-content-center">
     <div class="col-12 col-md-11 col-lg-10 col-xl-9 card-wrapper">
       <div class="card shadow-sm tally-card-historial mb-5">
-        <!-- 🟨 ENCABEZADO CON DISEÑO AMARILLO CORPORATIVO -->
         <div
           class="card-header bg-amarillo-tally d-flex justify-content-between align-items-center py-3"
         >
           <h5 class="mb-0 fw-bold">
-            <i class="bi bi-clock-history me-2"></i>Historial de Cotizaciones
+            <i class="bi bi-clock-history me-2"></i>Historial
           </h5>
           <button
             class="btn btn-sm btn-light fw-bold shadow-sm"
@@ -63,9 +116,8 @@
         </div>
 
         <div class="card-body p-3 text-dark">
-          <!-- 🔍 FILTROS -->
           <div class="row g-2 mb-3">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-6">
               <div class="input-group input-group-sm">
                 <span class="input-group-text"
                   ><i class="bi bi-search"></i
@@ -90,18 +142,17 @@
                 />
               </div>
             </div>
-            <div class="col-12 col-md-4 text-md-end">
+            <div class="col-12 col-md-2 d-grid">
               <button
                 class="btn btn-sm btn-secondary"
                 onclick="nsHistorialCotizaciones.limpiarFiltros()"
               >
-                <i class="bi bi-eraser-fill"></i> Limpiar Filtros
+                <i class="bi bi-eraser-fill"></i> Limpiar
               </button>
             </div>
           </div>
 
-          <!-- 📊 TABLA -->
-          <div class="table-responsive rounded-2 border">
+          <div class="table-responsive border-0">
             <table
               class="table table-hover align-middle mb-0"
               id="tablaHistorial"
@@ -125,8 +176,9 @@
             </table>
           </div>
 
-          <!-- 🧭 PAGINACIÓN REMOTA -->
-          <div class="d-flex justify-content-between align-items-center mt-3">
+          <div
+            class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mt-3"
+          >
             <div class="text-muted small" id="infoPaginacion">
               Mostrando 0 de 0 registros
             </div>
@@ -166,7 +218,7 @@
           fecha: queryFecha,
         });
 
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Consultando base de datos...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Buscando...</td></tr>`;
 
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_obtenerCotizaciones?${urlParams.toString()}`,
@@ -212,19 +264,22 @@
         );
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${cot.id}`;
 
+        /* Agregamos la propiedad 'data-label' a cada celda para la auto-conversión móvil */
         tbody.innerHTML += `
           <tr>
-            <td class="ps-3 fw-bold text-dark">${cot.numero_cotizacion}</td>
-            <td class="fw-medium text-secondary">${cot.cliente_nombre}</td>
-            <td class="text-secondary">${fechaFormateada}</td>
-            <td class="text-end fw-bold text-dark">$ ${cot.total_cotizacion.toLocaleString("es-CO")}</td>
-            <td class="text-center">
-              <a class="btn btn-sm btn-amarillo-tally me-1" href="${urlSeguraPdf}" target="_blank">
-                <i class="bi bi-file-pdf"></i> PDF
-              </a>
-              <button class="btn btn-sm btn-whatsapp" onclick="nsHistorialCotizaciones.compartirWhatsApp('${cot.cliente_nombre}', '${cot.numero_cotizacion}', '${urlSeguraPdf}')">
-                <i class="bi bi-whatsapp"></i> Compartir
-              </button>
+            <td data-label="Consecutivo" class="ps-md-3 fw-bold text-dark">${cot.numero_cotizacion}</td>
+            <td data-label="Cliente" class="fw-medium text-secondary">${cot.cliente_nombre}</td>
+            <td data-label="Fecha" class="text-secondary">${fechaFormateada}</td>
+            <td data-label="Total" class="text-end fw-bold text-dark">$ ${cot.total_cotizacion.toLocaleString("es-CO")}</td>
+            <td data-label="Acciones" class="text-center">
+              <div class="d-flex w-100 gap-1 justify-content-center">
+                <a class="btn btn-sm btn-amarillo-tally btn-movil-bloque" href="${urlSeguraPdf}" target="_blank">
+                  <i class="bi bi-file-pdf"></i> PDF
+                </a>
+                <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialCotizaciones.compartirWhatsApp('${cot.cliente_nombre}', '${cot.numero_cotizacion}', '${urlSeguraPdf}')">
+                  <i class="bi bi-whatsapp"></i> Compartir
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -275,16 +330,44 @@
       cargarCotizaciones();
     }
 
-    function limpiarFiltros() {
+    fnClean = function limpiarFiltros() {
       document.getElementById("buscarGeneral").value = "";
       document.getElementById("buscarFecha").value = "";
       dispararFiltro();
-    }
+    };
 
-    function compartirWhatsApp(clienteNombre, numeroCotizacion, urlSeguraPdf) {
-      const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu documento *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
-      const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
-      window.open(urlWhatsApp, "_blank");
+    async function compartirWhatsApp(
+      clienteNombre,
+      numeroCotizacion,
+      urlSeguraPdf,
+    ) {
+      try {
+        // 1. Llamamos a la API pública y gratuita de TinyURL para enmascarar el link de Supabase
+        const respuesta = await fetch(
+          `https://tinyurl.com/api-create.php?url=${encodeURIComponent(urlSeguraPdf)}`,
+        );
+
+        // Si la API responde bien, usamos el link corto; si falla, usamos el original para no romper el flujo
+        const urlAcortada = respuesta.ok
+          ? await respuesta.text()
+          : urlSeguraPdf;
+
+        // 2. Construimos el mensaje de WhatsApp pulido
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu documento *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
+        const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
+
+        // 3. Abrimos la pestaña
+        window.open(urlWhatsApp, "_blank");
+      } catch (err) {
+        console.error(
+          "Error al acortar la URL, enviando enlace original...",
+          err,
+        );
+        // En caso de cualquier error de red, envía el link normal para que el usuario no se quede varado
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu documento *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
+        const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
+        window.open(urlWhatsApp, "_blank");
+      }
     }
 
     return {
