@@ -264,7 +264,6 @@
         );
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${cot.id}`;
 
-        /* Agregamos la propiedad 'data-label' a cada celda para la auto-conversión móvil */
         tbody.innerHTML += `
           <tr>
             <td data-label="Consecutivo" class="ps-md-3 fw-bold text-dark">${cot.numero_cotizacion}</td>
@@ -330,11 +329,12 @@
       cargarCotizaciones();
     }
 
-    fnClean = function limpiarFiltros() {
+    // Corregida la declaración errónea aquí
+    function limpiarFiltros() {
       document.getElementById("buscarGeneral").value = "";
       document.getElementById("buscarFecha").value = "";
       dispararFiltro();
-    };
+    }
 
     async function compartirWhatsApp(
       clienteNombre,
@@ -342,28 +342,23 @@
       urlSeguraPdf,
     ) {
       try {
-        // 1. Llamamos a la API pública y gratuita de TinyURL para enmascarar el link de Supabase
         const respuesta = await fetch(
           `https://tinyurl.com/api-create.php?url=${encodeURIComponent(urlSeguraPdf)}`,
         );
 
-        // Si la API responde bien, usamos el link corto; si falla, usamos el original para no romper el flujo
         const urlAcortada = respuesta.ok
           ? await respuesta.text()
           : urlSeguraPdf;
 
-        // 2. Construimos el mensaje de WhatsApp pulido
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu documento *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
         const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
 
-        // 3. Abrimos la pestaña
         window.open(urlWhatsApp, "_blank");
       } catch (err) {
         console.error(
           "Error al acortar la URL, enviando enlace original...",
           err,
         );
-        // En caso de cualquier error de red, envía el link normal para que el usuario no se quede varado
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu documento *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
         const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
         window.open(urlWhatsApp, "_blank");
