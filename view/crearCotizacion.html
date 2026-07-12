@@ -7,45 +7,46 @@
 
   .tabla-cotizacion {
     font-size: 0.95rem;
-    color: #ffffff;
+    color: #212529;
   }
 
-  /* Paleta Estilo Treinta / Tally Dark */
-  .bg-tally-dark {
-    background-color: #1e1e24 !important; /* Fondo de tarjetas */
+  /* Paleta Estilo Tally Light */
+  .bg-tally-light {
+    background-color: #ffffff !important; /* Fondo de tarjeta blanco puro */
   }
 
-  .text-tally-yellow {
-    color: #fbc02d !important; /* Amarillo Treinta */
+  .text-tally-brand {
+    color: #0d6efd !important; /* Azul Accent moderno */
   }
 
-  .btn-tally-yellow {
-    background-color: #fbc02d !important;
-    color: #121212 !important;
+  .btn-tally-brand {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
     font-weight: 600;
     border: none;
     transition: all 0.2s ease;
   }
 
-  .btn-tally-yellow:hover {
-    background-color: #f5b01d !important;
+  .btn-tally-brand:hover {
+    background-color: #0b5ed7 !important;
     opacity: 0.9;
   }
 
-  /* Entradas de texto estilo Dark Premium */
+  /* Entradas de texto estilo Light Premium */
   .form-tally-control {
-    background-color: #121212 !important;
-    border: 1px solid #2d2d35 !important;
-    color: #ffffff !important;
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #212529 !important;
   }
 
   .form-tally-control:focus {
-    border-color: #fbc02d !important;
-    box-shadow: 0 0 0 0.25rem rgba(251, 192, 45, 0.15) !important;
+    background-color: #ffffff !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
   }
 
   .form-tally-control::placeholder {
-    color: #6c757d !important;
+    color: #adb5bd !important;
   }
 
   /* --- AJUSTES ENCAPSULADOS PARA ESCRITORIO --- */
@@ -58,8 +59,8 @@
   /* --- AJUSTES DE DISEÑO Y ARMONÍA PARA MÓVIL --- */
   @media (max-width: 768px) {
     .cotizacion-container {
-      margin-top: 0 !important; /* Se pega directamente a la navbar para eliminar cortes visuales */
-      padding-left: 0 !important; /* Ocupa el 100% del ancho del dispositivo */
+      margin-top: 0 !important; /* Se pega directamente a la navbar superior */
+      padding-left: 0 !important; /* Ocupa el 100% del ancho */
       padding-right: 0 !important;
     }
 
@@ -74,13 +75,13 @@
     }
 
     .cotizacion-container .card {
-      border-radius: 0 !important; /* Apariencia fluida e integrada */
+      border-radius: 0 !important; /* Estructura fluida en móviles */
     }
 
-    /* Cambio crítico: Cabecera hereda el fondo suave del formulario en lugar de negro puro */
+    /* Cabecera integrada de manera limpia con el fondo de la app */
     .cotizacion-container .card-header {
-      background-color: #1e1e24 !important;
-      border-bottom: 1px solid #2d2d35 !important;
+      background-color: #ffffff !important;
+      border-bottom: 1px solid #dee2e6 !important;
       padding-top: 1rem !important;
       padding-bottom: 1rem !important;
     }
@@ -95,44 +96,45 @@
     }
   }
 
-  /* Hover sutil sobre filas oscuras */
+  /* Hover sutil sobre filas en estilo claro */
   .tabla-cotizacion tbody tr:hover {
-    background-color: rgba(251, 192, 45, 0.04) !important;
+    background-color: rgba(13, 110, 253, 0.04) !important;
   }
 </style>
 
 <div class="container-fluid cotizacion-container">
   <div class="row justify-content-center">
     <div class="col-12 col-md-11 col-lg-10 col-xl-9 card-wrapper">
-      <div class="card shadow bg-tally-dark border-0">
+      <div class="card shadow-sm bg-tally-light border">
         <div
-          class="card-header bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center py-3"
+          class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3"
         >
-          <h5 class="mb-0 fw-bold text-white">
-            <i class="bi bi-file-earmark-text text-tally-yellow me-2"></i>Nueva
+          <h5 class="mb-0 fw-bold text-dark">
+            <i class="bi bi-file-earmark-text text-tally-brand me-2"></i>Nueva
             Cotización
           </h5>
           <span
-            class="badge bg-black text-tally-yellow border border-secondary px-3 py-2 fs-6"
+            class="badge bg-light text-dark border px-3 py-2 fs-6"
             id="cotNumero"
           >
             No. 0001
           </span>
         </div>
 
-        <div class="card-body p-3 p-sm-4 text-white">
+        <div class="card-body p-3 p-sm-4 text-dark">
           <div id="alertaCotizacion"></div>
 
+          <!-- DATOS DEL CLIENTE -->
           <div class="mb-4">
             <h6
-              class="text-tally-yellow text-uppercase fw-bold mb-3"
+              class="text-tally-brand text-uppercase fw-bold mb-3"
               style="font-size: 0.85rem; letter-spacing: 1px"
             >
               <i class="bi bi-person me-1"></i> Datos del Cliente
             </h6>
             <div class="row g-3">
               <div class="col-12 col-sm-6">
-                <label class="form-label small fw-semibold text-secondary"
+                <label class="form-label small fw-semibold text-muted"
                   >NOMBRE / RAZÓN SOCIAL</label
                 >
                 <input
@@ -143,7 +145,7 @@
                 />
               </div>
               <div class="col-12 col-sm-6">
-                <label class="form-label small fw-semibold text-secondary"
+                <label class="form-label small fw-semibold text-muted"
                   >DIRECCIÓN</label
                 >
                 <input
@@ -156,16 +158,17 @@
             </div>
           </div>
 
+          <!-- AGREGAR PRODUCTOS -->
           <div class="mb-4">
             <h6
-              class="text-tally-yellow text-uppercase fw-bold mb-3"
+              class="text-tally-brand text-uppercase fw-bold mb-3"
               style="font-size: 0.85rem; letter-spacing: 1px"
             >
               <i class="bi bi-box-seam me-1"></i> Agregar Productos o Servicios
             </h6>
             <div class="row g-2 align-items-end">
               <div class="col-12 col-md-5">
-                <label class="form-label small fw-semibold text-secondary"
+                <label class="form-label small fw-semibold text-muted"
                   >DESCRIPCIÓN DEL ÍTEM</label
                 >
                 <input
@@ -177,7 +180,7 @@
               </div>
               <div class="col-6 col-md-2">
                 <label
-                  class="form-label small fw-semibold text-secondary text-center d-block"
+                  class="form-label small fw-semibold text-muted text-center d-block"
                   >CANT.</label
                 >
                 <input
@@ -190,7 +193,7 @@
               </div>
               <div class="col-6 col-md-3">
                 <label
-                  class="form-label small fw-semibold text-secondary text-end d-block"
+                  class="form-label small fw-semibold text-muted text-end d-block"
                   >PRECIO UND ($)</label
                 >
                 <input
@@ -203,7 +206,7 @@
               <div class="col-12 col-md-2">
                 <button
                   type="button"
-                  class="btn btn-tally-yellow btn-sm w-100"
+                  class="btn btn-tally-brand btn-sm w-100"
                   onclick="nsCrearCotizacion.agregarItem()"
                 >
                   <i class="bi bi-plus-lg me-1"></i> Añadir
@@ -212,11 +215,12 @@
             </div>
           </div>
 
-          <div class="table-responsive rounded-2 border border-secondary mb-4">
-            <table class="table table-hover table-dark mb-0 tabla-cotizacion">
-              <thead class="table-black border-bottom border-secondary">
+          <!-- TABLA RESPONSIVA CLARA -->
+          <div class="table-responsive rounded-2 border mb-4">
+            <table class="table table-hover mb-0 tabla-cotizacion">
+              <thead class="table-light border-bottom">
                 <tr
-                  class="text-secondary"
+                  class="text-muted"
                   style="font-size: 0.8rem; font-weight: 700"
                 >
                   <th class="ps-3 text-uppercase" style="width: 45%">
@@ -238,36 +242,38 @@
             </table>
           </div>
 
+          <!-- TOTALES -->
           <div class="row justify-content-end mb-4">
             <div class="col-12 col-md-5">
               <div
-                class="d-flex justify-content-between align-items-center p-3 rounded-2 bg-black border border-secondary shadow-sm"
+                class="d-flex justify-content-between align-items-center p-3 rounded-2 bg-light border shadow-sm"
               >
                 <span
-                  class="text-secondary fw-bold text-uppercase"
+                  class="text-muted fw-bold text-uppercase"
                   style="font-size: 0.85rem; letter-spacing: 1px"
                   >TOTAL GENERAL</span
                 >
-                <span class="fw-bold text-tally-yellow fs-4" id="cotTxtTotal"
+                <span class="fw-bold text-tally-brand fs-4" id="cotTxtTotal"
                   >$ 0</span
                 >
               </div>
             </div>
           </div>
 
-          <hr class="border-secondary my-4" />
+          <hr class="text-muted my-4" />
 
+          <!-- ACCIONES -->
           <div class="d-flex justify-content-end gap-2">
             <button
               type="button"
-              class="btn btn-outline-secondary btn-sm px-4 text-white"
+              class="btn btn-outline-secondary btn-sm px-4"
               onclick="nsCrearCotizacion.limpiarFormulario()"
             >
               Limpiar
             </button>
             <button
               type="button"
-              class="btn btn-tally-yellow btn-sm px-4 shadow"
+              class="btn btn-tally-brand btn-sm px-4 shadow-sm"
               onclick="nsCrearCotizacion.guardarCotizacion()"
             >
               <i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar Registro
@@ -332,7 +338,7 @@
       if (!itemsDetalle.length) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5" class="text-center text-secondary py-4" style="font-style: italic; background-color: #121212;">
+            <td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">
               Ningún ítem agregado a la cotización todavía.
             </td>
           </tr>
@@ -343,11 +349,11 @@
 
       itemsDetalle.forEach((item) => {
         tbody.innerHTML += `
-          <tr class="align-middle border-bottom border-secondary-subtle" style="background-color: #121212;">
-            <td class="ps-3 fw-medium text-white">${item.descripcion}</td>
-            <td class="text-center fw-bold text-tally-yellow">${item.cantidad}</td>
-            <td class="text-end text-light">$ ${item.precio.toLocaleString("es-CO")}</td>
-            <td class="text-end fw-bold text-white">$ ${item.total.toLocaleString("es-CO")}</td>
+          <tr class="align-middle border-bottom" style="background-color: #ffffff;">
+            <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
+            <td class="text-center fw-bold text-tally-brand">${item.cantidad}</td>
+            <td class="text-end text-secondary">$ ${item.precio.toLocaleString("es-CO")}</td>
+            <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
             <td class="text-center pe-3">
               <button class="btn btn-link btn-sm text-danger p-0" onclick="nsCrearCotizacion.eliminarItem(${item.id})">
                 <i class="bi bi-trash3"></i>
@@ -400,9 +406,9 @@
 
     function mostrarMensaje(msg, tipo) {
       document.getElementById("alertaCotizacion").innerHTML = `
-        <div class="alert alert-${tipo} bg-dark border-secondary text-white alert-dismissible fade show shadow-sm" role="alert">
+        <div class="alert alert-${tipo} border-1 text-dark alert-dismissible fade show shadow-sm" role="alert" style="background-color: #ffffff;">
           <span class="${tipo === "danger" ? "text-danger" : tipo === "success" ? "text-success" : "text-warning"} fw-bold">■</span> ${msg}
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       `;
     }
