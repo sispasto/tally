@@ -126,7 +126,7 @@
                   type="text"
                   id="buscarGeneralFacturas"
                   class="form-control"
-                  placeholder="Buscar por nombre o celular..."
+                  placeholder="Buscar por nombre, consecutivo o celular..."
                   oninput="nsHistorialFacturas.ejecutarBusquedaConRetraso()"
                 />
               </div>
@@ -161,6 +161,7 @@
                 <tr>
                   <th class="ps-3 text-secondary">Consecutivo</th>
                   <th class="text-secondary">Cliente</th>
+                  <th class="text-secondary">Teléfono</th>
                   <th class="text-secondary">Fecha</th>
                   <th class="text-end text-secondary">Total</th>
                   <th class="text-center text-secondary">Acciones</th>
@@ -168,7 +169,7 @@
               </thead>
               <tbody id="tbodyHistorialFacturas">
                 <tr>
-                  <td colspan="5" class="text-center text-muted py-4">
+                  <td colspan="6" class="text-center text-muted py-4">
                     Esperando datos...
                   </td>
                 </tr>
@@ -221,7 +222,7 @@
           fecha: queryFecha,
         });
 
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Buscando...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Buscando...</td></tr>`;
 
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_obtenerFacturas?${urlParams.toString()}`,
@@ -244,7 +245,7 @@
         );
       } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">Error: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error: ${err.message}</td></tr>`;
       }
     }
 
@@ -254,7 +255,7 @@
       const ulPaginacion = document.getElementById("ulPaginacionFacturas");
 
       if (!facturas || facturas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4">No se encontraron registros.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">No se encontraron registros.</td></tr>`;
         infoPaginacion.innerText = "Mostrando 0 de 0 registros";
         ulPaginacion.innerHTML = "";
         return;
@@ -265,13 +266,14 @@
         const fechaFormateada = new Date(fact.created_at).toLocaleDateString(
           "es-CO",
         );
-        // Apunta directamente a la nueva función tally_getFacturaPDF
-        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${fact.id}`;
+        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPdf?id=${fact.id}`;
+        const txtTelefono = fact.cliente_telefono || "---";
 
         tbody.innerHTML += `
           <tr>
             <td data-label="Consecutivo" class="ps-md-3 fw-bold text-dark">${fact.numero_factura}</td>
             <td data-label="Cliente" class="fw-medium text-secondary">${fact.cliente_nombre}</td>
+            <td data-label="Teléfono" class="text-secondary">${txtTelefono}</td>
             <td data-label="Fecha" class="text-secondary">${fechaFormateada}</td>
             <td data-label="Total" class="text-end fw-bold text-dark">$ ${fact.total_factura.toLocaleString("es-CO")}</td>
             <td data-label="Acciones" class="text-center">
@@ -279,7 +281,7 @@
                 <button class="btn btn-sm btn-amarillo-tally btn-movil-bloque" onclick="nsHistorialFacturas.verPdf('${fact.id}', this)">
                   <i class="bi bi-file-pdf"></i> PDF
                 </button>
-                <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialFacturas.compartirWhatsApp('${fact.cliente_nombre}', '${fact.numero_factura}', '${urlSeguraPdf}')">
+                <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialFacturas.compartirWhatsApp('${fact.cliente_nombre}', '${fact.numero_factura}', '${urlSeguraPdf}', '${fact.cliente_telefono || ""}')">
                   <i class="bi bi-whatsapp"></i> Compartir
                 </button>
               </div>
@@ -327,9 +329,8 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Sesión expirada");
 
-        // Consumo de la nueva función remota especializada de facturas
         const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${id}`,
+          `${SUPABASE_URL}/functions/v1/tally_getFacturaPdf?id=${id}`,
           {
             method: "GET",
             headers: {
@@ -380,6 +381,7 @@
       clienteNombre,
       numeroFactura,
       urlSeguraPdf,
+      numTelefono,
     ) {
       try {
         const respuesta = await fetch(
@@ -390,8 +392,12 @@
           ? await respuesta.text()
           : urlSeguraPdf;
 
-        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura *${numeroFactura}*. Puedes visualizarlo aquí: ${urlAcortada}`;
-        const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura de venta *${numeroFactura}*. Puedes visualizarlo aquí: ${urlAcortada}`;
+
+        const destino = numTelefono
+          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
+          : "";
+        const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
 
         window.open(urlWhatsApp, "_blank");
       } catch (err) {
@@ -399,8 +405,11 @@
           "Error al acortar la URL, enviando enlace original...",
           err,
         );
-        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura *${numeroFactura}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
-        const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura de venta *${numeroFactura}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
+        const destino = numTelefono
+          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
+          : "";
+        const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
         window.open(urlWhatsApp, "_blank");
       }
     }
