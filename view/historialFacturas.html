@@ -216,7 +216,7 @@
 
         const urlParams = new URLSearchParams({
           pagina: paginaActual,
-          limpite: limite,
+          limite: limite,
           busqueda: queryGeneral,
           fecha: queryFecha,
         });
@@ -265,7 +265,8 @@
         const fechaFormateada = new Date(fact.created_at).toLocaleDateString(
           "es-CO",
         );
-        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${fact.id}&type=factura`;
+        // Apunta directamente a la nueva función tally_getFacturaPDF
+        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${fact.id}`;
 
         tbody.innerHTML += `
           <tr>
@@ -326,8 +327,9 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Sesión expirada");
 
+        // Consumo de la nueva función remota especializada de facturas
         const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${id}&type=factura`,
+          `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${id}`,
           {
             method: "GET",
             headers: {
