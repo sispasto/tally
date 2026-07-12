@@ -135,7 +135,7 @@
               <i class="bi bi-person me-1"></i> Datos del Cliente
             </h6>
             <div class="row g-3">
-              <div class="col-12 col-sm-6">
+              <div class="col-12 col-md-4">
                 <label class="form-label small fw-semibold text-muted"
                   >NOMBRE / RAZÓN SOCIAL</label
                 >
@@ -146,7 +146,7 @@
                   placeholder="Ej. Cliente Particular"
                 />
               </div>
-              <div class="col-12 col-sm-6">
+              <div class="col-12 col-sm-6 col-md-4">
                 <label class="form-label small fw-semibold text-muted"
                   >DIRECCIÓN</label
                 >
@@ -155,6 +155,17 @@
                   id="cotClienteDireccion"
                   class="form-control form-control-sm form-tally-control"
                   placeholder="Dirección de correspondencia"
+                />
+              </div>
+              <div class="col-12 col-sm-6 col-md-4">
+                <label class="form-label small fw-semibold text-muted"
+                  >TELÉFONO / CELULAR</label
+                >
+                <input
+                  type="text"
+                  id="cotClienteTelefono"
+                  class="form-control form-control-sm form-tally-control"
+                  placeholder="Ej. 3001234567"
                 />
               </div>
             </div>
@@ -312,6 +323,7 @@
       const nuevoItem = {
         id: Date.now(),
         descripcion: desc.toUpperCase(),
+        amount: cant, // alias si usas cantidad o d.cantidad
         cantidad: cant,
         precio: precio,
         total: cant * precio,
@@ -369,6 +381,10 @@
       const direccion = document
         .getElementById("cotClienteDireccion")
         .value.trim();
+      // SE OBTIENE EL VALOR DEL NUEVO INPUT
+      const telefono = document
+        .getElementById("cotClienteTelefono")
+        .value.trim();
 
       if (!nombre || !direccion) {
         mostrarMensaje("Complete el nombre y dirección del cliente.", "danger");
@@ -381,24 +397,22 @@
       }
 
       try {
-        // Deshabilitar botón para evitar multi-envíos
         btnGuardar.disabled = true;
 
-        // Obtener la sesión activa de Supabase
         const {
           data: { session },
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Debe iniciar sesión en la plataforma");
 
-        // Construcción del Payload para la Edge Function
+        // ADICIONADO "cliente_telefono" EN EL PAYLOAD
         const payloadCotizacion = {
           cliente_nombre: nombre,
           cliente_direccion: direccion,
+          cliente_telefono: telefono,
           items: itemsDetalle,
           total_cotizacion: totalGeneral,
         };
 
-        // Consumo de la Edge Function tally_crearCotizacion
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_crearCotizacion`,
           {
@@ -423,7 +437,6 @@
           return;
         }
 
-        // Actualizar el consecutivo visual en la tarjeta superior con el número retornado por la DB
         document.getElementById("cotNumero").innerText =
           result.numero_cotizacion;
 
@@ -446,6 +459,7 @@
     function limpiarFormulario() {
       document.getElementById("cotClienteNombre").value = "";
       document.getElementById("cotClienteDireccion").value = "";
+      document.getElementById("cotClienteTelefono").value = ""; // LIMPIAR CAMPO NUEVO
       itemsDetalle = [];
       renderItems();
     }

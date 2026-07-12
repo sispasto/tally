@@ -161,6 +161,7 @@
                 <tr>
                   <th class="ps-3 text-secondary">Consecutivo</th>
                   <th class="text-secondary">Cliente</th>
+                  <th class="text-secondary">Teléfono</th>
                   <th class="text-secondary">Fecha</th>
                   <th class="text-end text-secondary">Total</th>
                   <th class="text-center text-secondary">Acciones</th>
@@ -168,7 +169,7 @@
               </thead>
               <tbody id="tbodyHistorial">
                 <tr>
-                  <td colspan="5" class="text-center text-muted py-4">
+                  <td colspan="6" class="text-center text-muted py-4">
                     Esperando datos...
                   </td>
                 </tr>
@@ -213,12 +214,13 @@
 
         const urlParams = new URLSearchParams({
           pagina: paginaActual,
+          limpite: limite, // Se mantiene el parámetro actual de tu backend
           limite: limite,
           busqueda: queryGeneral,
           fecha: queryFecha,
         });
 
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Buscando...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Buscando...</td></tr>`;
 
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_obtenerCotizaciones?${urlParams.toString()}`,
@@ -241,7 +243,7 @@
         );
       } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">Error: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error: ${err.message}</td></tr>`;
       }
     }
 
@@ -251,7 +253,7 @@
       const ulPaginacion = document.getElementById("ulPaginacion");
 
       if (!cotizaciones || cotizaciones.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4">No se encontraron registros.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">No se encontraron registros.</td></tr>`;
         infoPaginacion.innerText = "Mostrando 0 de 0 registros";
         ulPaginacion.innerHTML = "";
         return;
@@ -264,10 +266,14 @@
         );
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${cot.id}`;
 
+        // Validar el valor de teléfono por si llega nulo o indefinido
+        const txtTelefono = cot.telefono || "---";
+
         tbody.innerHTML += `
           <tr>
             <td data-label="Consecutivo" class="ps-md-3 fw-bold text-dark">${cot.numero_cotizacion}</td>
             <td data-label="Cliente" class="fw-medium text-secondary">${cot.cliente_nombre}</td>
+            <td data-label="Teléfono" class="text-secondary">${txtTelefono}</td>
             <td data-label="Fecha" class="text-secondary">${fechaFormateada}</td>
             <td data-label="Total" class="text-end fw-bold text-dark">$ ${cot.total_cotizacion.toLocaleString("es-CO")}</td>
             <td data-label="Acciones" class="text-center">
@@ -275,7 +281,7 @@
                 <button class="btn btn-sm btn-amarillo-tally btn-movil-bloque" onclick="nsHistorialCotizaciones.verPdf('${cot.id}', this)">
                   <i class="bi bi-file-pdf"></i> PDF
                 </button>
-                <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialCotizaciones.compartirWhatsApp('${cot.cliente_nombre}', '${cot.numero_cotizacion}', '${urlSeguraPdf}')">
+                <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialCotizaciones.compartirWhatsApp('${cot.cliente_nombre}', '${cot.numero_cotizacion}', '${urlSeguraPdf}', '${cot.telefono || ""}')">
                   <i class="bi bi-whatsapp"></i> Compartir
                 </button>
               </div>
@@ -312,7 +318,6 @@
       `;
     }
 
-    // Nueva función para descargar/abrir el PDF de forma oculta y segura
     async function verPdf(id, boton) {
       const contenidoOriginal = boton.innerHTML;
       try {
@@ -339,7 +344,6 @@
         const blob = await response.blob();
         const urlBlob = window.URL.createObjectURL(blob);
 
-        // Abre el PDF en una pestaña nueva usando una URL de memoria limpia (blob:)
         window.open(urlBlob, "_blank");
       } catch (err) {
         console.error("Error al abrir PDF:", err);
@@ -377,6 +381,7 @@
       clienteNombre,
       numeroCotizacion,
       urlSeguraPdf,
+      numTelefono,
     ) {
       try {
         const respuesta = await fetch(
@@ -388,7 +393,12 @@
           : urlSeguraPdf;
 
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
-        const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
+
+        // Si hay un teléfono válido registrado, abre el chat directo, de lo contrario lo envía global
+        const destino = numTelefono
+          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
+          : "";
+        const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
 
         window.open(urlWhatsApp, "_blank");
       } catch (err) {
@@ -397,7 +407,10 @@
           err,
         );
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
-        const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMsg)}`;
+        const destino = numTelefono
+          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
+          : "";
+        const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
         window.open(urlWhatsApp, "_blank");
       }
     }
