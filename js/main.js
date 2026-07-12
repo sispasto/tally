@@ -24,6 +24,14 @@ function consultarCotizaciones() {
   main.appendChild(frmHistorialCotizaciones);
 }
 
+function gestionarFacturas() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmFactura = document.createElement("crear-factura");
+  frmFactura.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmFactura);
+}
+
 /*******************************************************************************/
 function registrarPersona() {
   let main = document.getElementById("App");

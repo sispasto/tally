@@ -4,3 +4,4 @@ import "./acercade.js";
 import "./menuTemplates.js";
 import "./cotizacion.js";
 import "./historialCotizaciones.js";
+import "./factura.js";
