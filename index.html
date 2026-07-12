@@ -78,6 +78,69 @@
         background-color: var(--treinta-yellow);
         color: #000000;
       }
+
+      /* Sidebar (Offcanvas) en blanco limpio con header amarillo */
+      .offcanvas-treinta {
+        background-color: #ffffff !important;
+        color: #1a1a1a !important;
+        border-right: none !important;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      }
+      .offcanvas-treinta .offcanvas-header {
+        background-color: var(--treinta-yellow);
+        color: #000000;
+      }
+
+      /* ==========================================================================
+   NUEVOS ESTILOS PARA CORREGIR LOS COLORES INTERNOS DEL MENÚ LATERAL
+   ========================================================================== */
+      .offcanvas-treinta .offcanvas-body .nav-link {
+        color: #333333 !important; /* Texto gris oscuro/negro para alta legibilidad */
+        font-weight: 500;
+        padding: 0.6rem 0.8rem;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+
+      /* Efecto hover elegante al pasar el cursor sobre las opciones (Fondo amarillo suave) */
+      .offcanvas-treinta .offcanvas-body .nav-link:hover {
+        background-color: #fef9e7 !important;
+        color: #000000 !important;
+      }
+
+      /* Estilo para la opción que esté activa */
+      .offcanvas-treinta .offcanvas-body .nav-link.active {
+        background-color: var(--treinta-yellow) !important;
+        color: #000000 !important;
+        font-weight: 600;
+      }
+
+      /* Ajustes para iconos dentro del menú */
+      .offcanvas-treinta .offcanvas-body .nav-link i {
+        font-size: 1.1rem;
+        color: #4f4f4f; /* Color base sutil para los iconos */
+      }
+
+      .offcanvas-treinta .offcanvas-body .nav-link:hover i,
+      .offcanvas-treinta .offcanvas-body .nav-link.active i {
+        color: #000000 !important; /* Resalta en negro al interactuar */
+      }
+
+      /* Separador superior de la sección de seguridad */
+      .offcanvas-treinta .border-top {
+        border-top-color: #e0e0e0 !important;
+      }
+
+      /* Forzar que las opciones con texto peligro/salida mantengan su color rojo */
+      .offcanvas-treinta .offcanvas-body .nav-link.text-danger {
+        color: #dc3545 !important;
+      }
+      .offcanvas-treinta .offcanvas-body .nav-link.text-danger i {
+        color: #dc3545 !important;
+      }
+      .offcanvas-treinta .offcanvas-body .nav-link.text-danger:hover {
+        background-color: #fdf2f2 !important;
+      }
     </style>
   </head>
 
