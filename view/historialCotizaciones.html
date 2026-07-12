@@ -272,9 +272,9 @@
             <td data-label="Total" class="text-end fw-bold text-dark">$ ${cot.total_cotizacion.toLocaleString("es-CO")}</td>
             <td data-label="Acciones" class="text-center">
               <div class="d-flex w-100 gap-1 justify-content-center">
-                <a class="btn btn-sm btn-amarillo-tally btn-movil-bloque" href="${urlSeguraPdf}" target="_blank">
+                <button class="btn btn-sm btn-amarillo-tally btn-movil-bloque" onclick="nsHistorialCotizaciones.verPdf('${cot.id}', this)">
                   <i class="bi bi-file-pdf"></i> PDF
-                </a>
+                </button>
                 <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialCotizaciones.compartirWhatsApp('${cot.cliente_nombre}', '${cot.numero_cotizacion}', '${urlSeguraPdf}')">
                   <i class="bi bi-whatsapp"></i> Compartir
                 </button>
@@ -312,6 +312,44 @@
       `;
     }
 
+    // Nueva función para descargar/abrir el PDF de forma oculta y segura
+    async function verPdf(id, boton) {
+      const contenidoOriginal = boton.innerHTML;
+      try {
+        boton.disabled = true;
+        boton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`;
+
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session) throw new Error("Sesión expirada");
+
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          },
+        );
+
+        if (!response.ok) throw new Error("No se pudo obtener el archivo");
+
+        const blob = await response.blob();
+        const urlBlob = window.URL.createObjectURL(blob);
+
+        // Abre el PDF en una pestaña nueva usando una URL de memoria limpia (blob:)
+        window.open(urlBlob, "_blank");
+      } catch (err) {
+        console.error("Error al abrir PDF:", err);
+        alert("No se pudo cargar el PDF del servidor.");
+      } finally {
+        boton.disabled = false;
+        boton.innerHTML = contenidoOriginal;
+      }
+    }
+
     function ejecutarBusquedaConRetraso() {
       clearTimeout(timeoutBusqueda);
       timeoutBusqueda = setTimeout(() => {
@@ -329,7 +367,6 @@
       cargarCotizaciones();
     }
 
-    // Corregida la declaración errónea aquí
     function limpiarFiltros() {
       document.getElementById("buscarGeneral").value = "";
       document.getElementById("buscarFecha").value = "";
@@ -372,6 +409,7 @@
       cambiarPagina,
       limpiarFiltros,
       compartirWhatsApp,
+      verPdf,
     };
   })();
 
