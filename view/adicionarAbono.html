@@ -118,7 +118,6 @@
         <div class="card-body p-3 p-sm-4 text-dark">
           <div id="alertaAbono"></div>
 
-          <!-- SECCIÓN 1: BUSCAR Y SELECCIONAR FACTURA -->
           <div class="mb-4">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -163,7 +162,6 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 2: INFORMACIÓN FINANCIERA DE LA FACTURA -->
           <div class="mb-4 d-none" id="seccionSaldosFactura">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -207,7 +205,6 @@
             </div>
           </div>
 
-          <!-- SECCIÓN 3: FORMULARIO DE RECAUDO -->
           <div class="mb-4">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -267,11 +264,8 @@
 
           <hr class="text-muted my-4" />
 
-          <!-- BOTONES DE ACCIÓN -->
           <div class="d-flex justify-content-between align-items-center mb-4">
-            <div id="wrapperAccionCompartir">
-              <!-- Botón dinámico de WhatsApp oculto por defecto -->
-            </div>
+            <div id="wrapperAccionCompartir"></div>
             <div class="d-flex gap-2">
               <button
                 type="button"
@@ -292,7 +286,6 @@
             </div>
           </div>
 
-          <!-- SECCIÓN: HISTORIAL DE ABONOS -->
           <div class="mb-2 d-none" id="seccionHistorialAbonos">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -314,9 +307,7 @@
                     <th class="pe-3 py-2 text-end">Monto</th>
                   </tr>
                 </thead>
-                <tbody id="tbodyHistorialAbonos">
-                  <!-- Renderizado dinámico -->
-                </tbody>
+                <tbody id="tbodyHistorialAbonos"></tbody>
               </table>
             </div>
           </div>
@@ -409,7 +400,7 @@
           .getElementById("seccionSaldosFactura")
           .classList.remove("d-none");
 
-        // --- RENDERIZADO CORREGIDO DEL HISTORIAL DE ABONOS ---
+        // --- RENDERIZADO DEL HISTORIAL DE ABONOS ---
         const contenedorHistorial = document.getElementById(
           "seccionHistorialAbonos",
         );
@@ -614,7 +605,6 @@
       saldoRestante,
     ) {
       try {
-        // Limpiamos el teléfono de caracteres especiales
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
@@ -622,13 +612,6 @@
         // --- ADICIÓN DE CÓDIGO DE ÁREA (COLOMBIA) ---
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
-        } else if (
-          telefonoLimpio.length === 12 &&
-          telefonoLimpio.startsWith("57")
-        ) {
-          // Si ya trae el 57 de la base de datos lo dejamos como está
-        } else if (telefonoLimpio === "") {
-          console.warn("Teléfono vacío, se enviará sin número predefinido.");
         }
 
         const textoMsg = `Hola *${clienteNombre}*, hemos recibido correctamente tu abono por un valor de *$${valorAbonado.toLocaleString("es-CO")}* para la factura de venta *${numeroFactura}*.\n\n*Saldo Pendiente:* $${saldoRestante.toLocaleString("es-CO")}\n\nPuedes consultar tu estado y el PDF actualizado aquí: ${urlSeguraPdf}`;
@@ -661,7 +644,6 @@
       document.getElementById("seccionSaldosFactura").classList.add("d-none");
       document.getElementById("wrapperAccionCompartir").innerHTML = "";
 
-      // Ocultar e inicializar contenedor del historial
       const contenedorHistorial = document.getElementById(
         "seccionHistorialAbonos",
       );
