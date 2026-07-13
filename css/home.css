@@ -62,7 +62,7 @@ body {
 
 .offcanvas-body {
   padding-top: 1.5rem !important;
-  background: #1a1d20 !important; /* Mantenemos tu gris casi negro original */
+  background: #343a40 !important; /* Mantenemos tu gris casi negro original */
 }
 
 /* Encabezado donde sale Luis Almeida */
@@ -80,7 +80,7 @@ body {
 .section-header {
   font-size: 0.8rem !important;
   letter-spacing: 0.8px;
-  color: #fbc02d !important; /* Gris azulado nítido */
+  color: #fff !important; /* Gris azulado nítido */
   text-transform: uppercase;
   font-weight: 700 !important;
   padding: 14px 15px 6px 15px !important;
@@ -91,7 +91,7 @@ body {
 
 /* Iconos de cabecera Pro: Azul nítido corporativo para destacar */
 .section-header i {
-  color: #fbc02d !important;
+  color: #fff !important;
   font-size: 0.9rem !important;
 }
 
