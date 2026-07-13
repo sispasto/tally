@@ -40,7 +40,7 @@ function consultarFacturas() {
   main.appendChild(frmHistorialFacturas);
 }
 
-function modificarFactura() {
+function modificarFacturas() {
   let main = document.getElementById("App");
   removeALLChilds(main);
   const frmModificarFactura = document.createElement("adicionar-abono");
