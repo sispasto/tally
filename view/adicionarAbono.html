@@ -59,6 +59,7 @@
     }
   }
 
+  /* --- OPTIMIZACIÓN MÓVIL RESPONSIVE --- */
   @media (max-width: 768px) {
     .abono-container {
       margin-top: 0 !important;
@@ -85,6 +86,23 @@
       border-bottom: 1px solid #e0a800 !important;
       padding-top: 1rem !important;
       padding-bottom: 1rem !important;
+    }
+
+    /* Ajustes específicos para los botones de acción en celular */
+    .contenedor-acciones-abono {
+      flex-direction: column-reverse !important; /* Apilar verticalmente */
+      gap: 0.75rem !important;
+    }
+
+    .contenedor-acciones-abono > div,
+    .contenedor-acciones-abono #wrapperAccionCompartir {
+      width: 100% !important;
+    }
+
+    .contenedor-acciones-abono .btn {
+      width: 100% !important;
+      padding-top: 0.6rem !important;
+      padding-bottom: 0.6rem !important;
     }
   }
 </style>
@@ -258,9 +276,13 @@
 
           <hr class="text-muted my-4" />
 
-          <div class="d-flex justify-content-between align-items-center mb-4">
+          <div
+            class="d-flex justify-content-between align-items-center mb-4 contenedor-acciones-abono"
+          >
             <div id="wrapperAccionCompartir"></div>
-            <div class="d-flex gap-2">
+            <div
+              class="d-flex gap-2 w-100 justify-content-end flex-wrap flex-sm-nowrap"
+            >
               <button
                 type="button"
                 class="btn btn-outline-secondary btn-sm px-4"
@@ -373,8 +395,6 @@
         clienteNombreOriginal = infoFactura.cliente_nombre;
         consecutivoFacturaOriginal = infoFactura.numero_factura;
         saldoMaximoPendiente = infoFactura.saldo_pendiente;
-
-        // ASIGNACIÓN DIRECTA DESDE LA EDGE FUNCTION (CÓDIGO LIMPIO)
         clienteTelefonoOriginal = infoFactura.telefono || "";
 
         document.getElementById("abonoClienteNombre").value =
@@ -390,7 +410,6 @@
           .getElementById("seccionSaldosFactura")
           .classList.remove("d-none");
 
-        // RENDERIZADO DEL HISTORIAL DE ABONOS
         const contenedorHistorial = document.getElementById(
           "seccionHistorialAbonos",
         );
@@ -560,6 +579,7 @@
 
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${facturaSeleccionadaId}`;
 
+        // Inyección del botón con la corrección estructural
         document.getElementById("wrapperAccionCompartir").innerHTML = `
           <button type="button" class="btn btn-sm btn-whatsapp shadow-sm px-3" 
             onclick="nsGestionAbonos.compartirComprobanteAbono('${clienteNombreOriginal}', '${consecutivoFacturaOriginal}', '${urlSeguraPdf}', '${clienteTelefonoOriginal}', ${monto}, ${result.nuevoAbono ? saldoMaximoPendiente - monto : 0})">
@@ -592,7 +612,15 @@
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
+
+        // --- ADICIÓN DEL CÓDIGO DE ÁREA SEGURO ---
         if (telefonoLimpio.length === 10) {
+          telefonoLimpio = "57" + telefonoLimpio; // Colombia por defecto si tiene 10 dígitos
+        } else if (
+          telefonoLimpio.length === 9 &&
+          (telefonoLimpio.startsWith("9") || telefonoLimpio.startsWith("8"))
+        ) {
+          // Ojo si manejas otro país de forma dinámica, pero forzar el prefijo soluciona el envío
           telefonoLimpio = "57" + telefonoLimpio;
         }
 
