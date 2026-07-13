@@ -59,7 +59,7 @@ class BienvenidaComponent extends HTMLElement {
     this._versionApp = value;
     // Si el componente ya está montado, actualizamos la etiqueta inmediatamente
     const label = this.querySelector("#version-label");
-    if (label) label.textContent = `NovaEnvios v${value}`;
+    if (label) label.textContent = `Tally v${value}`;
   }
 
   get versionApp() {
