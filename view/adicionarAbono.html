@@ -226,6 +226,7 @@
                   class="form-control form-control-sm form-tally-control fw-bold text-dark"
                   placeholder="0"
                   min="1"
+                  oninput="nsGestionAbonos.validarMontoEnTiempoReal()"
                   disabled
                 />
               </div>
@@ -322,51 +323,60 @@
         btnBuscar.disabled = true;
         btnBuscar.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span>`;
 
-        // Llamamos a la base de datos para recuperar los datos de la factura ingresada
-        const { data: factura, error } = await supabaseClient
-          .from("tally_facturas")
-          .select("id, numero_factura, cliente_nombre, telefono, total_factura")
-          .eq("numero_factura", inputBusqueda)
-          .maybeSingle();
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session)
+          throw new Error(
+            "Sesión expirada. Por favor inicie sesión nuevamente.",
+          );
 
-        if (error) throw error;
+        // 1. Invocar la Edge Function para validar de forma centralizada los estados y montos
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/tally_validarEstadoFactura`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ numero_factura: inputBusqueda }),
+          },
+        );
 
-        if (!factura) {
+        const resultado = await response.json();
+
+        if (!response.ok || !resultado.ok) {
           mostrarMensaje(
-            "No se encontró ninguna factura activa con ese consecutivo exacto.",
+            resultado.error || "No se pudo procesar la verificación.",
             "danger",
           );
           desactivarFormularioRecaudo();
           return;
         }
 
-        // Obtener la suma total de los abonos que ya posee asignados en la tabla
-        const { data: abonosPrevios, error: errAbonos } = await supabase
-          .from("tally_facturas_abonos")
-          .select("monto_abono")
-          .eq("factura_id", factura.id);
+        // 2. Extraer datos del payload unificado de la Edge Function
+        const infoFactura = resultado.dataFactura;
+        facturaSeleccionadaId = infoFactura.id;
+        clienteNombreOriginal = infoFactura.cliente_nombre;
+        consecutivoFacturaOriginal = infoFactura.numero_factura;
+        saldoMaximoPendiente = infoFactura.saldo_pendiente;
 
-        if (errAbonos) throw errAbonos;
+        // Se requiere consultar el teléfono por fuera debido al esquema específico de notificaciones
+        const { data: factTelefono } = await supabaseClient
+          .from("tally_facturas")
+          .select("telefono")
+          .eq("id", facturaSeleccionadaId)
+          .maybeSingle();
+        clienteTelefonoOriginal = factTelefono?.telefono || "";
 
-        const totalAbonado = abonosPrevios.reduce(
-          (sum, ab) => sum + parseFloat(ab.monto_abono),
-          0,
-        );
-        saldoMaximoPendiente = factura.total_factura - totalAbonado;
-
-        // Asignación de variables globales de control
-        facturaSeleccionadaId = factura.id;
-        clienteNombreOriginal = factura.cliente_nombre;
-        clienteTelefonoOriginal = factura.telefono || "";
-        consecutivoFacturaOriginal = factura.numero_factura;
-
-        // Renderizado visual en el UI
+        // 3. Renderizar la UI con los cálculos del servidor
         document.getElementById("abonoClienteNombre").value =
-          factura.cliente_nombre;
+          infoFactura.cliente_nombre;
         document.getElementById("valTotalFactura").innerText =
-          `$ ${factura.total_factura.toLocaleString("es-CO")}`;
+          `$ ${infoFactura.total_factura.toLocaleString("es-CO")}`;
         document.getElementById("valTotalAbonado").innerText =
-          `$ ${totalAbonado.toLocaleString("es-CO")}`;
+          `$ ${infoFactura.total_abonado.toLocaleString("es-CO")}`;
         document.getElementById("valSaldoPendiente").innerText =
           `$ ${saldoMaximoPendiente.toLocaleString("es-CO")}`;
 
@@ -375,25 +385,26 @@
           .classList.remove("d-none");
 
         const badgeEstado = document.getElementById("abonoEstadoFactura");
-        if (saldoMaximoPendiente <= 0) {
+
+        // 4. Aplicar Regla 1: Bloquear si permitirAbono es false (Saldo en cero)
+        if (!resultado.permitirAbono) {
           badgeEstado.className =
             "badge bg-success text-white border px-3 py-2 fs-6";
           badgeEstado.innerText = "Factura Pagada";
           desactivarFormularioRecaudo();
-          mostrarMensaje(
-            "Esta factura ya se encuentra cancelada en su totalidad.",
-            "success",
-          );
+          mostrarMensaje(resultado.motivo, "success");
         } else {
           badgeEstado.className =
             "badge bg-warning text-dark border px-3 py-2 fs-6";
           badgeEstado.innerText = "Con Saldo Pendiente";
           activarFormularioRecaudo();
+          // Configura dinámicamente el tope máximo en el input HTML
+          document.getElementById("abonoMonto").max = saldoMaximoPendiente;
         }
       } catch (err) {
         console.error(err);
         mostrarMensaje(
-          "Error al conectar con el servidor: " + err.message,
+          err.message || "Error al conectar con el servidor.",
           "danger",
         );
       } finally {
@@ -402,8 +413,29 @@
       }
     }
 
+    // Validación reactiva en el Frontend antes de presionar Enviar
+    function validarMontoEnTiempoReal() {
+      const inputMonto = document.getElementById("abonoMonto");
+      const btnGuardar = document.getElementById("btnGuardarAbono");
+      const montoDigitado = parseFloat(inputMonto.value) || 0;
+
+      if (montoDigitado > saldoMaximoPendiente) {
+        mostrarMensaje(
+          `El monto ingresado ($${montoDigitado.toLocaleString("es-CO")}) supera el saldo pendiente real ($${saldoMaximoPendiente.toLocaleString("es-CO")}).`,
+          "danger",
+        );
+        btnGuardar.disabled = true;
+      } else {
+        // Remover alertas de exceso si el valor vuelve a la normalidad
+        const alertaContainer = document.getElementById("alertaAbono");
+        if (alertaContainer.innerHTML.includes("supera el saldo pendiente")) {
+          alertaContainer.innerHTML = "";
+        }
+        btnGuardar.disabled = montoDigitado <= 0;
+      }
+    }
+
     async function registrarAbono() {
-      const btnGuardar = document.getElementById("btnGuardarCotizacion"); // Mapeo de control nativo
       const recuadroBoton = document.getElementById("btnGuardarAbono");
       const monto =
         parseFloat(document.getElementById("abonoMonto").value) || 0;
@@ -451,7 +483,6 @@
           notas: notas || "",
         };
 
-        // Conexión directa a tu Edge Function creada
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_adicionarAbono`,
           {
@@ -474,14 +505,11 @@
           return;
         }
 
-        // Éxito en la transacción backend
         mostrarMensaje(
           `¡Abono registrado! Nuevo saldo restante: $${result.infoPago.saldoRestante.toLocaleString("es-CO")}`,
           "success",
         );
 
-        // Renderizado seguro del botón de WhatsApp personalizado para abonos
-        // CORREGIDO: tally_getFacturaPDF en mayúsculas
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${facturaSeleccionadaId}`;
 
         document.getElementById("wrapperAccionCompartir").innerHTML = `
@@ -492,13 +520,16 @@
         `;
 
         limpiarFormularioDespuesRecaudo();
+        // Recargar los saldos de la pantalla para congelar o actualizar topes
+        document.getElementById("abonoBuscarFactura").value =
+          consecutivoFacturaOriginal;
+        await verificarFactura();
       } catch (err) {
         console.error(err);
         mostrarMensaje(err.message || "Fallo crítico en la red.", "danger");
       } finally {
-        recuderr = recuadroBoton;
-        recuderr.disabled = false;
-        recuderr.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Procesar Abono`;
+        recuadroBoton.disabled = false;
+        recuadroBoton.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Procesar Abono`;
       }
     }
 
@@ -511,7 +542,6 @@
       saldoRestante,
     ) {
       try {
-        // 1. Limpieza de números estricta y adición de código de área automatizada
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
@@ -580,6 +610,7 @@
 
     return {
       verificarFactura,
+      validarMontoEnTiempoReal,
       registrarAbono,
       compartirComprobanteAbono,
       limpiarFormulario,
