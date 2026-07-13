@@ -1,20 +1,18 @@
 <style>
   /* --- ESPACIO GLOBAL Y AISLAMIENTO --- */
   .abono-container {
-    margin-top: 2.5rem !important; /* Espacio limpio debajo de la navbar fija en Escritorio */
+    margin-top: 2.5rem !important;
     margin-bottom: 2rem !important;
   }
 
-  /* Paleta Estilo Tally Light con Detalles Premium */
   .bg-tally-light {
-    background-color: #ffffff !important; /* Fondo de tarjeta blanco puro */
+    background-color: #ffffff !important;
   }
 
   .text-tally-brand {
-    color: #0d6efd !important; /* Azul de los títulos e iconos secundarios */
+    color: #0d6efd !important;
   }
 
-  /* Botones amarillos corporativos con excelente contraste */
   .btn-tally-yellow {
     background-color: #fbc02d !important;
     color: #121212 !important;
@@ -39,7 +37,6 @@
     opacity: 0.9;
   }
 
-  /* Entradas de texto estilo Light Premium */
   .form-tally-control {
     background-color: #f8f9fa !important;
     border: 1px solid #dee2e6 !important;
@@ -56,18 +53,16 @@
     color: #adb5bd !important;
   }
 
-  /* --- AJUSTES ENCAPSULADOS PARA ESCRITORIO --- */
   @media (min-width: 992px) {
     .abono-container .card-wrapper {
       padding: 0 3rem;
     }
   }
 
-  /* --- AJUSTES DE DISEÑO Y ARMONÍA PARA MÓVIL --- */
   @media (max-width: 768px) {
     .abono-container {
-      margin-top: 0 !important; /* Se pega directamente a la navbar superior */
-      padding-left: 0 !important; /* Ocupa el 100% del ancho */
+      margin-top: 0 !important;
+      padding-left: 0 !important;
       padding-right: 0 !important;
     }
 
@@ -82,10 +77,9 @@
     }
 
     .abono-container .card {
-      border-radius: 0 !important; /* Estructura fluida en móviles */
+      border-radius: 0 !important;
     }
 
-    /* Cabecera amarilla en celular para dar jerarquía y combinar */
     .abono-container .card-header {
       background-color: #fbc02d !important;
       border-bottom: 1px solid #e0a800 !important;
@@ -135,7 +129,7 @@
                     type="text"
                     id="abonoBuscarFactura"
                     class="form-control form-tally-control"
-                    placeholder="Ej. F-1024 o consecutivo exacto..."
+                    placeholder="Ej. FAC-00003..."
                   />
                   <button
                     class="btn btn-tally-yellow"
@@ -255,7 +249,7 @@
                   id="abonoNotas"
                   rows="2"
                   class="form-control form-tally-control"
-                  placeholder="Ej. Comprobante de transferencia #55124 o notas adicionales..."
+                  placeholder="Ej. Comprobante de transferencia #55124..."
                   disabled
                 ></textarea>
               </div>
@@ -380,12 +374,8 @@
         consecutivoFacturaOriginal = infoFactura.numero_factura;
         saldoMaximoPendiente = infoFactura.saldo_pendiente;
 
-        const { data: factTelefono } = await supabaseClient
-          .from("tally_facturas")
-          .select("telefono")
-          .eq("id", facturaSeleccionadaId)
-          .maybeSingle();
-        clienteTelefonoOriginal = factTelefono?.telefono || "";
+        // ASIGNACIÓN DIRECTA DESDE LA EDGE FUNCTION (CÓDIGO LIMPIO)
+        clienteTelefonoOriginal = infoFactura.telefono || "";
 
         document.getElementById("abonoClienteNombre").value =
           infoFactura.cliente_nombre;
@@ -400,7 +390,7 @@
           .getElementById("seccionSaldosFactura")
           .classList.remove("d-none");
 
-        // --- RENDERIZADO DEL HISTORIAL DE ABONOS ---
+        // RENDERIZADO DEL HISTORIAL DE ABONOS
         const contenedorHistorial = document.getElementById(
           "seccionHistorialAbonos",
         );
@@ -408,7 +398,6 @@
 
         if (tbody && contenedorHistorial) {
           tbody.innerHTML = "";
-
           if (
             infoFactura.historial_abonos &&
             Array.isArray(infoFactura.historial_abonos) &&
@@ -426,11 +415,11 @@
                   },
                 );
               }
-
               const montoNumerico = parseFloat(abono.monto_abono) || 0;
-              const notasTexto = abono.notas
-                ? abono.notas.trim()
-                : "<em>Sin observaciones</em>";
+              const notasTexto =
+                abono.notes || abono.notas
+                  ? (abono.notes || abono.notas).trim()
+                  : "<em>Sin observaciones</em>";
               const metodoTexto = abono.metodo_pago || "N/A";
 
               const fila = document.createElement("tr");
@@ -450,10 +439,8 @@
             contenedorHistorial.style.display = "block";
           }
         }
-        // -----------------------------------------------------
 
         const badgeEstado = document.getElementById("abonoEstadoFactura");
-
         if (!resultado.permitirAbono) {
           badgeEstado.className =
             "badge bg-success text-white border px-3 py-2 fs-6";
@@ -541,7 +528,7 @@
           );
 
         const payloadAbono = {
-          factura_id: facturaSeleccionadaId,
+          numero_factura: consecutivoFacturaOriginal,
           monto_abono: monto,
           metodo_pago: metodo,
           notas: notas || "",
@@ -563,22 +550,19 @@
 
         if (!result.ok) {
           mostrarMensaje(
-            result.error || "Ocurrió un inconveniente al inyectar el abono.",
+            result.error || "Ocurrió un inconveniente al registrar el abono.",
             "danger",
           );
           return;
         }
 
-        mostrarMensaje(
-          `¡Abono registrado! Nuevo saldo restante: $${result.infoPago.saldoRestante.toLocaleString("es-CO")}`,
-          "success",
-        );
+        mostrarMensaje(`¡Abono registrado con éxito!`, "success");
 
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${facturaSeleccionadaId}`;
 
         document.getElementById("wrapperAccionCompartir").innerHTML = `
           <button type="button" class="btn btn-sm btn-whatsapp shadow-sm px-3" 
-            onclick="nsGestionAbonos.compartirComprobanteAbono('${clienteNombreOriginal}', '${consecutivoFacturaOriginal}', '${urlSeguraPdf}', '${clienteTelefonoOriginal}', ${monto}, ${result.infoPago.saldoRestante})">
+            onclick="nsGestionAbonos.compartirComprobanteAbono('${clienteNombreOriginal}', '${consecutivoFacturaOriginal}', '${urlSeguraPdf}', '${clienteTelefonoOriginal}', ${monto}, ${result.nuevoAbono ? saldoMaximoPendiente - monto : 0})">
             <i class="bi bi-whatsapp"></i> Notificar Pago por WhatsApp
           </button>
         `;
@@ -608,8 +592,6 @@
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
-
-        // --- ADICIÓN DE CÓDIGO DE ÁREA (COLOMBIA) ---
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
         }
