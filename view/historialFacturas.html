@@ -267,7 +267,7 @@
           "es-CO",
         );
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPdf?id=${fact.id}`;
-        const txtTelefono = fact.cliente_telefono || "---";
+        const txtTelefono = fact.telefono || "---";
 
         tbody.innerHTML += `
           <tr>
