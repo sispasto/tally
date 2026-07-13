@@ -6,3 +6,4 @@ import "./cotizacion.js";
 import "./historialCotizaciones.js";
 import "./factura.js";
 import "./historialFacturas.js";
+import "./adicionarAbono.js";

@@ -68,7 +68,12 @@ export const MENUS = {
               <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(consultarFacturas)">
                 <i class="bi bi-file-earmark-spreadsheet"></i> Consultar Facturas
               </a>
-            </li>                      
+            </li>    
+            <li>
+              <a class="nav-link d-flex align-items-center gap-2" href="#" onclick="PpalMenu.ejecutarAccion(modificarFacturas)">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Abonar a factura
+              </a>
+            </li>                  
           </ul>
         </div>
       </li>
