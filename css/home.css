@@ -152,13 +152,13 @@ body {
 
 /* Iconos de Cotizaciones: Amarillo/Ámbar corporativo */
 #catFinanzas .submenu-list .nav-link i {
-  color: #3b82f6 !important;
+  color: #fff !important;
   transition: transform 0.2s ease;
 }
 
 /* Iconos de Facturas: Celeste/Azul brillante nítido */
 #catFacturas .submenu-list .nav-link i {
-  color: #3b82f6 !important;
+  color: #fff !important;
   transition: transform 0.2s ease;
 }
 
