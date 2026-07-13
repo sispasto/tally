@@ -118,6 +118,7 @@
         <div class="card-body p-3 p-sm-4 text-dark">
           <div id="alertaAbono"></div>
 
+          <!-- SECCIÓN 1: BUSCAR Y SELECCIONAR FACTURA -->
           <div class="mb-4">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -162,6 +163,7 @@
             </div>
           </div>
 
+          <!-- SECCIÓN 2: INFORMACIÓN FINANCIERA DE LA FACTURA -->
           <div class="mb-4 d-none" id="seccionSaldosFactura">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -205,6 +207,7 @@
             </div>
           </div>
 
+          <!-- SECCIÓN 3: FORMULARIO DE RECAUDO -->
           <div class="mb-4">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -264,8 +267,11 @@
 
           <hr class="text-muted my-4" />
 
+          <!-- BOTONES DE ACCIÓN -->
           <div class="d-flex justify-content-between align-items-center mb-4">
-            <div id="wrapperAccionCompartir"></div>
+            <div id="wrapperAccionCompartir">
+              <!-- Botón dinámico de WhatsApp oculto por defecto -->
+            </div>
             <div class="d-flex gap-2">
               <button
                 type="button"
@@ -286,6 +292,7 @@
             </div>
           </div>
 
+          <!-- SECCIÓN: HISTORIAL DE ABONOS -->
           <div class="mb-2 d-none" id="seccionHistorialAbonos">
             <h6
               class="text-tally-brand text-uppercase fw-bold mb-3"
@@ -307,7 +314,9 @@
                     <th class="pe-3 py-2 text-end">Monto</th>
                   </tr>
                 </thead>
-                <tbody id="tbodyHistorialAbonos"></tbody>
+                <tbody id="tbodyHistorialAbonos">
+                  <!-- Renderizado dinámico -->
+                </tbody>
               </table>
             </div>
           </div>
@@ -351,7 +360,6 @@
             "Sesión expirada. Por favor inicie sesión nuevamente.",
           );
 
-        // 1. Invocar la Edge Function para validar de forma centralizada los estados y montos
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_validarEstadoFactura`,
           {
@@ -375,14 +383,12 @@
           return;
         }
 
-        // 2. Extraer datos del payload unificado de la Edge Function
         const infoFactura = resultado.dataFactura;
         facturaSeleccionadaId = infoFactura.id;
         clienteNombreOriginal = infoFactura.cliente_nombre;
         consecutivoFacturaOriginal = infoFactura.numero_factura;
         saldoMaximoPendiente = infoFactura.saldo_pendiente;
 
-        // Se requiere consultar el teléfono por fuera debido al esquema específico de notificaciones
         const { data: factTelefono } = await supabaseClient
           .from("tally_facturas")
           .select("telefono")
@@ -390,7 +396,6 @@
           .maybeSingle();
         clienteTelefonoOriginal = factTelefono?.telefono || "";
 
-        // 3. Renderizar la UI con los cálculos del servidor
         document.getElementById("abonoClienteNombre").value =
           infoFactura.cliente_nombre;
         document.getElementById("valTotalFactura").innerText =
@@ -404,45 +409,60 @@
           .getElementById("seccionSaldosFactura")
           .classList.remove("d-none");
 
-        // --- RENDERIZAR DINÁMICAMENTE EL HISTORIAL EN LA NUEVA TABLA ---
+        // --- RENDERIZADO CORREGIDO DEL HISTORIAL DE ABONOS ---
         const contenedorHistorial = document.getElementById(
           "seccionHistorialAbonos",
         );
         const tbody = document.getElementById("tbodyHistorialAbonos");
-        tbody.innerHTML = "";
 
-        if (
-          infoFactura.historial_abonos &&
-          infoFactura.historial_abonos.length > 0
-        ) {
-          infoFactura.historial_abonos.forEach((abono) => {
-            const fechaFormateada = new Date(
-              abono.created_at,
-            ).toLocaleDateString("es-CO", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
+        if (tbody && contenedorHistorial) {
+          tbody.innerHTML = "";
+
+          if (
+            infoFactura.historial_abonos &&
+            Array.isArray(infoFactura.historial_abonos) &&
+            infoFactura.historial_abonos.length > 0
+          ) {
+            infoFactura.historial_abonos.forEach((abono) => {
+              let fechaFormateada = "Sin fecha";
+              if (abono.created_at) {
+                fechaFormateada = new Date(abono.created_at).toLocaleDateString(
+                  "es-CO",
+                  {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  },
+                );
+              }
+
+              const montoNumerico = parseFloat(abono.monto_abono) || 0;
+              const notasTexto = abono.notas
+                ? abono.notas.trim()
+                : "<em>Sin observaciones</em>";
+              const metodoTexto = abono.metodo_pago || "N/A";
+
+              const fila = document.createElement("tr");
+              fila.innerHTML = `
+                <td class="ps-3 text-secondary" style="padding: 0.5rem 0.25rem;">${fechaFormateada}</td>
+                <td style="padding: 0.5rem 0.25rem;"><span class="badge bg-light text-dark border">${metodoTexto}</span></td>
+                <td class="text-muted text-truncate" style="max-width: 240px; padding: 0.5rem 0.25rem;">${notasTexto}</td>
+                <td class="pe-3 fw-bold text-end text-dark" style="padding: 0.5rem 0.25rem;">$ ${montoNumerico.toLocaleString("es-CO")}</td>
+              `;
+              tbody.appendChild(fila);
             });
-
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
-              <td class="ps-3 text-secondary">${fechaFormateada}</td>
-              <td><span class="badge bg-light text-dark border">${abono.metodo_pago}</span></td>
-              <td class="text-muted text-truncate" style="max-width: 240px;">${abono.notas || "<em>Sin observaciones</em>"}</td>
-              <td class="pe-3 fw-bold text-end text-dark">$ ${parseFloat(abono.monto_abono).toLocaleString("es-CO")}</td>
-            `;
-            tbody.appendChild(fila);
-          });
-          contenedorHistorial.classList.remove("d-none");
-        } else {
-          tbody.innerHTML = `<tr><td colspan="4" class="text-center p-3 text-muted text-uppercase small" style="font-size: 0.75rem;">Sin abonos previos registrados</td></tr>`;
-          contenedorHistorial.classList.remove("d-none");
+            contenedorHistorial.classList.remove("d-none");
+            contenedorHistorial.style.display = "block";
+          } else {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center p-3 text-muted small">Sin abonos previos registrados</td></tr>`;
+            contenedorHistorial.classList.remove("d-none");
+            contenedorHistorial.style.display = "block";
+          }
         }
-        // ---------------------------------------------------------------
+        // -----------------------------------------------------
 
         const badgeEstado = document.getElementById("abonoEstadoFactura");
 
-        // 4. Aplicar Regla 1: Bloquear si permitirAbono es false (Saldo en cero)
         if (!resultado.permitirAbono) {
           badgeEstado.className =
             "badge bg-success text-white border px-3 py-2 fs-6";
@@ -454,7 +474,6 @@
             "badge bg-warning text-dark border px-3 py-2 fs-6";
           badgeEstado.innerText = "Con Saldo Pendiente";
           activarFormularioRecaudo();
-          // Configura dinámicamente el tope máximo en el input HTML
           document.getElementById("abonoMonto").max = saldoMaximoPendiente;
         }
       } catch (err) {
@@ -469,7 +488,6 @@
       }
     }
 
-    // Validación reactiva en el Frontend antes de presionar Enviar
     function validarMontoEnTiempoReal() {
       const inputMonto = document.getElementById("abonoMonto");
       const btnGuardar = document.getElementById("btnGuardarAbono");
@@ -482,7 +500,6 @@
         );
         btnGuardar.disabled = true;
       } else {
-        // Remover alertas de exceso si el valor vuelve a la normalidad
         const alertaContainer = document.getElementById("alertaAbono");
         if (alertaContainer.innerHTML.includes("supera el saldo pendiente")) {
           alertaContainer.innerHTML = "";
@@ -507,7 +524,7 @@
       }
       if (monto <= 0 || !metodo) {
         mostrarMensaje(
-          "Por favor defina un monto de abono válido y el método de recaudo.",
+          "Por favor define un monto de abono válido y el método de recaudo.",
           "warning",
         );
         return;
@@ -576,7 +593,6 @@
         `;
 
         limpiarFormularioDespuesRecaudo();
-        // Recargar los saldos y la tabla de la pantalla de forma automática
         document.getElementById("abonoBuscarFactura").value =
           consecutivoFacturaOriginal;
         await verificarFactura();
@@ -598,11 +614,21 @@
       saldoRestante,
     ) {
       try {
+        // Limpiamos el teléfono de caracteres especiales
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
+
+        // --- ADICIÓN DE CÓDIGO DE ÁREA (COLOMBIA) ---
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
+        } else if (
+          telefonoLimpio.length === 12 &&
+          telefonoLimpio.startsWith("57")
+        ) {
+          // Si ya trae el 57 de la base de datos lo dejamos como está
+        } else if (telefonoLimpio === "") {
+          console.warn("Teléfono vacío, se enviará sin número predefinido.");
         }
 
         const textoMsg = `Hola *${clienteNombre}*, hemos recibido correctamente tu abono por un valor de *$${valorAbonado.toLocaleString("es-CO")}* para la factura de venta *${numeroFactura}*.\n\n*Saldo Pendiente:* $${saldoRestante.toLocaleString("es-CO")}\n\nPuedes consultar tu estado y el PDF actualizado aquí: ${urlSeguraPdf}`;
@@ -635,9 +661,16 @@
       document.getElementById("seccionSaldosFactura").classList.add("d-none");
       document.getElementById("wrapperAccionCompartir").innerHTML = "";
 
-      // Ocultar y vaciar tabla del historial
-      document.getElementById("seccionHistorialAbonos").classList.add("d-none");
-      document.getElementById("tbodyHistorialAbonos").innerHTML = "";
+      // Ocultar e inicializar contenedor del historial
+      const contenedorHistorial = document.getElementById(
+        "seccionHistorialAbonos",
+      );
+      if (contenedorHistorial) {
+        contenedorHistorial.classList.add("d-none");
+        contenedorHistorial.style.display = "none";
+      }
+      const tbody = document.getElementById("tbodyHistorialAbonos");
+      if (tbody) tbody.innerHTML = "";
 
       const badgeEstado = document.getElementById("abonoEstadoFactura");
       badgeEstado.className = "badge bg-white text-dark border px-3 py-2 fs-6";
