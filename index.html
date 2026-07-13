@@ -397,7 +397,6 @@
           }
 
           // 3. Llamada a la Edge Function
-          // Dentro de tu función updatePassword() en el HTML:
           const response = await fetch(
             `${SUPABASE_URL}/functions/v1/tally_authUser`,
             {
@@ -407,8 +406,8 @@
                 Authorization: `Bearer ${session.access_token}`,
               },
               body: JSON.stringify({
-                action: "updatePassword", // Coincide con el if en la Edge Function
-                claveNueva: claveNueva, // Coincide con la variable en la Edge Function
+                action: "updatePassword",
+                claveNueva: claveNueva,
               }),
             },
           );
@@ -416,17 +415,23 @@
           const data = await response.json();
 
           if (data.status === "success") {
-            // 4. Limpiar y cerrar modales
+            // 4. Limpiar campos
             document.getElementById("newPassword").value = "";
             document.getElementById("confirmNewPassword").value = "";
 
+            // Ocultar el modal de forma segura
             safeHideModal("changePasswordModal");
 
+            // 5. CORRECCIÓN DEL MENÚ COLAPSABLE (Manejo seguro)
             const navEl = document.getElementById("navbarText");
-            const bsCollapse =
-              bootstrap.Collapse.getInstance(navEl) ||
-              new bootstrap.Collapse(navEl, { toggle: false });
-            bsCollapse.hide();
+            if (navEl && navEl.classList.contains("show")) {
+              const bsCollapse =
+                bootstrap.Collapse.getInstance(navEl) ||
+                new bootstrap.Collapse(navEl, { toggle: false });
+              if (bsCollapse) {
+                bsCollapse.hide();
+              }
+            }
 
             alertSMS("Clave actualizada exitosamente");
           } else {
@@ -434,7 +439,7 @@
           }
         } catch (err) {
           console.error("Error en updatePassword:", err);
-          alertSMS("Error en la conexión al servidor");
+          alertSMS("Error en la interfaz al procesar la solicitud");
         }
       }
       // ============================
