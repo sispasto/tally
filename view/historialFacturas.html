@@ -281,8 +281,7 @@
               <div class="d-flex w-100 gap-1 justify-content-center">
                 <button class="btn btn-sm btn-amarillo-tally btn-movil-bloque" onclick="nsHistorialFacturas.verPdf('${fact.id}', this)">
                   <i class="bi bi-file-pdf"></i> PDF
-                </button>
-                {/* CORREGIDO: Se cambió fact.cliente_telefono por fact.telefono */}
+                </button>                
                 <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialFacturas.compartirWhatsApp('${fact.cliente_nombre}', '${fact.numero_factura}', '${urlSeguraPdf}', '${fact.telefono || ""}')">
                   <i class="bi bi-whatsapp"></i> Compartir
                 </button>
