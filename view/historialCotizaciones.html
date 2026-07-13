@@ -384,6 +384,16 @@
       numTelefono,
     ) {
       try {
+        // 1. Limpiar el teléfono de espacios, guiones, símbolos o letras
+        let telefonoLimpio = numTelefono
+          ? numTelefono.replace(/[^0-9]/g, "")
+          : "";
+
+        // 2. Si tiene 10 dígitos (estándar en Colombia), le anteponemos el prefijo del país 57
+        if (telefonoLimpio.length === 10) {
+          telefonoLimpio = "57" + telefonoLimpio;
+        }
+
         const respuesta = await fetch(
           `https://tinyurl.com/api-create.php?url=${encodeURIComponent(urlSeguraPdf)}`,
         );
@@ -394,10 +404,8 @@
 
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
 
-        // Si hay un teléfono válido registrado, abre el chat directo, de lo contrario lo envía global
-        const destino = numTelefono
-          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
-          : "";
+        // 3. Estructurar el destino con el número formateado de manera segura
+        const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
         const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
 
         window.open(urlWhatsApp, "_blank");
@@ -406,10 +414,17 @@
           "Error al acortar la URL, enviando enlace original...",
           err,
         );
-        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
-        const destino = numTelefono
-          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
+
+        // Replicar la misma lógica de descarte y formateo en el bloque catch por seguridad
+        let telefonoLimpio = numTelefono
+          ? numTelefono.replace(/[^0-9]/g, "")
           : "";
+        if (telefonoLimpio.length === 10) {
+          telefonoLimpio = "57" + telefonoLimpio;
+        }
+
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
+        const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
         const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
         window.open(urlWhatsApp, "_blank");
       }

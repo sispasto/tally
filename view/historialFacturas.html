@@ -266,7 +266,8 @@
         const fechaFormateada = new Date(fact.created_at).toLocaleDateString(
           "es-CO",
         );
-        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPdf?id=${fact.id}`;
+        // CORREGIDO: tally_getFacturaPDF en mayúsculas
+        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${fact.id}`;
         const txtTelefono = fact.telefono || "---";
 
         tbody.innerHTML += `
@@ -281,7 +282,8 @@
                 <button class="btn btn-sm btn-amarillo-tally btn-movil-bloque" onclick="nsHistorialFacturas.verPdf('${fact.id}', this)">
                   <i class="bi bi-file-pdf"></i> PDF
                 </button>
-                <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialFacturas.compartirWhatsApp('${fact.cliente_nombre}', '${fact.numero_factura}', '${urlSeguraPdf}', '${fact.cliente_telefono || ""}')">
+                {/* CORREGIDO: Se cambió fact.cliente_telefono por fact.telefono */}
+                <button class="btn btn-sm btn-whatsapp btn-movil-bloque" onclick="nsHistorialFacturas.compartirWhatsApp('${fact.cliente_nombre}', '${fact.numero_factura}', '${urlSeguraPdf}', '${fact.telefono || ""}')">
                   <i class="bi bi-whatsapp"></i> Compartir
                 </button>
               </div>
@@ -329,8 +331,9 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Sesión expirada");
 
+        // CORREGIDO: tally_getFacturaPDF en mayúsculas
         const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/tally_getFacturaPdf?id=${id}`,
+          `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${id}`,
           {
             method: "GET",
             headers: {
@@ -384,6 +387,16 @@
       numTelefono,
     ) {
       try {
+        // 1. Limpiar el teléfono de espacios, guiones, paréntesis o el signo '+'
+        let telefonoLimpio = numTelefono
+          ? numTelefono.replace(/[^0-9]/g, "")
+          : "";
+
+        // 2. Si el número tiene 10 dígitos (ej: 3151234567), se le añade el código de área de Colombia (57)
+        if (telefonoLimpio.length === 10) {
+          telefonoLimpio = "57" + telefonoLimpio;
+        }
+
         const respuesta = await fetch(
           `https://tinyurl.com/api-create.php?url=${encodeURIComponent(urlSeguraPdf)}`,
         );
@@ -394,9 +407,8 @@
 
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura de venta *${numeroFactura}*. Puedes visualizarlo aquí: ${urlAcortada}`;
 
-        const destino = numTelefono
-          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
-          : "";
+        // 3. Estructurar el destino con el número formateado correctamente
+        const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
         const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
 
         window.open(urlWhatsApp, "_blank");
@@ -405,10 +417,17 @@
           "Error al acortar la URL, enviando enlace original...",
           err,
         );
-        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura de venta *${numeroFactura}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
-        const destino = numTelefono
-          ? `phone=${numTelefono.replace(/\s+/g, "")}&`
+
+        // Replicar la misma lógica de limpieza en el catch por seguridad
+        let telefonoLimpio = numTelefono
+          ? numTelefono.replace(/[^0-9]/g, "")
           : "";
+        if (telefonoLimpio.length === 10) {
+          telefonoLimpio = "57" + telefonoLimpio;
+        }
+
+        const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura de venta *${numeroFactura}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
+        const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
         const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
         window.open(urlWhatsApp, "_blank");
       }
