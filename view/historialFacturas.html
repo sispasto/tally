@@ -267,7 +267,8 @@
           "es-CO",
         );
         // CORREGIDO: tally_getFacturaPDF en mayúsculas
-        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${fact.id}`;
+        // MODIFICADO: Se añade &t= con Date.now() para evitar problemas de caché al compartir por WhatsApp
+        const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${fact.id}&t=${Date.now()}`;
         const txtTelefono = fact.telefono || "---";
 
         tbody.innerHTML += `
@@ -331,8 +332,9 @@
         if (!session) throw new Error("Sesión expirada");
 
         // CORREGIDO: tally_getFacturaPDF en mayúsculas
+        // MODIFICADO: Se añade &t= con Date.now() a la petición fetch para forzar la descarga del PDF en vivo
         const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${id}`,
+          `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${id}&t=${Date.now()}`,
           {
             method: "GET",
             headers: {
