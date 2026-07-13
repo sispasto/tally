@@ -32,7 +32,7 @@ class BienvenidaComponent extends HTMLElement {
       if (this.versionApp) {
         const versionLabel = this.querySelector("#version-label");
         if (versionLabel) {
-          versionLabel.textContent = `NovaEnvios v${this.versionApp}`;
+          versionLabel.textContent = `Tally v${this.versionApp}`;
         }
       }
 
