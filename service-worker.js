@@ -1,4 +1,4 @@
-const APP_VERSION = "1.7";
+const APP_VERSION = "1.8";
 const CACHE_NAME = `app-tally-v${APP_VERSION}`;
 
 self.addEventListener("install", (e) => {
