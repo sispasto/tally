@@ -36,13 +36,6 @@ class HistorialCotizacionesComponent extends HTMLElement {
         s.setAttribute("data-dynamic", "true");
         container.appendChild(s);
       });
-
-      // 6. Cargar los primeros 10 registros del historial de forma inmediata
-      setTimeout(() => {
-        if (typeof nsHistorialCotizaciones !== "undefined") {
-          nsHistorialCotizaciones.cargarCotizaciones();
-        }
-      }, 50);
     } catch (e) {
       console.error("Error cargando historialCotizaciones", e);
     }

@@ -36,13 +36,6 @@ class HistorialFacturasComponent extends HTMLElement {
         s.setAttribute("data-dynamic", "true");
         container.appendChild(s);
       });
-
-      // 6. Cargar los primeros 10 registros del historial de forma inmediata con el namespace de facturas
-      setTimeout(() => {
-        if (typeof nsHistorialFacturas !== "undefined") {
-          nsHistorialFacturas.cargarFacturas();
-        }
-      }, 50);
     } catch (e) {
       console.error("Error cargando historialFacturas", e);
     }
