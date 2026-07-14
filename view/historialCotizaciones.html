@@ -442,11 +442,17 @@
   })();
 
   // Esto se ejecuta en el instante en que el HTML y este script entran al DOM
+  // Modifica la IIFE al final de tu vista HTML para que quede así:
   (function () {
     console.log("Se cargo el historial de cotizaciones correctamente");
-    if (typeof nsHistorialCotizaciones !== "undefined") {
-      nsHistorialCotizaciones.cargarCotizaciones();
-      alert("gfdg");
-    }
+
+    // Forzar a que espere a que el navegador termine de pintar el HTML gris
+    setTimeout(() => {
+      if (typeof nsHistorialCotizaciones !== "undefined") {
+        nsHistorialCotizaciones.cargarCotizaciones();
+      } else if (window.nsHistorialCotizaciones) {
+        window.nsHistorialCotizaciones.cargarCotizaciones();
+      }
+    }, 50); // 50ms son suficientes para que el DOM se dibuje por completo
   })();
 </script>
