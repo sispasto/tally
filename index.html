@@ -446,50 +446,42 @@
       // CERRAR SESIÓN
       // ============================
       async function logout() {
+        // 1. Intentamos cerrar sesión en el servidor (Supabase)
+        // Lo aislamos en su propio try/catch para que, si falla el internet o el token,
+        // el usuario igual pueda cerrar sesión localmente.
         try {
-          // 1. Cerrar sesión en el servidor de Supabase (Invalida el JWT )
           const { error } = await supabaseClient.auth.signOut();
-          if (error)
-            console.error("Error al cerrar sesión en Supabase:", error.message);
+          if (error) {
+            console.warn(
+              "Error al cerrar sesión en Supabase (servidor):",
+              error.message,
+            );
+          }
+        } catch (err) {
+          console.error("Error de conexión con Supabase:", err);
+        }
 
-          // 2. Limpieza TOTAL del almacenamiento de sesión
-          // Esto borra nombreUsuario, userRol, personaId y empresaId de un golpe
-          // 2. Limpieza TOTAL
+        // 2. Limpieza local y recarga garantizada
+        try {
+          // Limpieza TOTAL de la sesión local
           sessionStorage.clear();
 
-          // 3. Valores de seguridad para que la App no "explote" al leerlos
+          // Valores mínimos de seguridad por si tu app los lee antes de recargar
           sessionStorage.setItem("userRol", "0");
           sessionStorage.setItem("nombreUsuario", "");
           sessionStorage.setItem("personaId", "");
 
-          PpalMenu.mostrarMenuInvitado();
-
-          // 5. Limpiar campos físicos de los formularios de login/password
-          const fields = [
-            "username",
-            "password",
-            "newPassword",
-            "confirmNewPassword",
-          ];
-          fields.forEach((id) => {
-            const el = document.getElementById(id);
-            if (el) el.value = "";
-          });
-
-          // 6. Colapsar el menú de Bootstrap si está abierto
-          const navbarCollapse = document.getElementById("navbarText");
-          if (navbarCollapse) {
-            const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
-            if (bsCollapse) bsCollapse.hide();
+          // Notificamos al usuario justo antes de reiniciar
+          if (typeof alertSMS === "function") {
+            alertSMS("Sesión cerrada correctamente");
           }
 
-          PpalMenu.mostrarMenuInvitado();
-
-          // 7. Redirigir al Home y notificar
-          if (typeof getHome === "function") getHome();
-          alertSMS("Sesión cerrada correctamente");
+          // 3. El gran truco: Forzar el "F5"
+          // Esto destruye toda la RAM contaminada, limpia el DOM, cierra menús de Bootstrap,
+          // vacía campos de texto viejos y arranca tu App 100% limpia.
+          window.location.reload();
         } catch (err) {
-          console.error("Error crítico en logout:", err);
+          console.error("Error crítico en logout local:", err);
         }
       }
 
