@@ -194,13 +194,18 @@
 </div>
 
 <script>
+  // la eliminamos por completo para evitar conflictos con elementos del DOM que ya no existen.
+  if (window.nsHistorialCotizaciones) {
+    delete window.nsHistorialCotizaciones;
+    window.nsHistorialCotizaciones = null;
+  }
+
   var nsHistorialCotizaciones = (function () {
     let paginaActual = 1;
     const limite = 10;
     let timeoutBusqueda = null;
 
     async function cargarCotizaciones() {
-      console.log("0");
       const tbody = document.getElementById("tbodyHistorial");
       const queryGeneral = document
         .getElementById("buscarGeneral")
@@ -442,17 +447,19 @@
   })();
 
   // Inicializador único al entrar al DOM
+  // Inicializador único para el ciclo de vida SPA (Se ejecuta al montarse en el DOM)
   (function () {
     console.log("Se cargó el historial de cotizaciones correctamente");
 
+    // Ejecutamos con un pequeño delay para garantizar que el DOM del componente esté 100% renderizado
     setTimeout(() => {
       if (typeof nsHistorialCotizaciones !== "undefined") {
-        console.log("1");
-        nsHistorialCotizaciones.cargarCotizaciones();
+        console.log("1 - Disparando primera carga automática");
+        nsHistorialCotizaciones.cargarCotizaciones(); // 🚀 ¡AQUÍ se carga la primera vez!
       } else if (window.nsHistorialCotizaciones) {
-        console.log("2");
-        window.nsHistorialCotizaciones.cargarCotizaciones();
+        console.log("2 - Disparando primera carga automática (window)");
+        window.nsHistorialCotizaciones.cargarCotizaciones(); // 🚀 ¡AQUÍ de respaldo!
       }
-    }, 50);
+    }, 100); // 100ms es ideal para dar tiempo al Web Component de inyectarse en el `#App`
   })();
 </script>
