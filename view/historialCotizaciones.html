@@ -200,6 +200,7 @@
     let timeoutBusqueda = null;
 
     async function cargarCotizaciones() {
+      console.log("0");
       const tbody = document.getElementById("tbodyHistorial");
       const queryGeneral = document
         .getElementById("buscarGeneral")
@@ -365,11 +366,13 @@
     function dispararFiltro() {
       paginaActual = 1;
       cargarCotizaciones();
+      console.log("3");
     }
 
     function cambiarPagina(nuevaPagina) {
       paginaActual = nuevaPagina;
       cargarCotizaciones();
+      console.log("4");
     }
 
     function limpiarFiltros() {
@@ -444,8 +447,10 @@
 
     setTimeout(() => {
       if (typeof nsHistorialCotizaciones !== "undefined") {
+        console.log("1");
         nsHistorialCotizaciones.cargarCotizaciones();
       } else if (window.nsHistorialCotizaciones) {
+        console.log("2");
         window.nsHistorialCotizaciones.cargarCotizaciones();
       }
     }, 50);
