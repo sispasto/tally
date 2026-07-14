@@ -445,10 +445,16 @@
     };
   })();
 
-  // Esto se ejecuta en el instante en que el HTML y este script entran al DOM
   (function () {
-    if (typeof nsHistorialFacturas !== "undefined") {
-      nsHistorialFacturas.cargarFacturas();
-    }
+    console.log("Se cargo el historial de facturas correctamente");
+
+    // Forzar a que espere a que el navegador termine de pintar el HTML gris
+    setTimeout(() => {
+      if (typeof nsHistorialFacturas !== "undefined") {
+        nsHistorialFacturas.cargarFacturas();
+      } else if (window.nsHistorialFacturas) {
+        window.nsHistorialFacturas.cargarFacturas();
+      }
+    }, 50); // 50ms son suficientes para que el DOM se dibuje por completo
   })();
 </script>
