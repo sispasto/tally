@@ -446,25 +446,33 @@
       // CERRAR SESIÓN
       // ============================
       async function logout() {
-        // 1. Intentamos cerrar sesión en el servidor (Supabase)
-        // Lo aislamos en su propio try/catch para que, si falla el internet o el token,
-        // el usuario igual pueda cerrar sesión localmente.
+        // 1. Intentamos cerrar sesión formalmente en el servidor (Supabase)
         try {
-          const { error } = await supabaseClient.auth.signOut();
-          if (error) {
-            console.warn(
-              "Error al cerrar sesión en Supabase (servidor):",
-              error.message,
-            );
+          if (typeof supabaseClient !== "undefined" && supabaseClient.auth) {
+            // signOut() limpia la sesión en memoria del cliente y el localStorage automáticamente
+            await supabaseClient.auth.signOut();
           }
         } catch (err) {
           console.error("Error de conexión con Supabase:", err);
         }
 
-        // 2. Limpieza local y recarga garantizada
+        // 2. Limpieza local TOTAL (Destrucción absoluta de residuos)
         try {
-          // Limpieza TOTAL de la sesión local
+          // Elimina TODO del sessionStorage (roles, nombres, etc.)
           sessionStorage.clear();
+
+          // Elimina TODO del localStorage (aquí es donde Supabase guarda sus tokens persistentes)
+          localStorage.clear();
+
+          // Limpieza de cookies de sesión opcional por si acaso
+          document.cookie.split(";").forEach((c) => {
+            document.cookie = c
+              .replace(/^ +/, "")
+              .replace(
+                /=.*/,
+                "=;expires=" + new Date().toUTCString() + ";path=/",
+              );
+          });
 
           // Valores mínimos de seguridad por si tu app los lee antes de recargar
           sessionStorage.setItem("userRol", "0");
@@ -476,12 +484,13 @@
             alertSMS("Sesión cerrada correctamente");
           }
 
-          // 3. El gran truco: Forzar el "F5"
-          // Esto destruye toda la RAM contaminada, limpia el DOM, cierra menús de Bootstrap,
-          // vacía campos de texto viejos y arranca tu App 100% limpia.
-          window.location.reload();
+          // 3. Forzar el reinicio limpio desde la raíz de la URL (limpiando hashes antiguos si los hay)
+          window.location.href =
+            window.location.origin + window.location.pathname;
         } catch (err) {
           console.error("Error crítico en logout local:", err);
+          // Como último recurso de escape si algo falla en el try:
+          window.location.reload();
         }
       }
 
