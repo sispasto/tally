@@ -9,38 +9,46 @@ class HistorialCotizacionesComponent extends HTMLElement {
     }
 
     try {
-      // 1. Cargar el HTML de la vista del historial remoto bajo demanda
+      // 1. Cargar el HTML de la vista
       const res = await fetch("view/historialCotizaciones.html");
       const html = await res.text();
 
       const template = document.createElement("template");
       template.innerHTML = html;
 
-      // 2. Extraer y remover los scripts del template para procesarlos después
+      // 2. Extraer y remover los scripts
       const scripts = template.content.querySelectorAll("script");
       scripts.forEach((s) => s.remove());
 
-      // 3. Inyectar el HTML limpio dentro del componente del historial
+      // 3. INYECTAR EL HTML EN EL DOM PRIMERO (Síncronamente)
       this.innerHTML = "";
       this.appendChild(template.content.cloneNode(true));
 
-      // 4. Limpiar cualquier script dinámico residual previo en el contenedor principal
+      // 4. Limpiar scripts dinámicos previos
       container
         .querySelectorAll("script[data-dynamic]")
         .forEach((s) => s.remove());
 
-      // 5. Volver a inyectar y ejecutar los scripts en el contexto global de la app
+      // 5. VOLVER A INYECTAR LOS SCRIPTS (Esto registrará window.nsHistorialCotizaciones)
+      // Usamos un bucle para asegurar que se añadan al DOM antes de continuar
       scripts.forEach((old) => {
         const s = document.createElement("script");
         s.textContent = old.textContent;
         s.setAttribute("data-dynamic", "true");
         container.appendChild(s);
       });
+
+      // 6. ¡AHORA SÍ! La estructura ya existe físicamente en el DOM.
+      // Llamamos a la carga de datos de manera segura asegurando que el script ya compiló.
+      requestAnimationFrame(() => {
+        if (window.nsHistorialCotizaciones) {
+          window.nsHistorialCotizaciones.cargarCotizaciones();
+        } else if (typeof nsHistorialCotizaciones !== "undefined") {
+          nsHistorialCotizaciones.cargarCotizaciones();
+        }
+      });
     } catch (e) {
       console.error("Error cargando historialCotizaciones", e);
     }
   }
 }
-
-// Registro del Custom Element en el DOM global
-customElements.define("historial-cotizaciones", HistorialCotizacionesComponent);
