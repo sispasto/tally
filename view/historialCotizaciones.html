@@ -214,18 +214,19 @@
 
         const urlParams = new URLSearchParams({
           pagina: paginaActual,
-          limpite: limite, // Se mantiene el parámetro actual de tu backend
-          limite: limite,
+          limite: limite, // Corregido: removida propiedad duplicada con typo 'limpite'
           busqueda: queryGeneral,
           fecha: queryFecha,
         });
 
         tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Buscando...</td></tr>`;
 
+        // ⚡ Opciones de Fetch con "cache: 'no-store'" para saltar el Service Worker
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_obtenerCotizaciones?${urlParams.toString()}`,
           {
             method: "GET",
+            cache: "no-store", // 🔥 Prohíbe al navegador y al Service Worker usar la caché local
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${session.access_token}`,
@@ -266,7 +267,6 @@
         );
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${cot.id}`;
 
-        // Validar el valor de teléfono por si llega nulo o indefinido
         const txtTelefono = cot.telefono || "---";
 
         tbody.innerHTML += `
@@ -333,6 +333,7 @@
           `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${id}`,
           {
             method: "GET",
+            cache: "no-store", // 🔥 También desactiva caché para descargar PDFs actualizados
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },
@@ -384,12 +385,10 @@
       numTelefono,
     ) {
       try {
-        // 1. Limpiar el teléfono de espacios, guiones, símbolos o letras
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
 
-        // 2. Si tiene 10 dígitos (estándar en Colombia), le anteponemos el prefijo del país 57
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
         }
@@ -404,7 +403,6 @@
 
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
 
-        // 3. Estructurar el destino con el número formateado de manera segura
         const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
         const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
 
@@ -415,7 +413,6 @@
           err,
         );
 
-        // Replicar la misma lógica de descarte y formateo en el bloque catch por seguridad
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
@@ -441,18 +438,16 @@
     };
   })();
 
-  // Esto se ejecuta en el instante en que el HTML y este script entran al DOM
-  // Modifica la IIFE al final de tu vista HTML para que quede así:
+  // Inicializador único al entrar al DOM
   (function () {
-    console.log("Se cargo el historial de cotizaciones correctamente");
+    console.log("Se cargó el historial de cotizaciones correctamente");
 
-    // Forzar a que espere a que el navegador termine de pintar el HTML gris
     setTimeout(() => {
       if (typeof nsHistorialCotizaciones !== "undefined") {
         nsHistorialCotizaciones.cargarCotizaciones();
       } else if (window.nsHistorialCotizaciones) {
         window.nsHistorialCotizaciones.cargarCotizaciones();
       }
-    }, 50); // 50ms son suficientes para que el DOM se dibuje por completo
+    }, 50);
   })();
 </script>
