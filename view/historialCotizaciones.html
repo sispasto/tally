@@ -448,6 +448,7 @@
 
     // Forzar a que espere a que el navegador termine de pintar el HTML gris
     setTimeout(() => {
+      alert("Se cargó el historial de cotizaciones correctamente");
       if (typeof nsHistorialCotizaciones !== "undefined") {
         nsHistorialCotizaciones.cargarCotizaciones();
       } else if (window.nsHistorialCotizaciones) {
