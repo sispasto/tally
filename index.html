@@ -479,7 +479,7 @@
           // 3. El gran truco: Forzar el "F5"
           // Esto destruye toda la RAM contaminada, limpia el DOM, cierra menús de Bootstrap,
           // vacía campos de texto viejos y arranca tu App 100% limpia.
-          getHome(); // Esto recarga la vista principal y reinicia la App
+          window.location.reload();
         } catch (err) {
           console.error("Error crítico en logout local:", err);
         }
