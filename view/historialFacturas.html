@@ -434,8 +434,6 @@
       }
     }
 
-    cargarFacturas();
-
     return {
       cargarFacturas,
       ejecutarBusquedaConRetraso,
@@ -445,5 +443,12 @@
       compartirWhatsApp,
       verPdf,
     };
+  })();
+
+  // Esto se ejecuta en el instante en que el HTML y este script entran al DOM
+  (function () {
+    if (typeof nsHistorialFacturas !== "undefined") {
+      nsHistorialFacturas.cargarFacturas();
+    }
   })();
 </script>
