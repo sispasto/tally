@@ -434,6 +434,8 @@
       }
     }
 
+    cargarFacturas();
+
     return {
       cargarFacturas,
       ejecutarBusquedaConRetraso,
@@ -444,8 +446,4 @@
       verPdf,
     };
   })();
-
-  document.addEventListener("DOMContentLoaded", () => {
-    nsHistorialFacturas.cargarFacturas();
-  });
 </script>

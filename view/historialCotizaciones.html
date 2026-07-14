@@ -430,6 +430,8 @@
       }
     }
 
+    cargarCotizaciones();
+
     return {
       cargarCotizaciones,
       ejecutarBusquedaConRetraso,
@@ -439,12 +441,5 @@
       compartirWhatsApp,
       verPdf,
     };
-  })();
-
-  //  ¡ESTO SÍ! Se ejecuta inmediatamente en cuanto el HTML se inyecta en el DOM
-  (function () {
-    if (typeof nsHistorialCotizaciones !== "undefined") {
-      nsHistorialCotizaciones.cargarCotizaciones();
-    }
   })();
 </script>
