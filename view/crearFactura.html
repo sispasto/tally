@@ -162,10 +162,15 @@
                   >TELÉFONO / CELULAR</label
                 >
                 <input
-                  type="tel"
+                  type="text"
                   id="factClienteTelefono"
                   class="form-control form-control-sm form-tally-control"
                   placeholder="Ej. 3001234567"
+                  inputmode="numeric"
+                  maxlength="10"
+                  pattern="(3\d{9}|60\d{8})"
+                  title="El número debe tener 10 dígitos y empezar por 3 (celular) o por 60 (fijo)"
+                  required
                 />
               </div>
             </div>
