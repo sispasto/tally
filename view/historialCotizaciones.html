@@ -443,6 +443,7 @@
 
   // Esto se ejecuta en el instante en que el HTML y este script entran al DOM
   (function () {
+    console.log("Se cargo el historial de cotizaciones correctamente");
     if (typeof nsHistorialCotizaciones !== "undefined") {
       nsHistorialCotizaciones.cargarCotizaciones();
     }
