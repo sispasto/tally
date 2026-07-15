@@ -41,12 +41,9 @@
 
   /* 📱 OPTIMIZACIÓN RESPONSIVA PARA CELULARES (VISTA VERTICAL) */
   @media (max-width: 767.98px) {
-    /* Ocultar la cabecera real de la tabla */
     #tablaHistorial thead {
       display: none;
     }
-
-    /* Transformar las filas de la tabla en tarjetas flotantes */
     #tablaHistorial tr {
       display: block;
       background: #ffffff;
@@ -56,8 +53,6 @@
       margin-bottom: 12px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
-
-    /* Transformar las celdas en bloques con etiquetas descriptivas */
     #tablaHistorial td {
       display: flex;
       justify-content: space-between;
@@ -67,8 +62,6 @@
       text-align: right !important;
       width: 100% !important;
     }
-
-    /* Inyectar los títulos de cada dato dinámicamente a la izquierda */
     #tablaHistorial td::before {
       content: attr(data-label);
       font-weight: 600;
@@ -77,19 +70,15 @@
       font-size: 0.85rem;
       padding-right: 10px;
     }
-
-    /* Ajustar el contenedor de acciones para que ocupe todo el ancho inferior */
     #tablaHistorial td:last-child {
       justify-content: center !important;
       border-top: 1px solid #edf2f7 !important;
       margin-top: 8px;
       padding-top: 10px !important;
     }
-
     #tablaHistorial td:last-child::before {
-      display: none; /* Quitar la etiqueta de "Acciones" en móvil */
+      display: none;
     }
-
     .btn-movil-bloque {
       flex: 1;
       text-align: center;
@@ -194,7 +183,7 @@
 </div>
 
 <script>
-  // la eliminamos por completo para evitar conflictos con elementos del DOM que ya no existen.
+  // 🧹 LIMPIEZA DE MEMORIA: Prevenir duplicaciones en entornos SPA
   if (window.nsHistorialCotizaciones) {
     delete window.nsHistorialCotizaciones;
     window.nsHistorialCotizaciones = null;
@@ -207,10 +196,16 @@
 
     async function cargarCotizaciones() {
       const tbody = document.getElementById("tbodyHistorial");
-      const queryGeneral = document
-        .getElementById("buscarGeneral")
-        .value.trim();
-      const queryFecha = document.getElementById("buscarFecha").value;
+      const infoPaginacion = document.getElementById("infoPaginacion");
+      const ulPaginacion = document.getElementById("ulPaginacion");
+
+      // 🛡️ Safe Guard: Si por tiempos de renderizado de la SPA el DOM no está listo, salimos silenciosamente
+      if (!tbody) return;
+
+      // Lectura segura con Optional Chaining (?.) para evitar que se rompa el código
+      const queryGeneral =
+        document.getElementById("buscarGeneral")?.value?.trim() || "";
+      const queryFecha = document.getElementById("buscarFecha")?.value || "";
 
       try {
         const {
@@ -220,19 +215,19 @@
 
         const urlParams = new URLSearchParams({
           pagina: paginaActual,
-          limite: limite, // Corregido: removida propiedad duplicada con typo 'limpite'
+          limite: limite,
           busqueda: queryGeneral,
           fecha: queryFecha,
         });
 
+        // Feedback visual inmediato en la tabla actual
         tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm me-2 text-warning"></span>Buscando...</td></tr>`;
 
-        // ⚡ Opciones de Fetch con "cache: 'no-store'" para saltar el Service Worker
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_obtenerCotizaciones?${urlParams.toString()}`,
           {
             method: "GET",
-            cache: "no-store", // 🔥 Prohíbe al navegador y al Service Worker usar la caché local
+            cache: "no-store", // Desactiva caché para datos en tiempo real
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${session.access_token}`,
@@ -243,14 +238,19 @@
         const result = await response.json();
         if (!result.ok) throw new Error(result.error);
 
-        renderizarTabla(
-          result.data,
-          result.totalRegistros,
-          result.paginasTotales,
-        );
+        // Control adicional: Solo pintamos si el elemento del DOM sigue siendo el de la vista actual
+        if (document.getElementById("tbodyHistorial") === tbody) {
+          renderizarTabla(
+            result.data,
+            result.totalRegistros,
+            result.paginasTotales,
+          );
+        }
       } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error: ${err.message}</td></tr>`;
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Error: ${err.message}</td></tr>`;
+        }
       }
     }
 
@@ -259,10 +259,13 @@
       const infoPaginacion = document.getElementById("infoPaginacion");
       const ulPaginacion = document.getElementById("ulPaginacion");
 
+      if (!tbody) return;
+
       if (!cotizaciones || cotizaciones.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4">No se encontraron registros.</td></tr>`;
-        infoPaginacion.innerText = "Mostrando 0 de 0 registros";
-        ulPaginacion.innerHTML = "";
+        if (infoPaginacion)
+          infoPaginacion.innerText = "Mostrando 0 de 0 registros";
+        if (ulPaginacion) ulPaginacion.innerHTML = "";
         return;
       }
 
@@ -272,7 +275,6 @@
           "es-CO",
         );
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${cot.id}`;
-
         const txtTelefono = cot.telefono || "---";
 
         tbody.innerHTML += `
@@ -301,27 +303,32 @@
         desdeRegistro + cotizaciones.length - 1,
         totalRegistros,
       );
-      infoPaginacion.innerText = `Mostrando del ${desdeRegistro} al ${hastaRegistro} de ${totalRegistros} registros`;
 
-      ulPaginacion.innerHTML = `
-        <li class="page-item ${paginaActual === 1 ? "disabled" : ""}">
-          <a class="page-link" href="#" onclick="nsHistorialCotizaciones.cambiarPagina(${paginaActual - 1}); return false;">Anterior</a>
-        </li>
-      `;
+      if (infoPaginacion) {
+        infoPaginacion.innerText = `Mostrando del ${desdeRegistro} al ${hastaRegistro} de ${totalRegistros} registros`;
+      }
 
-      for (let i = 1; i <= paginasTotales; i++) {
+      if (ulPaginacion) {
+        ulPaginacion.innerHTML = `
+          <li class="page-item ${paginaActual === 1 ? "disabled" : ""}">
+            <a class="page-link" href="#" onclick="nsHistorialCotizaciones.cambiarPagina(${paginaActual - 1}); return false;">Anterior</a>
+          </li>
+        `;
+
+        for (let i = 1; i <= paginasTotales; i++) {
+          ulPaginacion.innerHTML += `
+            <li class="page-item ${paginaActual === i ? "active" : ""}">
+              <a class="page-link" href="#" onclick="nsHistorialCotizaciones.cambiarPagina(${i}); return false;">${i}</a>
+            </li>
+          `;
+        }
+
         ulPaginacion.innerHTML += `
-          <li class="page-item ${paginaActual === i ? "active" : ""}">
-            <a class="page-link" href="#" onclick="nsHistorialCotizaciones.cambiarPagina(${i}); return false;">${i}</a>
+          <li class="page-item ${paginaActual === paginasTotales ? "disabled" : ""}">
+            <a class="page-link" href="#" onclick="nsHistorialCotizaciones.cambiarPagina(${paginaActual + 1}); return false;">Siguiente</a>
           </li>
         `;
       }
-
-      ulPaginacion.innerHTML += `
-        <li class="page-item ${paginaActual === paginasTotales ? "disabled" : ""}">
-          <a class="page-link" href="#" onclick="nsHistorialCotizaciones.cambiarPagina(${paginaActual + 1}); return false;">Siguiente</a>
-        </li>
-      `;
     }
 
     async function verPdf(id, boton) {
@@ -339,7 +346,7 @@
           `${SUPABASE_URL}/functions/v1/tally_getPdf?id=${id}`,
           {
             method: "GET",
-            cache: "no-store", // 🔥 También desactiva caché para descargar PDFs actualizados
+            cache: "no-store",
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },
@@ -350,7 +357,6 @@
 
         const blob = await response.blob();
         const urlBlob = window.URL.createObjectURL(blob);
-
         window.open(urlBlob, "_blank");
       } catch (err) {
         console.error("Error al abrir PDF:", err);
@@ -362,7 +368,6 @@
     }
 
     function ejecutarBusquedaConRetraso() {
-      alert("Aqui");
       clearTimeout(timeoutBusqueda);
       timeoutBusqueda = setTimeout(() => {
         dispararFiltro();
@@ -370,21 +375,20 @@
     }
 
     function dispararFiltro() {
-      alert("Aqui2");
       paginaActual = 1;
       cargarCotizaciones();
-      console.log("3");
     }
 
     function cambiarPagina(nuevaPagina) {
       paginaActual = nuevaPagina;
       cargarCotizaciones();
-      console.log("4");
     }
 
     function limpiarFiltros() {
-      document.getElementById("buscarGeneral").value = "";
-      document.getElementById("buscarFecha").value = "";
+      const bGen = document.getElementById("buscarGeneral");
+      const bFec = document.getElementById("buscarFecha");
+      if (bGen) bGen.value = "";
+      if (bFec) bFec.value = "";
       dispararFiltro();
     }
 
@@ -398,7 +402,6 @@
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
-
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
         }
@@ -410,30 +413,30 @@
         const urlAcortada = respuesta.ok
           ? await respuesta.text()
           : urlSeguraPdf;
-
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlAcortada}`;
-
         const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
-        const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
 
-        window.open(urlWhatsApp, "_blank");
+        window.open(
+          `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`,
+          "_blank",
+        );
       } catch (err) {
         console.error(
           "Error al acortar la URL, enviando enlace original...",
           err,
         );
-
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
         }
-
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu cotización *${numeroCotizacion}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
         const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
-        const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
-        window.open(urlWhatsApp, "_blank");
+        window.open(
+          `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`,
+          "_blank",
+        );
       }
     }
 
@@ -446,5 +449,17 @@
       compartirWhatsApp,
       verPdf,
     };
+  })();
+
+  // 🚀 Inicializador de Ciclo de Vida tolerante a SPAs
+  (function () {
+    console.log("Componente montado.");
+
+    // Un margen de 150ms permite al Web Component asentarse perfectamente en el DOM del #App antes de consultar datos.
+    setTimeout(() => {
+      if (window.nsHistorialCotizaciones) {
+        window.nsHistorialCotizaciones.cargarCotizaciones();
+      }
+    }, 150);
   })();
 </script>
