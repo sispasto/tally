@@ -200,7 +200,7 @@
     window.nsHistorialCotizaciones = null;
   }
 
-  const nsHistorialCotizaciones = (function () {
+  var nsHistorialCotizaciones = (function () {
     let paginaActual = 1;
     const limite = 10;
     let timeoutBusqueda = null;
@@ -448,7 +448,7 @@
 
   // Inicializador único al entrar al DOM
   // Inicializador único para el ciclo de vida SPA (Se ejecuta al montarse en el DOM)
-  (function () {
+  /*(function () {
     console.log("Se cargó el historial de cotizaciones correctamente");
 
     // Ejecutamos con un pequeño delay para garantizar que el DOM del componente esté 100% renderizado
@@ -461,5 +461,5 @@
         window.nsHistorialCotizaciones.cargarCotizaciones(); // 🚀 ¡AQUÍ de respaldo!
       }
     }, 100); // 100ms es ideal para dar tiempo al Web Component de inyectarse en el `#App`
-  })();
+  })();*/
 </script>
