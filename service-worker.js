@@ -2,8 +2,6 @@ const APP_VERSION = "1.2";
 const CACHE_NAME = `app-tally-v${APP_VERSION}`;
 
 self.addEventListener("install", (e) => {
-  //console.log("SW instalado - versión", APP_VERSION);
-
   // ⚠️ NO usar skipWaiting (modo controlado)
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -28,7 +26,6 @@ self.addEventListener("activate", (e) => {
         names
           .filter((name) => name !== CACHE_NAME)
           .map((name) => {
-            //console.log("Eliminando cache viejo:", name);
             return caches.delete(name);
           }),
       );
@@ -40,6 +37,17 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+
+  const url = new URL(e.request.url);
+
+  // 🛡️ REGLA DE EXCLUSIÓN PARA SUPABASE (Network-Only)
+  // Si la petición va al dominio de Supabase o a sus funciones, no pasa por la caché.
+  if (
+    url.hostname.includes("supabase.co") ||
+    url.pathname.includes("/functions/v1/")
+  ) {
+    return; // El SW se hace a un lado y deja que el navegador consulte directamente a internet.
+  }
 
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
@@ -79,7 +87,6 @@ self.addEventListener("message", (event) => {
 
   // 🔥 activar manualmente cuando el usuario haga clic
   if (event.data?.action === "SKIP_WAITING") {
-    //console.log("Activando nueva versión manualmente...");
     self.skipWaiting();
   }
 });
