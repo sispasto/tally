@@ -362,6 +362,7 @@
     }
 
     function ejecutarBusquedaConRetraso() {
+      alert("Aqui");
       clearTimeout(timeoutBusqueda);
       timeoutBusqueda = setTimeout(() => {
         dispararFiltro();
@@ -369,6 +370,7 @@
     }
 
     function dispararFiltro() {
+      alert("Aqui2");
       paginaActual = 1;
       cargarCotizaciones();
       console.log("3");
@@ -445,21 +447,4 @@
       verPdf,
     };
   })();
-
-  // Inicializador único al entrar al DOM
-  // Inicializador único para el ciclo de vida SPA (Se ejecuta al montarse en el DOM)
-  /*(function () {
-    console.log("Se cargó el historial de cotizaciones correctamente");
-
-    // Ejecutamos con un pequeño delay para garantizar que el DOM del componente esté 100% renderizado
-    setTimeout(() => {
-      if (typeof nsHistorialCotizaciones !== "undefined") {
-        console.log("1 - Disparando primera carga automática");
-        nsHistorialCotizaciones.cargarCotizaciones(); // 🚀 ¡AQUÍ se carga la primera vez!
-      } else if (window.nsHistorialCotizaciones) {
-        console.log("2 - Disparando primera carga automática (window)");
-        window.nsHistorialCotizaciones.cargarCotizaciones(); // 🚀 ¡AQUÍ de respaldo!
-      }
-    }, 100); // 100ms es ideal para dar tiempo al Web Component de inyectarse en el `#App`
-  })();*/
 </script>
