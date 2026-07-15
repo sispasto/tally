@@ -218,6 +218,7 @@
           limite: limite,
           busqueda: queryGeneral,
           fecha: queryFecha,
+          _t: Date.now(), // 🔥 Rompe la caché del Service Worker obligándolo a ir a internet
         });
 
         // Feedback visual inmediato en la tabla actual
