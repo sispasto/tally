@@ -7,6 +7,27 @@ let intervalSW = null;
 let newVersionAvailable = null;
 
 function gestionarCotizaciones() {
+  // 1. Validamos si la variable/IIFE de la vista anterior existe en el objeto global 'window'
+  if (
+    typeof window.nsHistorialCotizaciones !== "undefined" &&
+    window.nsHistorialCotizaciones !== null
+  ) {
+    alert(
+      "¡Alerta de fuga de memoria! 'nsHistorialCotizaciones' existe en window antes de cargar el nuevo componente.",
+    );
+    console.warn(
+      "La IIFE anterior sigue viva:",
+      window.nsHistorialCotizaciones,
+    );
+
+    // Opcional: Puedes forzar su eliminación aquí mismo para desinfectar la memoria
+    window.nsHistorialCotizaciones = null;
+    delete window.nsHistorialCotizaciones;
+  } else {
+    console.log(
+      "Memoria limpia: 'nsHistorialCotizaciones' no existe en este momento.",
+    );
+  }
   let main = document.getElementById("App");
   removeALLChilds(main);
   const frmCotizacion = document.createElement("crear-cotizacion");
