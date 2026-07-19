@@ -1,5 +1,4 @@
 <style>
-  /* --- Reutiliza exactamente tus mismos estilos estéticos --- */
   .factura-container {
     margin-top: 2.5rem !important;
     margin-bottom: 2rem !important;
@@ -60,10 +59,21 @@
           class="card-header border-bottom d-flex justify-content-between align-items-center py-3"
           style="background-color: #fbc02d"
         >
-          <h5 class="mb-0 fw-bold text-dark">
-            <i class="bi bi-pencil-square text-primary me-2"></i>Modificar
-            Factura
-          </h5>
+          <div class="d-flex align-items-center gap-2">
+            <!-- Botón Atrás (UX Solicitado) -->
+            <button
+              type="button"
+              class="btn btn-sm btn-light border-0 bg-transparent text-dark p-1 rounded-circle me-1"
+              onclick="window.location.hash = '#consultar-facturas'"
+              title="Volver al listado"
+            >
+              <i class="bi bi-arrow-left fs-5 fw-bold"></i>
+            </button>
+            <h5 class="mb-0 fw-bold text-dark">
+              <i class="bi bi-pencil-square text-primary me-1"></i>Modificar
+              Factura
+            </h5>
+          </div>
           <span
             class="badge bg-white text-dark border px-3 py-2 fs-6"
             id="editFactNumero"
@@ -277,7 +287,6 @@
       }
 
       try {
-        // Extraemos el token de sesión activo de forma segura
         const {
           data: { session },
         } = await supabaseClient.auth.getSession();
@@ -299,7 +308,6 @@
 
         const factura = result.factura;
 
-        // Renderizado en UI
         document.getElementById("editFactNumero").innerText =
           factura.numero_factura;
         document.getElementById("editFactClienteNombre").value =
@@ -429,6 +437,7 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Expiró la autenticación");
 
+        // Los nombres se envían tal cual en inglés: amount y price
         const payload = {
           factura_id: idFacturaActiva,
           cliente_nombre: nombre,
@@ -437,8 +446,8 @@
           total_factura: totalGeneral,
           items: itemsDetalle.map((item) => ({
             descripcion: item.descripcion,
-            cantidad: item.amount,
-            precio: item.price,
+            amount: item.amount,
+            price: item.price,
           })),
         };
 
