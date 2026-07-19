@@ -58,6 +58,25 @@
     ); /* Desplazamiento interactivo hacia la izquierda */
   }
 
+  /* OPTIMIZACIÓN DE LA COLUMNA DE ELIMINAR PARA DISPOSITIVOS MÓVILES */
+  .col-eliminar-tally {
+    width: 55px !important;
+    min-width: 55px !important;
+    text-align: center !important;
+  }
+  .btn-eliminar-item-tally {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+  .btn-eliminar-item-tally:active {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+  }
+
   @media (max-width: 768px) {
     .factura-container {
       margin-top: 0 !important;
@@ -70,6 +89,14 @@
     .factura-container .card-header {
       background-color: #fbc02d !important;
       border-bottom: 1px solid #e0a800 !important;
+    }
+    /* Permite un desplazamiento responsivo fluido en pantallas muy angostas */
+    .table-responsive-custom {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tabla-factura {
+      min-width: 580px; /* Asegura que las columnas no colapsen entre sí en celulares */
     }
   }
 </style>
@@ -213,14 +240,16 @@
           </div>
 
           <!-- TABLA -->
-          <div class="table-responsive rounded-2 border mb-4">
+          <div
+            class="table-responsive table-responsive-custom rounded-2 border mb-4"
+          >
             <table class="table table-hover mb-0 tabla-factura">
               <thead class="table-light border-bottom">
                 <tr
                   class="text-muted"
                   style="font-size: 0.8rem; font-weight: 700"
                 >
-                  <th class="ps-3 text-uppercase" style="width: 45%">
+                  <th class="ps-3 text-uppercase" style="width: 40%">
                     Descripción
                   </th>
                   <th class="text-center text-uppercase" style="width: 15%">
@@ -232,7 +261,7 @@
                   <th class="text-end text-uppercase" style="width: 20%">
                     Total
                   </th>
-                  <th class="text-center" style="width: 5%"></th>
+                  <th class="col-eliminar-tally"></th>
                 </tr>
               </thead>
               <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
@@ -348,7 +377,6 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        /* SOLUCIÓN AL DETALLE: Se integra el idx para forzar IDs 100% únicos en el render inicial */
         itemsDetalle = factura.items.map((d, idx) => ({
           id: d.id || Date.now() + idx + Math.random(),
           descripcion: d.descripcion,
@@ -433,13 +461,13 @@
       itemsDetalle.forEach((item) => {
         tbody.innerHTML += `
           <tr class="align-middle border-bottom" style="background-color: #ffffff;">
-            <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
+            <td class="ps-3 fw-medium text-dark text-wrap">${item.descripcion}</td>
             <td class="text-center fw-bold text-primary">${item.amount}</td>
             <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
             <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
-            <td class="text-center pe-3">
-              <button class="btn btn-link btn-sm text-danger p-0" onclick="nsEditarFactura.eliminarItem(${item.id})">
-                <i class="bi bi-trash3"></i>
+            <td class="col-eliminar-tally">
+              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${item.id})">
+                <i class="bi bi-trash3 fs-5"></i>
               </button>
             </td>
           </tr>
