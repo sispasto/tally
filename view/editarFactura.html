@@ -293,8 +293,6 @@
     let itemsDetalle = [];
     let totalGeneral = 0;
     let idFacturaActiva = null;
-
-    /* VARIABLE PARA GUARDAR EL ESTADO ORIGINAL */
     let estadoOriginal = null;
 
     function calcularTotales() {
@@ -350,15 +348,15 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        itemsDetalle = factura.items.map((d) => ({
-          id: d.id || Date.now() + Math.random(),
+        /* SOLUCIÓN AL DETALLE: Se integra el idx para forzar IDs 100% únicos en el render inicial */
+        itemsDetalle = factura.items.map((d, idx) => ({
+          id: d.id || Date.now() + idx + Math.random(),
           descripcion: d.descripcion,
           amount: parseInt(d.cantidad),
           price: parseFloat(d.precio_unitario),
           total: parseFloat(d.total_linea),
         }));
 
-        /* GUARDAMOS CAPTURA DE LOS DATOS INICIALES EXCLUSIVOS DE COMPARACIÓN */
         estadoOriginal = {
           nombre: factura.cliente_nombre,
           direccion: factura.cliente_direccion || "",
@@ -476,7 +474,6 @@
         );
       }
 
-      /* PROCESO DE VALIDACIÓN DE MODIFICACIONES REALES */
       const itemsActualesMapeados = itemsDetalle.map((item) => ({
         descripcion: item.descripcion.toUpperCase(),
         amount: item.amount,
