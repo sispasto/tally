@@ -43,27 +43,27 @@ function consultarFacturas() {
 function gestionarEdicionFactura(idFactura) {
   let main = document.getElementById("App");
   console.log("ID de factura a editar:", idFactura);
+
   // Limpia el contenedor principal usando tu helper global
   removeALLChilds(main);
 
   // Instancia el componente espejo de edición
   const frmEditar = document.createElement("editar-factura");
-  frmEditar.setAttribute("container", "#App"); // <-- Pasas el parámetro del contenedor
+  frmEditar.setAttribute("container", "#App");
   main.appendChild(frmEditar);
 
-  // Función interna recursiva para esperar a que TODO esté listo (Scripts + Supabase)
+  // Función interna recursiva para esperar que el cliente de Auth y el Namespace estén listos
   function intentarCargar(intentos = 0) {
-    const supabseListo =
-      typeof SUPABASE_KEY !== "undefined" && SUPABASE_KEY !== "";
+    const supabaseListo = typeof supabaseClient !== "undefined";
     const namespaceListo =
       typeof nsEditarFactura !== "undefined" &&
-      nsEditarFactura.cargarDatosFactura;
+      typeof nsEditarFactura.cargarDatosFactura === "function";
 
-    if (supabseListo && namespaceListo) {
+    if (supabaseListo && namespaceListo) {
       nsEditarFactura.cargarDatosFactura(idFactura);
-    } else if (intentos < 10) {
-      // Si no está listo, reintenta cada 50ms (máximo 500ms total) para darle tiempo al sistema tras el reload
-      setTimeout(() => intentarCargar(intentos + 1), 50);
+    } else if (intentos < 15) {
+      // Reintenta cada 60ms (dando hasta 900ms totales para inicializarse tras cambios de hash)
+      setTimeout(() => intentarCargar(intentos + 1), 60);
     } else {
       console.error(
         "No se pudo cargar la factura: Las dependencias de Supabase o los scripts no iniciaron a tiempo.",
