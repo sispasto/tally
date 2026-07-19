@@ -369,13 +369,10 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        // SOLUCIÓN AL ID DUPLICADO: Usamos crypto.randomUUID() para garantizar IDs únicos e independientes
-        itemsDetalle = factura.items.map((d) => ({
-          id:
-            d.id ||
-            (typeof crypto !== "undefined" && crypto.randomUUID
-              ? crypto.randomUUID()
-              : Math.random().toString(36).substring(2, 15)),
+        // SOLUCIÓN DEFINITIVA: ID numérico secuencial puro usando Date.now() + el índice
+        const baseTime = Date.now();
+        itemsDetalle = factura.items.map((d, idx) => ({
+          id: d.id ? parseInt(d.id) : baseTime + idx,
           descripcion: d.descripcion,
           amount: parseInt(d.cantidad),
           price: parseFloat(d.precio_unitario),
@@ -420,11 +417,8 @@
         return;
       }
 
-      // ID Único para nuevos ítems agregados manualmente
-      const nuevoId =
-        typeof crypto !== "undefined" && crypto.randomUUID
-          ? crypto.randomUUID()
-          : Math.random().toString(36).substring(2, 15);
+      // ID numérico garantizado único para nuevos ítems agregados manualmente
+      const nuevoId = Date.now() + Math.floor(Math.random() * 1000);
 
       itemsDetalle.push({
         id: nuevoId,
@@ -441,8 +435,11 @@
     }
 
     function eliminarItem(id) {
-      // Como los IDs ahora son strings únicos y diferentes, sólo se filtrará el seleccionado
-      itemsDetalle = itemsDetalle.filter((item) => item.id !== id);
+      // Forzamos la comparación numérica pura
+      const idNumerico = parseInt(id);
+      itemsDetalle = itemsDetalle.filter(
+        (item) => parseInt(item.id) !== idNumerico,
+      );
       renderItems();
     }
 
@@ -466,9 +463,8 @@
       }
 
       itemsDetalle.forEach((item) => {
-        // Enviar el ID como string seguro a las funciones onclick
-        const itemIdEscapado =
-          typeof item.id === "string" ? `'${item.id}'` : item.id;
+        // Al ser IDs 100% numéricos, pasarlos al onclick directo ya no rompe el DOM
+        const targetId = item.id;
 
         // 1. Vista de tabla para PC
         tbody.innerHTML += `
@@ -478,7 +474,7 @@
             <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
             <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
             <td class="col-eliminar-tally">
-              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${itemIdEscapado})">
+              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${targetId})">
                 <i class="bi bi-trash3 fs-5"></i>
               </button>
             </td>
@@ -496,7 +492,7 @@
                 </div>
                 <button type="button" class="btn btn-light text-danger border rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
                         style="width: 38px; height: 38px;" 
-                        onclick="nsEditarFactura.eliminarItem(${itemIdEscapado})">
+                        onclick="nsEditarFactura.eliminarItem(${targetId})">
                   <i class="bi bi-trash3 fs-5"></i>
                 </button>
               </div>
