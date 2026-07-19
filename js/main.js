@@ -42,8 +42,7 @@ function consultarFacturas() {
 
 function gestionarEdicionFactura(idFactura) {
   let main = document.getElementById("App");
-  console.log("ID de factura a editar:", idFactura);
-
+  //console.log("ID de factura a editar:", idFactura);
   // Limpia el contenedor principal usando tu helper global
   removeALLChilds(main);
 
