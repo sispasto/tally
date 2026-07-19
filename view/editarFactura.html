@@ -369,8 +369,13 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        itemsDetalle = factura.items.map((d, idx) => ({
-          id: d.id || Date.now() + idx + Math.random(),
+        // SOLUCIÓN AL ID DUPLICADO: Usamos crypto.randomUUID() para garantizar IDs únicos e independientes
+        itemsDetalle = factura.items.map((d) => ({
+          id:
+            d.id ||
+            (typeof crypto !== "undefined" && crypto.randomUUID
+              ? crypto.randomUUID()
+              : Math.random().toString(36).substring(2, 15)),
           descripcion: d.descripcion,
           amount: parseInt(d.cantidad),
           price: parseFloat(d.precio_unitario),
@@ -415,8 +420,14 @@
         return;
       }
 
+      // ID Único para nuevos ítems agregados manualmente
+      const nuevoId =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : Math.random().toString(36).substring(2, 15);
+
       itemsDetalle.push({
-        id: Date.now() + Math.random(),
+        id: nuevoId,
         descripcion: desc.toUpperCase(),
         amount: cant,
         price: precio,
@@ -430,6 +441,7 @@
     }
 
     function eliminarItem(id) {
+      // Como los IDs ahora son strings únicos y diferentes, sólo se filtrará el seleccionado
       itemsDetalle = itemsDetalle.filter((item) => item.id !== id);
       renderItems();
     }
@@ -438,7 +450,6 @@
       const tbody = document.getElementById("tbodyEditarFacturaItems");
       const mobileContainer = document.getElementById("itemsMobileContainer");
 
-      // Limpiamos siempre ambos contenedores antes de renderizar
       tbody.innerHTML = "";
       if (mobileContainer) mobileContainer.innerHTML = "";
 
@@ -455,7 +466,11 @@
       }
 
       itemsDetalle.forEach((item) => {
-        // 1. Renderizado para computadoras (Tabla clásica)
+        // Enviar el ID como string seguro a las funciones onclick
+        const itemIdEscapado =
+          typeof item.id === "string" ? `'${item.id}'` : item.id;
+
+        // 1. Vista de tabla para PC
         tbody.innerHTML += `
           <tr class="align-middle border-bottom" style="background-color: #ffffff;">
             <td class="ps-3 fw-medium text-dark text-wrap">${item.descripcion}</td>
@@ -463,14 +478,14 @@
             <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
             <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
             <td class="col-eliminar-tally">
-              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${item.id})">
+              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${itemIdEscapado})">
                 <i class="bi bi-trash3 fs-5"></i>
               </button>
             </td>
           </tr>
         `;
 
-        // 2. Renderizado para celulares (Tarjetas apiladas verticales)
+        // 2. Vista de tarjetas para Celulares
         if (mobileContainer) {
           mobileContainer.innerHTML += `
             <div class="item-mobile-card text-dark">
@@ -479,10 +494,9 @@
                   <span class="text-muted d-block small fw-bold" style="font-size:0.75rem;">DESCRIPCIÓN</span>
                   <div class="fw-bold text-dark text-wrap">${item.descripcion}</div>
                 </div>
-                <!-- Bote de basura optimizado para pantallas táctiles -->
                 <button type="button" class="btn btn-light text-danger border rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
                         style="width: 38px; height: 38px;" 
-                        onclick="nsEditarFactura.eliminarItem(${item.id})">
+                        onclick="nsEditarFactura.eliminarItem(${itemIdEscapado})">
                   <i class="bi bi-trash3 fs-5"></i>
                 </button>
               </div>
