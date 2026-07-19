@@ -29,6 +29,17 @@
     background-color: #1ebd56 !important;
     opacity: 0.9;
   }
+  /* Estilo premium e identificable para el botón de corregir/editar */
+  .btn-editar-tally {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    font-weight: 600;
+    border: 1px solid #cbd5e1 !important;
+  }
+  .btn-editar-tally:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+  }
   .page-item.active .page-link {
     background-color: #ffbe2e !important;
     border-color: #ffbe2e !important;
@@ -41,12 +52,10 @@
 
   /* 📱 OPTIMIZACIÓN RESPONSIVA PARA CELULARES (VISTA VERTICAL) */
   @media (max-width: 767.98px) {
-    /* Ocultar la cabecera real de la tabla */
     #tablaHistorialFacturas thead {
       display: none;
     }
 
-    /* Transformar las filas de la tabla en tarjetas flotantes */
     #tablaHistorialFacturas tr {
       display: block;
       background: #ffffff;
@@ -57,7 +66,6 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    /* Transformar las celdas en bloques con etiquetas descriptivas */
     #tablaHistorialFacturas td {
       display: flex;
       justify-content: space-between;
@@ -68,7 +76,6 @@
       width: 100% !important;
     }
 
-    /* Inyectar los títulos de cada dato dinámicamente a la izquierda */
     #tablaHistorialFacturas td::before {
       content: attr(data-label);
       font-weight: 600;
@@ -78,7 +85,6 @@
       padding-right: 10px;
     }
 
-    /* Ajustar el contenedor de acciones para que ocupe todo el ancho inferior */
     #tablaHistorialFacturas td:last-child {
       justify-content: center !important;
       border-top: 1px solid #edf2f7 !important;
@@ -87,7 +93,7 @@
     }
 
     #tablaHistorialFacturas td:last-child::before {
-      display: none; /* Quitar la etiqueta de "Acciones" en móvil */
+      display: none;
     }
 
     .btn-movil-bloque {
@@ -217,7 +223,7 @@
 
         const urlParams = new URLSearchParams({
           pagina: paginaActual,
-          limite: limite,
+          limpite: limite,
           busqueda: queryGeneral,
           fecha: queryFecha,
         });
@@ -266,11 +272,10 @@
         const fechaFormateada = new Date(fact.created_at).toLocaleDateString(
           "es-CO",
         );
-        // CORREGIDO: tally_getFacturaPDF en mayúsculas
-        // MODIFICADO: Se añade &t= con Date.now() para evitar problemas de caché al compartir por WhatsApp
         const urlSeguraPdf = `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${fact.id}&t=${Date.now()}`;
         const txtTelefono = fact.telefono || "---";
 
+        // 🔥 MODIFICADO: Se añade el botón "Editar" de primero en el grupo de acciones móviles y de escritorio
         tbody.innerHTML += `
           <tr>
             <td data-label="Consecutivo" class="ps-md-3 fw-bold text-dark">${fact.numero_factura}</td>
@@ -280,6 +285,9 @@
             <td data-label="Total" class="text-end fw-bold text-dark">$ ${fact.total_factura.toLocaleString("es-CO")}</td>
             <td data-label="Acciones" class="text-center">
               <div class="d-flex w-100 gap-1 justify-content-center">
+                <button class="btn btn-sm btn-editar-tally btn-movil-bloque" onclick="gestionarEdicionFactura('${fact.id}')" title="Modificar Factura">
+                  <i class="bi bi-pencil-square text-primary"></i> Editar
+                </button>
                 <button class="btn btn-sm btn-amarillo-tally btn-movil-bloque" onclick="nsHistorialFacturas.verPdf('${fact.id}', this)">
                   <i class="bi bi-file-pdf"></i> PDF
                 </button>                
@@ -331,15 +339,11 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Sesión expirada");
 
-        // CORREGIDO: tally_getFacturaPDF en mayúsculas
-        // MODIFICADO: Se añade &t= con Date.now() a la petición fetch para forzar la descarga del PDF en vivo
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_getFacturaPDF?id=${id}&t=${Date.now()}`,
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-            },
+            headers: { Authorization: `Bearer ${session.access_token}` },
           },
         );
 
@@ -347,7 +351,6 @@
 
         const blob = await response.blob();
         const urlBlob = window.URL.createObjectURL(blob);
-
         window.open(urlBlob, "_blank");
       } catch (err) {
         console.error("Error al abrir PDF:", err);
@@ -388,12 +391,9 @@
       numTelefono,
     ) {
       try {
-        // 1. Limpiar el teléfono de espacios, guiones, paréntesis o el signo '+'
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
-
-        // 2. Si el número tiene 10 dígitos (ej: 3151234567), se le añade el código de área de Colombia (57)
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
         }
@@ -401,14 +401,10 @@
         const respuesta = await fetch(
           `https://tinyurl.com/api-create.php?url=${encodeURIComponent(urlSeguraPdf)}`,
         );
-
         const urlAcortada = respuesta.ok
           ? await respuesta.text()
           : urlSeguraPdf;
-
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura de venta *${numeroFactura}*. Puedes visualizarlo aquí: ${urlAcortada}`;
-
-        // 3. Estructurar el destino con el número formateado correctamente
         const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
         const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
 
@@ -418,15 +414,12 @@
           "Error al acortar la URL, enviando enlace original...",
           err,
         );
-
-        // Replicar la misma lógica de limpieza en el catch por seguridad
         let telefonoLimpio = numTelefono
           ? numTelefono.replace(/[^0-9]/g, "")
           : "";
         if (telefonoLimpio.length === 10) {
           telefonoLimpio = "57" + telefonoLimpio;
         }
-
         const textoMsg = `Hola *${clienteNombre}*, adjuntamos el enlace con tu factura de venta *${numeroFactura}*. Puedes visualizarlo aquí: ${urlSeguraPdf}`;
         const destino = telefonoLimpio ? `phone=${telefonoLimpio}&` : "";
         const urlWhatsApp = `https://api.whatsapp.com/send?${destino}text=${encodeURIComponent(textoMsg)}`;
@@ -447,14 +440,12 @@
 
   (function () {
     console.log("Se cargo el historial de facturas correctamente");
-
-    // Forzar a que espere a que el navegador termine de pintar el HTML gris
     setTimeout(() => {
       if (typeof nsHistorialFacturas !== "undefined") {
         nsHistorialFacturas.cargarFacturas();
       } else if (window.nsHistorialFacturas) {
         window.nsHistorialFacturas.cargarFacturas();
       }
-    }, 50); // 50ms son suficientes para que el DOM se dibuje por completo
+    }, 50);
   })();
 </script>

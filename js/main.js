@@ -40,12 +40,25 @@ function consultarFacturas() {
   main.appendChild(frmHistorialFacturas);
 }
 
-function modificarFacturas() {
+function gestionarEdicionFactura(idFactura) {
   let main = document.getElementById("App");
+
+  // Limpia el contenedor principal usando tu helper global
   removeALLChilds(main);
-  const frmModificarFactura = document.createElement("adicionar-abono");
-  frmModificarFactura.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
-  main.appendChild(frmModificarFactura);
+  // Instancia el componente espejo de edición
+  const frmEditar = document.createElement("editar-factura");
+  frmEditar.setAttribute("container", "#App"); // <-- Pasas el parámetro del contenedor
+  main.appendChild(frmEditar);
+  // Le damos un respiro mínimo (50ms) para que el componente se conecte al DOM
+  // y el script de la vista esté disponible globalmente antes de inyectar los datos
+  setTimeout(() => {
+    if (
+      typeof nsEditarFactura !== "undefined" &&
+      nsEditarFactura.cargarDatosFactura
+    ) {
+      nsEditarFactura.cargarDatosFactura(idFactura);
+    }
+  }, 50);
 }
 
 /*******************************************************************************/

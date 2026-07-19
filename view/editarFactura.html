@@ -1,0 +1,515 @@
+<style>
+  /* --- Reutiliza exactamente tus mismos estilos estéticos --- */
+  .factura-container {
+    margin-top: 2.5rem !important;
+    margin-bottom: 2rem !important;
+  }
+  .tabla-factura {
+    font-size: 0.95rem;
+    color: #212529;
+  }
+  .bg-tally-light {
+    background-color: #ffffff !important;
+  }
+  .text-tally-brand {
+    color: #0d6efd !important;
+  }
+  .btn-tally-yellow {
+    background-color: #fbc02d !important;
+    color: #121212 !important;
+    font-weight: 600;
+    border: 1px solid #e0a800 !important;
+    transition: all 0.2s ease;
+  }
+  .btn-tally-yellow:hover {
+    background-color: #f5b01d !important;
+    opacity: 0.9;
+  }
+  .form-tally-control {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    color: #212529 !important;
+  }
+  .form-tally-control:focus {
+    background-color: #ffffff !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+  }
+
+  @media (max-width: 768px) {
+    .factura-container {
+      margin-top: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .factura-container .card {
+      border-radius: 0 !important;
+    }
+    .factura-container .card-header {
+      background-color: #fbc02d !important;
+      border-bottom: 1px solid #e0a800 !important;
+    }
+  }
+</style>
+
+<div class="container-fluid factura-container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-11 col-lg-10 col-xl-9 card-wrapper">
+      <div class="card shadow-sm bg-tally-light border">
+        <div
+          class="card-header border-bottom d-flex justify-content-between align-items-center py-3"
+          style="background-color: #fbc02d"
+        >
+          <h5 class="mb-0 fw-bold text-dark">
+            <i class="bi bi-pencil-square text-primary me-2"></i>Modificar
+            Factura
+          </h5>
+          <span
+            class="badge bg-white text-dark border px-3 py-2 fs-6"
+            id="editFactNumero"
+          >
+            Cargando...
+          </span>
+        </div>
+
+        <div class="card-body p-3 p-sm-4 text-dark">
+          <div id="alertaEditarFactura"></div>
+
+          <!-- CLIENTE -->
+          <div class="mb-4">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-person me-1"></i> Datos del Cliente
+            </h6>
+            <div class="row g-3">
+              <div class="col-12 col-md-4">
+                <label class="form-label small fw-semibold text-muted"
+                  >NOMBRE / RAZÓN SOCIAL</label
+                >
+                <input
+                  type="text"
+                  id="editFactClienteNombre"
+                  class="form-control form-control-sm form-tally-control"
+                />
+              </div>
+              <div class="col-12 col-sm-6 col-md-4">
+                <label class="form-label small fw-semibold text-muted"
+                  >DIRECCIÓN</label
+                >
+                <input
+                  type="text"
+                  id="editFactClienteDireccion"
+                  class="form-control form-control-sm form-tally-control"
+                />
+              </div>
+              <div class="col-12 col-sm-6 col-md-4">
+                <label class="form-label small fw-semibold text-muted"
+                  >TELÉFONO / CELULAR</label
+                >
+                <input
+                  type="text"
+                  id="editFactClienteTelefono"
+                  class="form-control form-control-sm form-tally-control"
+                  maxlength="10"
+                  inputmode="numeric"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- AGREGAR -->
+          <div class="mb-4">
+            <h6
+              class="text-tally-brand text-uppercase fw-bold mb-3"
+              style="font-size: 0.85rem; letter-spacing: 1px"
+            >
+              <i class="bi bi-box-seam me-1"></i> Agregar Productos o Servicios
+            </h6>
+            <div class="row g-2 align-items-end">
+              <div class="col-12 col-md-5">
+                <label class="form-label small fw-semibold text-muted"
+                  >DESCRIPCIÓN DEL ÍTEM</label
+                >
+                <input
+                  type="text"
+                  id="editFactItemDescripcion"
+                  class="form-control form-control-sm form-tally-control"
+                  placeholder="Ej. Modificación de ítem..."
+                />
+              </div>
+              <div class="col-6 col-md-2">
+                <label
+                  class="form-label small fw-semibold text-muted text-center d-block"
+                  >CANT.</label
+                >
+                <input
+                  type="number"
+                  id="editFactItemCantidad"
+                  class="form-control form-control-sm form-tally-control text-center"
+                  min="1"
+                  value="1"
+                />
+              </div>
+              <div class="col-6 col-md-3">
+                <label
+                  class="form-label small fw-semibold text-muted text-end d-block"
+                  >PRECIO UND ($)</label
+                >
+                <input
+                  type="number"
+                  id="editFactItemPrecio"
+                  class="form-control form-control-sm form-tally-control text-end"
+                  placeholder="0"
+                />
+              </div>
+              <div class="col-12 col-md-2">
+                <button
+                  type="button"
+                  class="btn btn-tally-yellow btn-sm w-100"
+                  onclick="nsEditarFactura.agregarItem()"
+                >
+                  <i class="bi bi-plus-lg me-1"></i> Añadir
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLA -->
+          <div class="table-responsive rounded-2 border mb-4">
+            <table class="table table-hover mb-0 tabla-factura">
+              <thead class="table-light border-bottom">
+                <tr
+                  class="text-muted"
+                  style="font-size: 0.8rem; font-weight: 700"
+                >
+                  <th class="ps-3 text-uppercase" style="width: 45%">
+                    Descripción
+                  </th>
+                  <th class="text-center text-uppercase" style="width: 15%">
+                    Cantidad
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Precio Und
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Total
+                  </th>
+                  <th class="text-center" style="width: 5%"></th>
+                </tr>
+              </thead>
+              <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
+            </table>
+          </div>
+
+          <!-- TOTAL -->
+          <div class="row justify-content-end mb-4">
+            <div class="col-12 col-md-5">
+              <div
+                class="d-flex justify-content-between align-items-center p-3 rounded-2 bg-light border shadow-sm"
+              >
+                <span
+                  class="text-muted fw-bold text-uppercase"
+                  style="font-size: 0.85rem; letter-spacing: 1px"
+                  >TOTAL GENERAL</span
+                >
+                <span
+                  class="fw-bold text-tally-brand fs-4"
+                  id="editFactTxtTotal"
+                  >$ 0</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <hr class="text-muted my-4" />
+
+          <!-- BOTONES -->
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm px-4"
+              onclick="window.location.hash = '#consultar-facturas'"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              id="btnActualizarFactura"
+              class="btn btn-tally-yellow btn-sm px-4 shadow-sm"
+              onclick="nsEditarFactura.guardarCambios()"
+            >
+              <i class="bi bi-cloud-arrow-up-fill me-1"></i> Aplicar Corrección
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var nsEditarFactura = (function () {
+    let itemsDetalle = [];
+    let totalGeneral = 0;
+    let idFacturaActiva = null;
+
+    function calcularTotales() {
+      totalGeneral = itemsDetalle.reduce((acc, item) => acc + item.total, 0);
+      document.getElementById("editFactTxtTotal").innerText =
+        `$ ${totalGeneral.toLocaleString("es-CO")}`;
+    }
+
+    // 1. Carga los datos actuales desde Supabase saltando caché gracias a lo aprendido del Service Worker
+    async function cargarDatosFactura(idFactura) {
+      idFacturaActiva = idFactura;
+      itemsDetalle = [];
+
+      try {
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session) throw new Error("Sesión inválida");
+
+        // Traer datos del encabezado (maestro)
+        const resMaestro = await fetch(
+          `${SUPABASE_URL}/rest/v1/tally_facturas?id=eq.${idFactura}&_t=${Date.now()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+              apikey: SUPABASE_KEY,
+            },
+          },
+        );
+        const [factura] = await resMaestro.json();
+
+        if (!factura)
+          throw new Error("No se encontró el registro de la factura");
+
+        // Traer el desglose actual (detalle)
+        const resDetalle = await fetch(
+          `${SUPABASE_URL}/rest/v1/tally_facturas_detalle?factura_id=eq.${idFactura}&_t=${Date.now()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+              apikey: SUPABASE_KEY,
+            },
+          },
+        );
+        const detalles = await resDetalle.json();
+
+        // Settear campos en UI
+        document.getElementById("editFactNumero").innerText =
+          factura.numero_factura;
+        document.getElementById("editFactClienteNombre").value =
+          factura.cliente_nombre;
+        document.getElementById("editFactClienteDireccion").value =
+          factura.cliente_direccion || "";
+        document.getElementById("editFactClienteTelefono").value =
+          factura.cliente_telefono || "";
+
+        // Mapear detalles al array con la misma estructura reactiva de tu componente anterior
+        itemsDetalle = detalles.map((d) => ({
+          id: d.id || Date.now() + Math.random(),
+          descripcion: d.descripcion,
+          amount: parseInt(d.cantidad),
+          price: parseFloat(d.precio_unitario),
+          total: parseFloat(d.total_linea),
+        }));
+
+        renderItems();
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje(
+          "Error al intentar recuperar la factura: " + err.message,
+          "danger",
+        );
+      }
+    }
+
+    function agregarItem() {
+      const desc = document
+        .getElementById("editFactItemDescripcion")
+        .value.trim();
+      const cant =
+        parseInt(document.getElementById("editFactItemCantidad").value) || 0;
+      const precio =
+        parseFloat(document.getElementById("editFactItemPrecio").value) || 0;
+
+      if (!desc || cant <= 0 || precio <= 0) {
+        mostrarMensaje(
+          "Verifica las propiedades del ítem a añadir.",
+          "warning",
+        );
+        return;
+      }
+
+      itemsDetalle.push({
+        id: Date.now(),
+        descripcion: desc.toUpperCase(),
+        amount: cant,
+        price: precio,
+        total: cant * precio,
+      });
+
+      document.getElementById("editFactItemDescripcion").value = "";
+      document.getElementById("editFactItemCantidad").value = "1";
+      document.getElementById("editFactItemPrecio").value = "";
+      renderItems();
+    }
+
+    function eliminarItem(id) {
+      itemsDetalle = itemsDetalle.filter((item) => item.id !== id);
+      renderItems();
+    }
+
+    function renderItems() {
+      const tbody = document.getElementById("tbodyEditarFacturaItems");
+      tbody.innerHTML = "";
+
+      if (!itemsDetalle.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">
+              La lista quedó vacía. Añade un ítem o vuelve atrás.
+            </td>
+          </tr>
+        `;
+        calcularTotales();
+        return;
+      }
+
+      itemsDetalle.forEach((item) => {
+        tbody.innerHTML += `
+          <tr class="align-middle border-bottom" style="background-color: #ffffff;">
+            <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
+            <td class="text-center fw-bold text-primary">${item.amount}</td>
+            <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
+            <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
+            <td class="text-center pe-3">
+              <button class="btn btn-link btn-sm text-danger p-0" onclick="nsEditarFactura.eliminarItem(${item.id})">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      calcularTotales();
+    }
+
+    // 2. Ejecuta la actualización segura atómica directa en Supabase REST sin arriesgar datos dinámicos
+    async function guardarCambios() {
+      const btn = document.getElementById("btnActualizarFactura");
+      const nombre = document
+        .getElementById("editFactClienteNombre")
+        .value.trim();
+      const direccion = document
+        .getElementById("editFactClienteDireccion")
+        .value.trim();
+      const telefono = document
+        .getElementById("editFactClienteTelefono")
+        .value.trim();
+
+      if (!nombre || !direccion)
+        return mostrarMensaje(
+          "Rellene campos mandatorios de identidad.",
+          "danger",
+        );
+      if (!itemsDetalle.length)
+        return mostrarMensaje(
+          "Debe existir al menos un registro en la grilla.",
+          "danger",
+        );
+
+      try {
+        btn.disabled = true;
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        if (!session) throw new Error("Expiró la autenticación");
+
+        // A. PATCH al Maestro
+        const resMaestro = await fetch(
+          `${SUPABASE_URL}/rest/v1/tally_facturas?id=eq.${idFacturaActiva}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+              apikey: SUPABASE_KEY,
+            },
+            body: JSON.stringify({
+              cliente_nombre: nombre,
+              cliente_direccion: direccion,
+              cliente_telefono: telefono || null,
+              total_factura: totalGeneral,
+            }),
+          },
+        );
+
+        if (!resMaestro.ok)
+          throw new Error("Fallo en la actualización primaria");
+
+        // B. DELETE de los ítems obsoletos
+        await fetch(
+          `${SUPABASE_URL}/rest/v1/tally_facturas_detalle?factura_id=eq.${idFacturaActiva}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+              apikey: SUPABASE_KEY,
+            },
+          },
+        );
+
+        // C. POST re-insertando el detalle nuevo depurado
+        const nuevosRenglones = itemsDetalle.map((item) => ({
+          factura_id: idFacturaActiva,
+          user_id: session.user.id,
+          descripcion: item.descripcion,
+          cantidad: item.amount,
+          precio_unitario: item.price,
+          total_linea: item.total,
+        }));
+
+        const resInsert = await fetch(
+          `${SUPABASE_URL}/rest/v1/tally_facturas_detalle`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+              apikey: SUPABASE_KEY,
+            },
+            body: JSON.stringify(nuevosRenglones),
+          },
+        );
+
+        if (!resInsert.ok)
+          throw new Error("No fue posible reestructurar las líneas de detalle");
+
+        mostrarMensaje("¡Factura modificada con éxito!", "success");
+
+        setTimeout(() => {
+          window.location.hash = "#consultar-facturas";
+        }, 1200);
+      } catch (err) {
+        console.error(err);
+        mostrarMensaje(err.message || "Error al sincronizar datos", "danger");
+        btn.disabled = false;
+      }
+    }
+
+    function mostrarMensaje(msg, tipo) {
+      document.getElementById("alertaEditarFactura").innerHTML = `
+        <div class="alert alert-${tipo} border-1 text-dark alert-dismissible fade show shadow-sm" role="alert" style="background-color: #ffffff;">
+          <span class="${tipo === "danger" ? "text-danger" : tipo === "success" ? "text-success" : "text-warning"} fw-bold">■</span> ${msg}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      `;
+    }
+
+    return { cargarDatosFactura, agregarItem, eliminarItem, guardarCambios };
+  })();
+</script>
