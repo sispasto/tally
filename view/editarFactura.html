@@ -55,6 +55,16 @@
     transform: translateX(-3px);
   }
 
+  /* Estilos específicos para las tarjetas de ítems en móvil */
+  .item-card-mobile {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
   @media (max-width: 768px) {
     .factura-container {
       margin-top: 0 !important;
@@ -208,8 +218,8 @@
             </div>
           </div>
 
-          <!-- TABLA -->
-          <div class="table-responsive rounded-2 border mb-4">
+          <!-- VISTA ESCRITORIO: TABLA (Oculta en móviles) -->
+          <div class="table-responsive rounded-2 border mb-4 d-none d-md-block">
             <table class="table table-hover mb-0 tabla-factura">
               <thead class="table-light border-bottom">
                 <tr
@@ -234,6 +244,9 @@
               <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
             </table>
           </div>
+
+          <!-- VISTA MÓVIL: CONTENEDOR DE TARJETA / CARDS (Oculto en PC) -->
+          <div id="contenedorFacturaItemsMobile" class="d-md-none mb-4"></div>
 
           <!-- TOTAL -->
           <div class="row justify-content-end mb-4">
@@ -285,8 +298,6 @@
 </div>
 
 <script>
-  // BLINDAJE SPA: Si la instancia ya existe en window, la reutilizamos o reiniciamos
-  // para evitar que los eventos HTML llamen a un script "fantasma" duplicado en memoria.
   if (!window.nsEditarFacturaInstancia) {
     window.nsEditarFacturaInstancia = (function () {
       let itemsDetalle = [];
@@ -318,7 +329,7 @@
           idFactura,
         );
         idFacturaActiva = idFactura;
-        itemsDetalle = []; // Limpieza absoluta de memoria vieja
+        itemsDetalle = [];
         estadoOriginal = null;
 
         if (
@@ -439,18 +450,12 @@
           (item) => String(item.id) === String(idABorrar),
         );
         if (!existeItem) {
-          console.warn(
-            "[DEBUG] El ítem no se encontró en el arreglo actual. Buscando solución de contingencia...",
-          );
+          console.warn("[DEBUG] El ítem no se encontró en el arreglo actual.");
           return;
         }
 
         itemsDetalle = itemsDetalle.filter(
           (item) => String(item.id) !== String(idABorrar),
-        );
-        console.log(
-          "[DEBUG] Arreglo después de filtrar de manera segura:",
-          JSON.parse(JSON.stringify(itemsDetalle)),
         );
 
         renderItems();
@@ -458,25 +463,34 @@
 
       function renderItems() {
         const tbody = document.getElementById("tbodyEditarFacturaItems");
-        if (!tbody) return;
+        const divMobile = document.getElementById(
+          "contenedorFacturaItemsMobile",
+        );
 
+        if (!tbody || !divMobile) return;
+
+        // Limpieza de contenedores antes de renderizar
         tbody.textContent = "";
+        divMobile.textContent = "";
 
         if (!itemsDetalle.length) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">
-                La lista quedó vacía. Añade un ítem o vuelve atrás.
-              </td>
-            </tr>
+          const mensajeVacio = `
+            <div class="text-center text-muted py-4 w-100" style="font-style: italic;">
+              La lista quedó vacía. Añade un ítem o vuelve atrás.
+            </div>
           `;
+          tbody.innerHTML = `<tr><td colspan="5">${mensajeVacio}</td></tr>`;
+          divMobile.innerHTML = mensajeVacio;
           calcularTotales();
           return;
         }
 
-        let htmlContenido = "";
+        let htmlDesktop = "";
+        let htmlMobile = "";
+
         itemsDetalle.forEach((item) => {
-          htmlContenido += `
+          // Render para PC (Tabla)
+          htmlDesktop += `
             <tr class="align-middle border-bottom" style="background-color: #ffffff;">
               <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
               <td class="text-center fw-bold text-primary">${item.amount}</td>
@@ -489,9 +503,36 @@
               </td>
             </tr>
           `;
+
+          // Render para Celular (Cards adaptativas)
+          htmlMobile += `
+            <div class="item-card-mobile">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="fw-bold text-dark pe-2" style="font-size: 0.95rem;">${item.descripcion}</div>
+                <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1 line-height-1" onclick="nsEditarFactura.eliminarItem('${item.id}')" style="margin-top: -4px;">
+                  <i class="bi bi-trash3 fs-5"></i>
+                </button>
+              </div>
+              <div class="row g-1 pt-2 border-top style="font-size: 0.85rem;">
+                <div class="col-4">
+                  <span class="text-muted d-block small text-uppercase">Cant.</span>
+                  <span class="fw-bold text-primary">${item.amount}</span>
+                </div>
+                <div class="col-4 text-center">
+                  <span class="text-muted d-block small text-uppercase">Precio Und.</span>
+                  <span class="text-secondary">$ ${item.price.toLocaleString("es-CO")}</span>
+                </div>
+                <div class="col-4 text-end">
+                  <span class="text-muted d-block small text-uppercase">Total</span>
+                  <span class="fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</span>
+                </div>
+              </div>
+            </div>
+          `;
         });
 
-        tbody.innerHTML = htmlContenido;
+        tbody.innerHTML = htmlDesktop;
+        divMobile.innerHTML = htmlMobile;
         calcularTotales();
       }
 
@@ -607,6 +648,5 @@
     })();
   }
 
-  // Apuntamos la variable de alcance global siempre a la instancia única controlada en window
   var nsEditarFactura = window.nsEditarFacturaInstancia;
 </script>
