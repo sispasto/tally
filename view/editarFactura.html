@@ -285,327 +285,328 @@
 </div>
 
 <script>
-  var nsEditarFactura = (function () {
-    let itemsDetalle = [];
-    let totalGeneral = 0;
-    let idFacturaActiva = null;
-    let estadoOriginal = null;
+  // BLINDAJE SPA: Si la instancia ya existe en window, la reutilizamos o reiniciamos
+  // para evitar que los eventos HTML llamen a un script "fantasma" duplicado en memoria.
+  if (!window.nsEditarFacturaInstancia) {
+    window.nsEditarFacturaInstancia = (function () {
+      let itemsDetalle = [];
+      let totalGeneral = 0;
+      let idFacturaActiva = null;
+      let estadoOriginal = null;
 
-    function generarIdUnico(idx = 0) {
-      return (
-        "item_" +
-        Date.now() +
-        "_" +
-        idx +
-        "_" +
-        Math.floor(Math.random() * 1000)
-      );
-    }
-
-    function calcularTotales() {
-      totalGeneral = itemsDetalle.reduce((acc, item) => acc + item.total, 0);
-      document.getElementById("editFactTxtTotal").innerText =
-        `$ ${totalGeneral.toLocaleString("es-CO")}`;
-      console.log("[DEBUG] Recalculando total general:", totalGeneral);
-    }
-
-    async function cargarDatosFactura(idFactura) {
-      console.log("[DEBUG] Iniciando cargarDatosFactura para ID:", idFactura);
-      idFacturaActiva = idFactura;
-      itemsDetalle = [];
-      estadoOriginal = null;
-
-      if (
-        typeof supabaseClient === "undefined" ||
-        typeof SUPABASE_URL === "undefined"
-      ) {
-        console.warn(
-          "Componentes de conexión no listos en el DOM. Reintentando...",
+      function generarIdUnico(idx = 0) {
+        return (
+          "item_" +
+          Date.now() +
+          "_" +
+          idx +
+          "_" +
+          Math.floor(Math.random() * 1000)
         );
-        setTimeout(() => cargarDatosFactura(idFactura), 200);
-        return;
       }
 
-      try {
-        const {
-          data: { session },
-        } = await supabaseClient.auth.getSession();
-        if (!session) throw new Error("Sesión inválida o expirada.");
+      function calcularTotales() {
+        totalGeneral = itemsDetalle.reduce((acc, item) => acc + item.total, 0);
+        document.getElementById("editFactTxtTotal").innerText =
+          `$ ${totalGeneral.toLocaleString("es-CO")}`;
+        console.log("[DEBUG] Recalculando total general:", totalGeneral);
+      }
 
-        const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/tally_leerFactura?id=${idFactura}&_t=${Date.now()}`,
-          {
-            method: "GET",
-            headers: { Authorization: `Bearer ${session.access_token}` },
-          },
+      async function cargarDatosFactura(idFactura) {
+        console.log(
+          "[DEBUG] Instancia Activa - Cargando datos para ID:",
+          idFactura,
+        );
+        idFacturaActiva = idFactura;
+        itemsDetalle = []; // Limpieza absoluta de memoria vieja
+        estadoOriginal = null;
+
+        if (
+          typeof supabaseClient === "undefined" ||
+          typeof SUPABASE_URL === "undefined"
+        ) {
+          console.warn(
+            "Componentes de conexión no listos en el DOM. Reintentando...",
+          );
+          setTimeout(() => cargarDatosFactura(idFactura), 200);
+          return;
+        }
+
+        try {
+          const {
+            data: { session },
+          } = await supabaseClient.auth.getSession();
+          if (!session) throw new Error("Sesión inválida o expirada.");
+
+          const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/tally_leerFactura?id=${idFactura}&_t=${Date.now()}`,
+            {
+              method: "GET",
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            },
+          );
+
+          const result = await response.json();
+          if (!result.ok)
+            throw new Error(result.error || "No se pudo recuperar la factura");
+
+          const factura = result.factura;
+
+          document.getElementById("editFactNumero").innerText =
+            factura.numero_factura;
+          document.getElementById("editFactClienteNombre").value =
+            factura.cliente_nombre;
+          document.getElementById("editFactClienteDireccion").value =
+            factura.cliente_direccion || "";
+          document.getElementById("editFactClienteTelefono").value =
+            factura.cliente_telefono || "";
+
+          itemsDetalle = (factura.items || []).map((d, idx) => ({
+            id: d.id ? String(d.id) : generarIdUnico(idx),
+            descripcion: d.descripcion,
+            amount: parseInt(d.cantidad) || 0,
+            price: parseFloat(d.precio_unitario) || 0,
+            total: parseFloat(d.total_linea) || 0,
+          }));
+
+          console.log(
+            "[DEBUG] Items cargados en la instancia:",
+            JSON.parse(JSON.stringify(itemsDetalle)),
+          );
+
+          estadoOriginal = {
+            nombre: factura.cliente_nombre,
+            direccion: factura.cliente_direccion || "",
+            telefono: factura.cliente_telefono || "",
+            items: itemsDetalle.map((item) => ({
+              descripcion: item.descripcion.toUpperCase(),
+              amount: item.amount,
+              price: item.price,
+            })),
+          };
+
+          renderItems();
+        } catch (err) {
+          console.error("[ERROR] En cargarDatosFactura:", err);
+          mostrarMensaje(
+            "Error al intentar recuperar la factura: " + err.message,
+            "danger",
+          );
+        }
+      }
+
+      function agregarItem() {
+        const desc = document
+          .getElementById("editFactItemDescripcion")
+          .value.trim();
+        const cant =
+          parseInt(document.getElementById("editFactItemCantidad").value) || 0;
+        const precio =
+          parseFloat(document.getElementById("editFactItemPrecio").value) || 0;
+
+        if (!desc || cant <= 0 || precio <= 0) {
+          mostrarMensaje(
+            "Verifica las propiedades del ítem a añadir.",
+            "warning",
+          );
+          return;
+        }
+
+        const nuevoItem = {
+          id: generarIdUnico(itemsDetalle.length),
+          descripcion: desc.toUpperCase(),
+          amount: cant,
+          price: precio,
+          total: cant * precio,
+        };
+
+        itemsDetalle.push(nuevoItem);
+        console.log("[DEBUG] Item agregado a la lista:", nuevoItem);
+
+        document.getElementById("editFactItemDescripcion").value = "";
+        document.getElementById("editFactItemCantidad").value = "1";
+        document.getElementById("editFactItemPrecio").value = "";
+        renderItems();
+      }
+
+      function eliminarItem(idABorrar) {
+        console.log(
+          "[DEBUG] Intentando eliminar Item con ID recibido:",
+          idABorrar,
         );
 
-        const result = await response.json();
-        if (!result.ok)
-          throw new Error(result.error || "No se pudo recuperar la factura");
+        const existeItem = itemsDetalle.some(
+          (item) => String(item.id) === String(idABorrar),
+        );
+        if (!existeItem) {
+          console.warn(
+            "[DEBUG] El ítem no se encontró en el arreglo actual. Buscando solución de contingencia...",
+          );
+          return;
+        }
 
-        const factura = result.factura;
-
-        document.getElementById("editFactNumero").innerText =
-          factura.numero_factura;
-        document.getElementById("editFactClienteNombre").value =
-          factura.cliente_nombre;
-        document.getElementById("editFactClienteDireccion").value =
-          factura.cliente_direccion || "";
-        document.getElementById("editFactClienteTelefono").value =
-          factura.cliente_telefono || "";
-
-        itemsDetalle = (factura.items || []).map((d, idx) => ({
-          id: d.id ? String(d.id) : generarIdUnico(idx),
-          descripcion: d.descripcion,
-          amount: parseInt(d.cantidad) || 0,
-          price: parseFloat(d.precio_unitario) || 0,
-          total: parseFloat(d.total_linea) || 0,
-        }));
-
+        itemsDetalle = itemsDetalle.filter(
+          (item) => String(item.id) !== String(idABorrar),
+        );
         console.log(
-          "[DEBUG] Items cargados exitosamente de la DB:",
+          "[DEBUG] Arreglo después de filtrar de manera segura:",
           JSON.parse(JSON.stringify(itemsDetalle)),
         );
 
-        estadoOriginal = {
-          nombre: factura.cliente_nombre,
-          direccion: factura.cliente_direccion || "",
-          telefono: factura.cliente_telefono || "",
-          items: itemsDetalle.map((item) => ({
-            descripcion: item.descripcion.toUpperCase(),
-            amount: item.amount,
-            price: item.price,
-          })),
-        };
-
         renderItems();
-      } catch (err) {
-        console.error("[ERROR] En cargarDatosFactura:", err);
-        mostrarMensaje(
-          "Error al intentar recuperar la factura: " + err.message,
-          "danger",
-        );
-      }
-    }
-
-    function agregarItem() {
-      const desc = document
-        .getElementById("editFactItemDescripcion")
-        .value.trim();
-      const cant =
-        parseInt(document.getElementById("editFactItemCantidad").value) || 0;
-      const precio =
-        parseFloat(document.getElementById("editFactItemPrecio").value) || 0;
-
-      if (!desc || cant <= 0 || precio <= 0) {
-        mostrarMensaje(
-          "Verifica las propiedades del ítem a añadir.",
-          "warning",
-        );
-        return;
       }
 
-      const nuevoItem = {
-        id: generarIdUnico(itemsDetalle.length),
-        descripcion: desc.toUpperCase(),
-        amount: cant,
-        price: precio,
-        total: cant * precio,
-      };
+      function renderItems() {
+        const tbody = document.getElementById("tbodyEditarFacturaItems");
+        if (!tbody) return;
 
-      itemsDetalle.push(nuevoItem);
-      console.log(
-        "[DEBUG] Item agregado. Estado actual de itemsDetalle:",
-        JSON.parse(JSON.stringify(itemsDetalle)),
-      );
+        tbody.textContent = "";
 
-      document.getElementById("editFactItemDescripcion").value = "";
-      document.getElementById("editFactItemCantidad").value = "1";
-      document.getElementById("editFactItemPrecio").value = "";
-      renderItems();
-    }
+        if (!itemsDetalle.length) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">
+                La lista quedó vacía. Añade un ítem o vuelve atrás.
+              </td>
+            </tr>
+          `;
+          calcularTotales();
+          return;
+        }
 
-    function eliminarItem(idABorrar) {
-      console.log(
-        "[DEBUG] Intentando eliminar Item con ID recibido:",
-        idABorrar,
-      );
+        let htmlContenido = "";
+        itemsDetalle.forEach((item) => {
+          htmlContenido += `
+            <tr class="align-middle border-bottom" style="background-color: #ffffff;">
+              <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
+              <td class="text-center fw-bold text-primary">${item.amount}</td>
+              <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
+              <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
+              <td class="text-center pe-3">
+                <button type="button" class="btn btn-link btn-sm text-danger p-0" onclick="nsEditarFactura.eliminarItem('${item.id}')">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        });
 
-      // FILTRO DE SEGURIDAD SPA: Detiene ejecuciones fantasmas si el ID ya fue borrado de la memoria
-      const existeItem = itemsDetalle.some(
-        (item) => String(item.id) === String(idABorrar),
-      );
-      if (!existeItem) {
-        console.warn(
-          "[DEBUG] Ejecución duplicada bloqueada. El ítem ya no existe en el arreglo.",
-        );
-        return;
-      }
-
-      console.log(
-        "[DEBUG] Arreglo antes del filtrado:",
-        JSON.parse(JSON.stringify(itemsDetalle)),
-      );
-      itemsDetalle = itemsDetalle.filter(
-        (item) => String(item.id) !== String(idABorrar),
-      );
-      console.log(
-        "[DEBUG] Arreglo después del filtrado:",
-        JSON.parse(JSON.stringify(itemsDetalle)),
-      );
-
-      renderItems();
-    }
-
-    function renderItems() {
-      const tbody = document.getElementById("tbodyEditarFacturaItems");
-      if (!tbody) return;
-
-      // Limpieza total del nodo HTML
-      tbody.textContent = "";
-
-      if (!itemsDetalle.length) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">
-              La lista quedó vacía. Añade un ítem o vuelve atrás.
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML = htmlContenido;
         calcularTotales();
-        return;
       }
 
-      let htmlContenido = "";
-      itemsDetalle.forEach((item) => {
-        htmlContenido += `
-          <tr class="align-middle border-bottom" style="background-color: #ffffff;">
-            <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
-            <td class="text-center fw-bold text-primary">${item.amount}</td>
-            <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
-            <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
-            <td class="text-center pe-3">
-              <button type="button" class="btn btn-link btn-sm text-danger p-0" onclick="nsEditarFactura.eliminarItem('${item.id}')">
-                <i class="bi bi-trash3"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      });
+      async function guardarCambios() {
+        const btn = document.getElementById("btnActualizarFactura");
+        const nombre = document
+          .getElementById("editFactClienteNombre")
+          .value.trim();
+        const direccion = document
+          .getElementById("editFactClienteDireccion")
+          .value.trim();
+        const telefono = document
+          .getElementById("editFactClienteTelefono")
+          .value.trim();
 
-      tbody.innerHTML = htmlContenido;
-      calcularTotales();
-    }
+        if (!nombre || !direccion) {
+          return mostrarMensaje(
+            "Rellene campos mandatorios de identidad.",
+            "danger",
+          );
+        }
 
-    async function guardarCambios() {
-      const btn = document.getElementById("btnActualizarFactura");
-      const nombre = document
-        .getElementById("editFactClienteNombre")
-        .value.trim();
-      const direccion = document
-        .getElementById("editFactClienteDireccion")
-        .value.trim();
-      const telefono = document
-        .getElementById("editFactClienteTelefono")
-        .value.trim();
+        if (!itemsDetalle.length) {
+          return mostrarMensaje(
+            "La grilla no puede estar vacía. Agregue un producto o servicio.",
+            "danger",
+          );
+        }
 
-      if (!nombre || !direccion) {
-        return mostrarMensaje(
-          "Rellene campos mandatorios de identidad.",
-          "danger",
-        );
-      }
+        const itemsActualesMapeados = itemsDetalle.map((item) => ({
+          descripcion: item.descripcion.toUpperCase(),
+          amount: item.amount,
+          price: item.price,
+        }));
 
-      if (!itemsDetalle.length) {
-        return mostrarMensaje(
-          "La grilla no puede estar vacía. Agregue un producto o servicio.",
-          "danger",
-        );
-      }
+        const noCambioCliente =
+          estadoOriginal.nombre === nombre &&
+          estadoOriginal.direccion === direccion &&
+          estadoOriginal.telefono === telefono;
 
-      const itemsActualesMapeados = itemsDetalle.map((item) => ({
-        descripcion: item.descripcion.toUpperCase(),
-        amount: item.amount,
-        price: item.price,
-      }));
+        const noCambioItems =
+          JSON.stringify(estadoOriginal.items) ===
+          JSON.stringify(itemsActualesMapeados);
 
-      const noCambioCliente =
-        estadoOriginal.nombre === nombre &&
-        estadoOriginal.direccion === direccion &&
-        estadoOriginal.telefono === telefono;
+        if (noCambioCliente && noCambioItems) {
+          return mostrarMensaje(
+            "Debe existir al menos una modificación en la factura para poder actualizar.",
+            "warning",
+          );
+        }
 
-      const noCambioItems =
-        JSON.stringify(estadoOriginal.items) ===
-        JSON.stringify(itemsActualesMapeados);
+        try {
+          btn.disabled = true;
+          const {
+            data: { session },
+          } = await supabaseClient.auth.getSession();
+          if (!session) throw new Error("Expiró la autenticación");
 
-      if (noCambioCliente && noCambioItems) {
-        return mostrarMensaje(
-          "Debe existir al menos una modificación en la factura para poder actualizar.",
-          "warning",
-        );
-      }
+          const payload = {
+            factura_id: idFacturaActiva,
+            cliente_nombre: nombre,
+            cliente_direccion: direccion,
+            cliente_telefono: telefono || null,
+            total_factura: totalGeneral,
+            items: itemsDetalle.map((item) => ({
+              descripcion: item.descripcion,
+              amount: item.amount,
+              price: item.price,
+            })),
+          };
 
-      try {
-        btn.disabled = true;
-        const {
-          data: { session },
-        } = await supabaseClient.auth.getSession();
-        if (!session) throw new Error("Expiró la autenticación");
-
-        const payload = {
-          factura_id: idFacturaActiva,
-          cliente_nombre: nombre,
-          cliente_direccion: direccion,
-          cliente_telefono: telefono || null,
-          total_factura: totalGeneral,
-          items: itemsDetalle.map((item) => ({
-            descripcion: item.descripcion,
-            amount: item.amount,
-            price: item.price,
-          })),
-        };
-
-        console.log("[DEBUG] Enviando Payload de actualización:", payload);
-
-        const response = await fetch(
-          `${SUPABASE_URL}/functions/v1/tally_editarFactura`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${session.access_token}`,
+          const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/tally_editarFactura`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify(payload),
             },
-            body: JSON.stringify(payload),
-          },
-        );
+          );
 
-        const result = await response.json();
-        if (!result.ok)
-          throw new Error(result.error || "Error al procesar la actualización");
+          const result = await response.json();
+          if (!result.ok)
+            throw new Error(
+              result.error || "Error al procesar la actualización",
+            );
 
-        mostrarMensaje("¡Factura modificada con éxito!", "success");
+          mostrarMensaje("¡Factura modificada con éxito!", "success");
 
-        setTimeout(() => {
-          consultarFacturas();
-          window.location.hash = "#consultar-facturas";
-        }, 1200);
-      } catch (err) {
-        console.error("[ERROR] En guardarCambios:", err);
-        mostrarMensaje(err.message || "Error al sincronizar datos", "danger");
-        btn.disabled = false;
+          setTimeout(() => {
+            consultarFacturas();
+            window.location.hash = "#consultar-facturas";
+          }, 1200);
+        } catch (err) {
+          console.error("[ERROR] En guardarCambios:", err);
+          mostrarMensaje(err.message || "Error al sincronizar datos", "danger");
+          btn.disabled = false;
+        }
       }
-    }
 
-    function mostrarMensaje(msg, tipo) {
-      document.getElementById("alertaEditarFactura").innerHTML = `
-        <div class="alert alert-${tipo} border-1 text-dark alert-dismissible fade show shadow-sm" role="alert" style="background-color: #ffffff;">
-          <span class="${tipo === "danger" ? "text-danger" : tipo === "success" ? "text-success" : "text-warning"} fw-bold">■</span> ${msg}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      `;
-    }
+      function mostrarMensaje(msg, tipo) {
+        document.getElementById("alertaEditarFactura").innerHTML = `
+          <div class="alert alert-${tipo} border-1 text-dark alert-dismissible fade show shadow-sm" role="alert" style="background-color: #ffffff;">
+            <span class="${tipo === "danger" ? "text-danger" : tipo === "success" ? "text-success" : "text-warning"} fw-bold">■</span> ${msg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        `;
+      }
 
-    return { cargarDatosFactura, agregarItem, eliminarItem, guardarCambios };
-  })();
+      return { cargarDatosFactura, agregarItem, eliminarItem, guardarCambios };
+    })();
+  }
+
+  // Apuntamos la variable de alcance global siempre a la instancia única controlada en window
+  var nsEditarFactura = window.nsEditarFacturaInstancia;
 </script>
