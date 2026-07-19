@@ -294,6 +294,9 @@
     let totalGeneral = 0;
     let idFacturaActiva = null;
 
+    /* VARIABLE PARA GUARDAR EL ESTADO ORIGINAL */
+    let estadoOriginal = null;
+
     function calcularTotales() {
       totalGeneral = itemsDetalle.reduce((acc, item) => acc + item.total, 0);
       document.getElementById("editFactTxtTotal").innerText =
@@ -303,6 +306,7 @@
     async function cargarDatosFactura(idFactura) {
       idFacturaActiva = idFactura;
       itemsDetalle = [];
+      estadoOriginal = null;
 
       if (
         typeof supabaseClient === "undefined" ||
@@ -353,6 +357,18 @@
           price: parseFloat(d.precio_unitario),
           total: parseFloat(d.total_linea),
         }));
+
+        /* GUARDAMOS CAPTURA DE LOS DATOS INICIALES EXCLUSIVOS DE COMPARACIÓN */
+        estadoOriginal = {
+          nombre: factura.cliente_nombre,
+          direccion: factura.cliente_direccion || "",
+          telefono: factura.cliente_telefono || "",
+          items: itemsDetalle.map((item) => ({
+            descripcion: item.descripcion.toUpperCase(),
+            amount: item.amount,
+            price: item.price,
+          })),
+        };
 
         renderItems();
       } catch (err) {
@@ -452,10 +468,34 @@
           "danger",
         );
       }
+
       if (!itemsDetalle.length) {
         return mostrarMensaje(
-          "Debe existir al menos un registro en la grilla.",
+          "La grilla no puede estar vacía. Agregue un producto o servicio.",
           "danger",
+        );
+      }
+
+      /* PROCESO DE VALIDACIÓN DE MODIFICACIONES REALES */
+      const itemsActualesMapeados = itemsDetalle.map((item) => ({
+        descripcion: item.descripcion.toUpperCase(),
+        amount: item.amount,
+        price: item.price,
+      }));
+
+      const noCambioCliente =
+        estadoOriginal.nombre === nombre &&
+        estadoOriginal.direccion === direccion &&
+        estadoOriginal.telefono === telefono;
+
+      const noCambioItems =
+        JSON.stringify(estadoOriginal.items) ===
+        JSON.stringify(itemsActualesMapeados);
+
+      if (noCambioCliente && noCambioItems) {
+        return mostrarMensaje(
+          "Debe existir al menos una modificación en la factura para poder actualizar.",
+          "warning",
         );
       }
 
