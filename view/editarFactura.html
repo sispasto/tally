@@ -35,29 +35,27 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
   }
 
-  /* NUEVOS ESTILOS REFORZADOS PARA EL BOTÓN DE REGRESAR */
-  .btn-back-tally {
-    background-color: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  /* NUEVO ESTILO DE BOTÓN CON ÍCONO BOOTSTRAP RELLENO */
+  .btn-back-icon-tally {
+    background: transparent !important;
+    border: none !important;
     color: #212529 !important;
-    width: 34px;
-    height: 34px;
+    padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
   }
-  .btn-back-tally:hover {
-    background-color: #ffffff !important;
-    color: #0d6efd !important;
-    transform: translateX(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-color: rgba(0, 0, 0, 0.2) !important;
-  }
-  .btn-back-tally i {
-    font-size: 1.1rem;
+  .btn-back-icon-tally i {
+    font-size: 1.65rem; /* Ajusta el tamaño visual del círculo relleno */
     line-height: 1;
+  }
+  .btn-back-icon-tally:hover {
+    color: #0d6efd !important; /* Cambia a azul de marca en hover */
+    transform: translateX(
+      -3px
+    ); /* Desplazamiento interactivo hacia la izquierda */
   }
 
   @media (max-width: 768px) {
@@ -85,17 +83,17 @@
           style="background-color: #fbc02d"
         >
           <div class="d-flex align-items-center gap-3">
-            <!-- BOTÓN ATRÁS MEJORADO VISUALMENTE -->
+            <!-- BOTÓN UTILIZANDO ÍCONO BOOTSTRAP RELLENO INTERACTIVO -->
             <button
               type="button"
-              class="btn btn-back-tally rounded-circle me-1"
+              class="btn btn-back-icon-tally me-1"
               onclick="
                 consultarFacturas();
                 window.location.hash = '#consultar-facturas';
               "
               title="Volver al listado"
             >
-              <i class="bi bi-arrow-left fw-bold"></i>
+              <i class="bi bi-arrow-left-circle-fill"></i>
             </button>
             <h5 class="mb-0 fw-bold text-dark">
               <i class="bi bi-pencil-square text-primary me-1"></i>Modificar
