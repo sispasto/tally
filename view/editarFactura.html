@@ -35,6 +35,31 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
   }
 
+  /* NUEVOS ESTILOS REFORZADOS PARA EL BOTÓN DE REGRESAR */
+  .btn-back-tally {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    color: #212529 !important;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  .btn-back-tally:hover {
+    background-color: #ffffff !important;
+    color: #0d6efd !important;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2) !important;
+  }
+  .btn-back-tally i {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
   @media (max-width: 768px) {
     .factura-container {
       margin-top: 0 !important;
@@ -59,15 +84,18 @@
           class="card-header border-bottom d-flex justify-content-between align-items-center py-3"
           style="background-color: #fbc02d"
         >
-          <div class="d-flex align-items-center gap-2">
-            <!-- Botón Atrás (UX Solicitado) -->
+          <div class="d-flex align-items-center gap-3">
+            <!-- BOTÓN ATRÁS MEJORADO VISUALMENTE -->
             <button
               type="button"
-              class="btn btn-sm btn-light border-0 bg-transparent text-dark p-1 rounded-circle me-1"
-              onclick="window.location.hash = '#consultar-facturas'"
+              class="btn btn-back-tally rounded-circle me-1"
+              onclick="
+                consultarFacturas();
+                window.location.hash = '#consultar-facturas';
+              "
               title="Volver al listado"
             >
-              <i class="bi bi-arrow-left fs-5 fw-bold"></i>
+              <i class="bi bi-arrow-left fw-bold"></i>
             </button>
             <h5 class="mb-0 fw-bold text-dark">
               <i class="bi bi-pencil-square text-primary me-1"></i>Modificar
@@ -235,12 +263,15 @@
 
           <hr class="text-muted my-4" />
 
-          <!-- BOTONES -->
+          <!-- BOTONES INFERIORES -->
           <div class="d-flex justify-content-end gap-2">
             <button
               type="button"
               class="btn btn-outline-secondary btn-sm px-4"
-              onclick="window.location.hash = '#consultar-facturas'"
+              onclick="
+                consultarFacturas();
+                window.location.hash = '#consultar-facturas';
+              "
             >
               Cancelar
             </button>
@@ -437,7 +468,6 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Expiró la autenticación");
 
-        // Los nombres se envían tal cual en inglés: amount y price
         const payload = {
           factura_id: idFacturaActiva,
           cliente_nombre: nombre,
@@ -470,6 +500,7 @@
         mostrarMensaje("¡Factura modificada con éxito!", "success");
 
         setTimeout(() => {
+          consultarFacturas();
           window.location.hash = "#consultar-facturas";
         }, 1200);
       } catch (err) {
