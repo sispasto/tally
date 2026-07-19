@@ -369,7 +369,7 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        // Clonamos profundamente para romper cualquier referencia oculta de memoria compartida
+        // Clonado profundo para evitar problemas de referencias cruzadas en memoria
         const itemsClonados = JSON.parse(JSON.stringify(factura.items || []));
 
         itemsDetalle = itemsClonados.map((d) => ({
@@ -431,7 +431,7 @@
     }
 
     function eliminarItem(indexAlcanzado) {
-      // Eliminamos usando estrictamente la posición del índice en el array, libre de errores de IDs duplicados
+      // Forzamos la mutación limpia basada únicamente en el índice posicional
       itemsDetalle.splice(indexAlcanzado, 1);
       renderItems();
     }
@@ -440,24 +440,26 @@
       const tbody = document.getElementById("tbodyEditarFacturaItems");
       const mobileContainer = document.getElementById("itemsMobileContainer");
 
-      tbody.innerHTML = "";
-      if (mobileContainer) mobileContainer.innerHTML = "";
-
       if (!itemsDetalle.length) {
         const vacioHtml = `
           <div class="text-center text-muted py-4 bg-white" style="font-style: italic;">
             La lista quedó vacía. Añade un ítem o vuelve atrás.
           </div>
         `;
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">La lista quedó vacía.</td></tr>`;
+        if (tbody)
+          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">La lista quedó vacía.</td></tr>`;
         if (mobileContainer) mobileContainer.innerHTML = vacioHtml;
         calcularTotales();
         return;
       }
 
+      let htmlDesktop = "";
+      let htmlMobile = "";
+
+      // Acumulamos de manera segura en hilos de texto independientes
       itemsDetalle.forEach((item, idx) => {
-        // 1. Vista de tabla para PC (Pasamos 'idx' directamente como argumento numérico limpio)
-        tbody.innerHTML += `
+        // 1. Acumulador Desktop
+        htmlDesktop += `
           <tr class="align-middle border-bottom" style="background-color: #ffffff;">
             <td class="ps-3 fw-medium text-dark text-wrap">${item.descripcion}</td>
             <td class="text-center fw-bold text-primary">${item.amount}</td>
@@ -471,39 +473,41 @@
           </tr>
         `;
 
-        // 2. Vista de tarjetas para Celulares
-        if (mobileContainer) {
-          mobileContainer.innerHTML += `
-            <div class="item-mobile-card text-dark">
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <div style="max-width: 80%;">
-                  <span class="text-muted d-block small fw-bold" style="font-size:0.75rem;">DESCRIPCIÓN</span>
-                  <div class="fw-bold text-dark text-wrap">${item.descripcion}</div>
-                </div>
-                <button type="button" class="btn btn-light text-danger border rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
-                        style="width: 38px; height: 38px;" 
-                        onclick="nsEditarFactura.eliminarItem(${idx})">
-                  <i class="bi bi-trash3 fs-5"></i>
-                </button>
+        // 2. Acumulador Mobile
+        htmlMobile += `
+          <div class="item-mobile-card text-dark">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div style="max-width: 80%;">
+                <span class="text-muted d-block small fw-bold" style="font-size:0.75rem;">DESCRIPCIÓN</span>
+                <div class="fw-bold text-dark text-wrap">${item.descripcion}</div>
               </div>
-              <div class="row g-2 pt-1 border-top border-light">
-                <div class="col-3">
-                  <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">CANT.</span>
-                  <span class="fw-bold text-primary">${item.amount}</span>
-                </div>
-                <div class="col-4 text-end">
-                  <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">PRECIO UND</span>
-                  <span class="text-secondary" style="font-size: 0.85rem;">$ ${item.price.toLocaleString("es-CO")}</span>
-                </div>
-                <div class="col-5 text-end">
-                  <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">TOTAL</span>
-                  <span class="fw-bold text-dark" style="font-size: 0.9rem;">$ ${item.total.toLocaleString("es-CO")}</span>
-                </div>
+              <button type="button" class="btn btn-light text-danger border rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                      style="width: 38px; height: 38px;" 
+                      onclick="nsEditarFactura.eliminarItem(${idx})">
+                <i class="bi bi-trash3 fs-5"></i>
+              </button>
+            </div>
+            <div class="row g-2 pt-1 border-top border-light">
+              <div class="col-3">
+                <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">CANT.</span>
+                <span class="fw-bold text-primary">${item.amount}</span>
+              </div>
+              <div class="col-4 text-end">
+                <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">PRECIO UND</span>
+                <span class="text-secondary" style="font-size: 0.85rem;">$ ${item.price.toLocaleString("es-CO")}</span>
+              </div>
+              <div class="col-5 text-end">
+                <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">TOTAL</span>
+                <span class="fw-bold text-dark" style="font-size: 0.9rem;">$ ${item.total.toLocaleString("es-CO")}</span>
               </div>
             </div>
-          `;
-        }
+          </div>
+        `;
       });
+
+      // Única inyección al DOM para evitar rupturas de bindings y clicks duplicados
+      if (tbody) tbody.innerHTML = htmlDesktop;
+      if (mobileContainer) mobileContainer.innerHTML = htmlMobile;
 
       calcularTotales();
     }
