@@ -44,25 +44,3 @@ class EditarFacturaComponent extends HTMLElement {
 
 // Registro del Custom Element
 customElements.define("editar-factura", EditarFacturaComponent);
-
-// 🚀 Función Global de Navegación desde la lista de facturas
-function gestionarEdicionFactura(idFactura) {
-  let main = document.getElementById("App");
-  // Asumiendo que removeALLChilds es tu función helper global
-  if (typeof removeALLChilds === "function") {
-    removeALLChilds(main);
-  } else {
-    main.innerHTML = "";
-  }
-
-  const frmEditar = document.createElement("editar-factura");
-  frmEditar.setAttribute("container", "#App");
-  main.appendChild(frmEditar);
-
-  // Le damos un respiro muy breve para que conecte y se inyecte el script antes de cargar datos
-  setTimeout(() => {
-    if (typeof nsEditarFactura !== "undefined") {
-      nsEditarFactura.cargarDatosFactura(idFactura);
-    }
-  }, 100);
-}
