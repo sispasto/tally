@@ -35,7 +35,6 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
   }
 
-  /* NUEVO ESTILO DE BOTÓN CON ÍCONO BOOTSTRAP RELLENO */
   .btn-back-icon-tally {
     background: transparent !important;
     border: none !important;
@@ -48,14 +47,12 @@
     cursor: pointer;
   }
   .btn-back-icon-tally i {
-    font-size: 1.65rem; /* Ajusta el tamaño visual del círculo relleno */
+    font-size: 1.65rem;
     line-height: 1;
   }
   .btn-back-icon-tally:hover {
-    color: #0d6efd !important; /* Cambia a azul de marca en hover */
-    transform: translateX(
-      -3px
-    ); /* Desplazamiento interactivo hacia la izquierda */
+    color: #0d6efd !important;
+    transform: translateX(-3px);
   }
 
   @media (max-width: 768px) {
@@ -83,7 +80,6 @@
           style="background-color: #fbc02d"
         >
           <div class="d-flex align-items-center gap-3">
-            <!-- BOTÓN UTILIZANDO ÍCONO BOOTSTRAP RELLENO INTERACTIVO -->
             <button
               type="button"
               class="btn btn-back-icon-tally me-1"
@@ -295,7 +291,6 @@
     let idFacturaActiva = null;
     let estadoOriginal = null;
 
-    // Generador de ID seguro basado en texto para evitar problemas de redondeo float en HTML
     function generarIdUnico(idx = 0) {
       return (
         "item_" +
@@ -360,7 +355,6 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        // Mapeo inicial con IDs controlados en formato string
         itemsDetalle = (factura.items || []).map((d, idx) => ({
           id: d.id ? String(d.id) : generarIdUnico(idx),
           descripcion: d.descripcion,
@@ -437,20 +431,30 @@
         "[DEBUG] Intentando eliminar Item con ID recibido:",
         idABorrar,
       );
+
+      // FILTRO DE SEGURIDAD SPA: Detiene ejecuciones fantasmas si el ID ya fue borrado de la memoria
+      const existeItem = itemsDetalle.some(
+        (item) => String(item.id) === String(idABorrar),
+      );
+      if (!existeItem) {
+        console.warn(
+          "[DEBUG] Ejecución duplicada bloqueada. El ítem ya no existe en el arreglo.",
+        );
+        return;
+      }
+
       console.log(
         "[DEBUG] Arreglo antes del filtrado:",
         JSON.parse(JSON.stringify(itemsDetalle)),
       );
-
-      // Forzar evaluación estricta convirtiendo ambas partes a String
       itemsDetalle = itemsDetalle.filter(
         (item) => String(item.id) !== String(idABorrar),
       );
-
       console.log(
         "[DEBUG] Arreglo después del filtrado:",
         JSON.parse(JSON.stringify(itemsDetalle)),
       );
+
       renderItems();
     }
 
@@ -458,7 +462,8 @@
       const tbody = document.getElementById("tbodyEditarFacturaItems");
       if (!tbody) return;
 
-      tbody.innerHTML = "";
+      // Limpieza total del nodo HTML
+      tbody.textContent = "";
 
       if (!itemsDetalle.length) {
         tbody.innerHTML = `
@@ -472,9 +477,9 @@
         return;
       }
 
+      let htmlContenido = "";
       itemsDetalle.forEach((item) => {
-        // CORRECCIÓN CLAVE: Envolver el ID string entre comillas simples dentro de la llamada en línea
-        tbody.innerHTML += `
+        htmlContenido += `
           <tr class="align-middle border-bottom" style="background-color: #ffffff;">
             <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
             <td class="text-center fw-bold text-primary">${item.amount}</td>
@@ -488,6 +493,8 @@
           </tr>
         `;
       });
+
+      tbody.innerHTML = htmlContenido;
       calcularTotales();
     }
 
