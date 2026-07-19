@@ -369,14 +369,14 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        // SOLUCIÓN DEFINITIVA: ID numérico secuencial puro usando Date.now() + el índice
-        const baseTime = Date.now();
-        itemsDetalle = factura.items.map((d, idx) => ({
-          id: d.id ? parseInt(d.id) : baseTime + idx,
+        // Clonamos profundamente para romper cualquier referencia oculta de memoria compartida
+        const itemsClonados = JSON.parse(JSON.stringify(factura.items || []));
+
+        itemsDetalle = itemsClonados.map((d) => ({
           descripcion: d.descripcion,
-          amount: parseInt(d.cantidad),
-          price: parseFloat(d.precio_unitario),
-          total: parseFloat(d.total_linea),
+          amount: parseInt(d.cantidad) || 0,
+          price: parseFloat(d.precio_unitario) || 0,
+          total: parseFloat(d.total_linea) || 0,
         }));
 
         estadoOriginal = {
@@ -417,11 +417,7 @@
         return;
       }
 
-      // ID numérico garantizado único para nuevos ítems agregados manualmente
-      const nuevoId = Date.now() + Math.floor(Math.random() * 1000);
-
       itemsDetalle.push({
-        id: nuevoId,
         descripcion: desc.toUpperCase(),
         amount: cant,
         price: precio,
@@ -434,12 +430,9 @@
       renderItems();
     }
 
-    function eliminarItem(id) {
-      // Forzamos la comparación numérica pura
-      const idNumerico = parseInt(id);
-      itemsDetalle = itemsDetalle.filter(
-        (item) => parseInt(item.id) !== idNumerico,
-      );
+    function eliminarItem(indexAlcanzado) {
+      // Eliminamos usando estrictamente la posición del índice en el array, libre de errores de IDs duplicados
+      itemsDetalle.splice(indexAlcanzado, 1);
       renderItems();
     }
 
@@ -462,11 +455,8 @@
         return;
       }
 
-      itemsDetalle.forEach((item) => {
-        // Al ser IDs 100% numéricos, pasarlos al onclick directo ya no rompe el DOM
-        const targetId = item.id;
-
-        // 1. Vista de tabla para PC
+      itemsDetalle.forEach((item, idx) => {
+        // 1. Vista de tabla para PC (Pasamos 'idx' directamente como argumento numérico limpio)
         tbody.innerHTML += `
           <tr class="align-middle border-bottom" style="background-color: #ffffff;">
             <td class="ps-3 fw-medium text-dark text-wrap">${item.descripcion}</td>
@@ -474,7 +464,7 @@
             <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
             <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
             <td class="col-eliminar-tally">
-              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${targetId})">
+              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${idx})">
                 <i class="bi bi-trash3 fs-5"></i>
               </button>
             </td>
@@ -492,7 +482,7 @@
                 </div>
                 <button type="button" class="btn btn-light text-danger border rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
                         style="width: 38px; height: 38px;" 
-                        onclick="nsEditarFactura.eliminarItem(${targetId})">
+                        onclick="nsEditarFactura.eliminarItem(${idx})">
                   <i class="bi bi-trash3 fs-5"></i>
                 </button>
               </div>
