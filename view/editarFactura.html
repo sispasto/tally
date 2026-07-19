@@ -6,7 +6,6 @@
   .tabla-factura {
     font-size: 0.95rem;
     color: #212529;
-    width: 100%;
   }
   .bg-tally-light {
     background-color: #ffffff !important;
@@ -36,6 +35,7 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
   }
 
+  /* NUEVO ESTILO DE BOTÓN CON ÍCONO BOOTSTRAP RELLENO */
   .btn-back-icon-tally {
     background: transparent !important;
     border: none !important;
@@ -48,43 +48,28 @@
     cursor: pointer;
   }
   .btn-back-icon-tally i {
-    font-size: 1.65rem;
+    font-size: 1.65rem; /* Ajusta el tamaño visual del círculo relleno */
     line-height: 1;
   }
-
-  /* Vista de bloques para celular (Oculta por defecto en PC) */
-  .items-mobile-container {
-    display: none;
+  .btn-back-icon-tally:hover {
+    color: #0d6efd !important; /* Cambia a azul de marca en hover */
+    transform: translateX(
+      -3px
+    ); /* Desplazamiento interactivo hacia la izquierda */
   }
 
-  .item-mobile-card {
-    background: #ffffff;
-    padding: 12px;
-    border-bottom: 1px solid #dee2e6;
-  }
-  .item-mobile-card:last-child {
-    border-bottom: none;
-  }
-
-  /* OPTIMIZACIONES PARA DISPOSITIVOS MÓVILES */
   @media (max-width: 768px) {
     .factura-container {
       margin-top: 0 !important;
-      padding-left: 0.25rem !important;
-      padding-right: 0.25rem !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
     }
-    .factura-container .card-body {
-      padding: 1rem 0.5rem !important;
+    .factura-container .card {
+      border-radius: 0 !important;
     }
-
-    /* Ocultamos la tabla clásica en celular */
-    .table-responsive-tally {
-      display: none !important;
-    }
-
-    /* Mostramos la vista de lista/tarjetas adaptable */
-    .items-mobile-container {
-      display: block !important;
+    .factura-container .card-header {
+      background-color: #fbc02d !important;
+      border-bottom: 1px solid #e0a800 !important;
     }
   }
 </style>
@@ -227,37 +212,31 @@
             </div>
           </div>
 
-          <!-- CONTENEDOR DE ITEMS ADAPTABLE -->
-          <div class="border rounded-2 mb-4 overflow-hidden">
-            <!-- VISTA EN TABLA (SÓLO PARA PC / TABLET) -->
-            <div class="table-responsive-tally">
-              <table class="table table-hover mb-0 tabla-factura">
-                <thead class="table-light border-bottom">
-                  <tr
-                    class="text-muted"
-                    style="font-size: 0.8rem; font-weight: 700"
-                  >
-                    <th class="ps-3 text-uppercase" style="width: 40%">
-                      Descripción
-                    </th>
-                    <th class="text-center text-uppercase" style="width: 15%">
-                      Cantidad
-                    </th>
-                    <th class="text-end text-uppercase" style="width: 20%">
-                      Precio Und
-                    </th>
-                    <th class="text-end text-uppercase" style="width: 20%">
-                      Total
-                    </th>
-                    <th style="width: 50px"></th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
-              </table>
-            </div>
-
-            <!-- VISTA VERTICAL EN TARJETAS (SÓLO PARA CELULARES) -->
-            <div id="itemsMobileContainer" class="items-mobile-container"></div>
+          <!-- TABLA -->
+          <div class="table-responsive rounded-2 border mb-4">
+            <table class="table table-hover mb-0 tabla-factura">
+              <thead class="table-light border-bottom">
+                <tr
+                  class="text-muted"
+                  style="font-size: 0.8rem; font-weight: 700"
+                >
+                  <th class="ps-3 text-uppercase" style="width: 45%">
+                    Descripción
+                  </th>
+                  <th class="text-center text-uppercase" style="width: 15%">
+                    Cantidad
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Precio Und
+                  </th>
+                  <th class="text-end text-uppercase" style="width: 20%">
+                    Total
+                  </th>
+                  <th class="text-center" style="width: 5%"></th>
+                </tr>
+              </thead>
+              <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
+            </table>
           </div>
 
           <!-- TOTAL -->
@@ -369,14 +348,13 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        // Clonado profundo para evitar problemas de referencias cruzadas en memoria
-        const itemsClonados = JSON.parse(JSON.stringify(factura.items || []));
-
-        itemsDetalle = itemsClonados.map((d) => ({
+        /* SOLUCIÓN AL DETALLE: Se integra el idx para forzar IDs 100% únicos en el render inicial */
+        itemsDetalle = factura.items.map((d, idx) => ({
+          id: d.id || Date.now() + idx + Math.random(),
           descripcion: d.descripcion,
-          amount: parseInt(d.cantidad) || 0,
-          price: parseFloat(d.precio_unitario) || 0,
-          total: parseFloat(d.total_linea) || 0,
+          amount: parseInt(d.cantidad),
+          price: parseFloat(d.precio_unitario),
+          total: parseFloat(d.total_linea),
         }));
 
         estadoOriginal = {
@@ -418,6 +396,7 @@
       }
 
       itemsDetalle.push({
+        id: Date.now() + Math.random(),
         descripcion: desc.toUpperCase(),
         amount: cant,
         price: precio,
@@ -430,85 +409,42 @@
       renderItems();
     }
 
-    function eliminarItem(indexAlcanzado) {
-      // Forzamos la mutación limpia basada únicamente en el índice posicional
-      itemsDetalle.splice(indexAlcanzado, 1);
+    function eliminarItem(id) {
+      itemsDetalle = itemsDetalle.filter((item) => item.id !== id);
       renderItems();
     }
 
     function renderItems() {
       const tbody = document.getElementById("tbodyEditarFacturaItems");
-      const mobileContainer = document.getElementById("itemsMobileContainer");
+      tbody.innerHTML = "";
 
       if (!itemsDetalle.length) {
-        const vacioHtml = `
-          <div class="text-center text-muted py-4 bg-white" style="font-style: italic;">
-            La lista quedó vacía. Añade un ítem o vuelve atrás.
-          </div>
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">
+              La lista quedó vacía. Añade un ítem o vuelve atrás.
+            </td>
+          </tr>
         `;
-        if (tbody)
-          tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4" style="font-style: italic; background-color: #ffffff;">La lista quedó vacía.</td></tr>`;
-        if (mobileContainer) mobileContainer.innerHTML = vacioHtml;
         calcularTotales();
         return;
       }
 
-      let htmlDesktop = "";
-      let htmlMobile = "";
-
-      // Acumulamos de manera segura en hilos de texto independientes
-      itemsDetalle.forEach((item, idx) => {
-        // 1. Acumulador Desktop
-        htmlDesktop += `
+      itemsDetalle.forEach((item) => {
+        tbody.innerHTML += `
           <tr class="align-middle border-bottom" style="background-color: #ffffff;">
-            <td class="ps-3 fw-medium text-dark text-wrap">${item.descripcion}</td>
+            <td class="ps-3 fw-medium text-dark">${item.descripcion}</td>
             <td class="text-center fw-bold text-primary">${item.amount}</td>
             <td class="text-end text-secondary">$ ${item.price.toLocaleString("es-CO")}</td>
             <td class="text-end fw-bold text-dark">$ ${item.total.toLocaleString("es-CO")}</td>
-            <td class="col-eliminar-tally">
-              <button type="button" class="btn btn-link text-danger p-0 btn-eliminar-item-tally" onclick="nsEditarFactura.eliminarItem(${idx})">
-                <i class="bi bi-trash3 fs-5"></i>
+            <td class="text-center pe-3">
+              <button class="btn btn-link btn-sm text-danger p-0" onclick="nsEditarFactura.eliminarItem(${item.id})">
+                <i class="bi bi-trash3"></i>
               </button>
             </td>
           </tr>
         `;
-
-        // 2. Acumulador Mobile
-        htmlMobile += `
-          <div class="item-mobile-card text-dark">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div style="max-width: 80%;">
-                <span class="text-muted d-block small fw-bold" style="font-size:0.75rem;">DESCRIPCIÓN</span>
-                <div class="fw-bold text-dark text-wrap">${item.descripcion}</div>
-              </div>
-              <button type="button" class="btn btn-light text-danger border rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
-                      style="width: 38px; height: 38px;" 
-                      onclick="nsEditarFactura.eliminarItem(${idx})">
-                <i class="bi bi-trash3 fs-5"></i>
-              </button>
-            </div>
-            <div class="row g-2 pt-1 border-top border-light">
-              <div class="col-3">
-                <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">CANT.</span>
-                <span class="fw-bold text-primary">${item.amount}</span>
-              </div>
-              <div class="col-4 text-end">
-                <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">PRECIO UND</span>
-                <span class="text-secondary" style="font-size: 0.85rem;">$ ${item.price.toLocaleString("es-CO")}</span>
-              </div>
-              <div class="col-5 text-end">
-                <span class="text-muted d-block" style="font-size: 0.7rem; font-weight:700;">TOTAL</span>
-                <span class="fw-bold text-dark" style="font-size: 0.9rem;">$ ${item.total.toLocaleString("es-CO")}</span>
-              </div>
-            </div>
-          </div>
-        `;
       });
-
-      // Única inyección al DOM para evitar rupturas de bindings y clicks duplicados
-      if (tbody) tbody.innerHTML = htmlDesktop;
-      if (mobileContainer) mobileContainer.innerHTML = htmlMobile;
-
       calcularTotales();
     }
 
