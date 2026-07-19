@@ -261,18 +261,29 @@
         `$ ${totalGeneral.toLocaleString("es-CO")}`;
     }
 
-    // 1. Carga los datos usando de forma unificada la Edge Function segura "tally_leerFactura"
+    // 1. Carga los datos usando la Edge Function con reintento seguro si el cliente no está listo
     async function cargarDatosFactura(idFactura) {
       idFacturaActiva = idFactura;
       itemsDetalle = [];
+
+      // PROTECCIÓN DE CICLO DE VIDA: Espera si supabaseClient o las credenciales no se han inicializado en main.js
+      if (
+        typeof supabaseClient === "undefined" ||
+        typeof SUPABASE_URL === "undefined"
+      ) {
+        console.warn(
+          "Supabase no está listo en el DOM global, reintentando carga en 200ms...",
+        );
+        setTimeout(() => cargarDatosFactura(idFactura), 200);
+        return;
+      }
 
       try {
         const {
           data: { session },
         } = await supabaseClient.auth.getSession();
-        if (!session) throw new Error("Sesión inválida");
+        if (!session) throw new Error("Sesión inválida o expirada.");
 
-        // Consumo directo de la Edge Function por GET pasando el ID de la factura
         const response = await fetch(
           `${SUPABASE_URL}/functions/v1/tally_leerFactura?id=${idFactura}&_t=${Date.now()}`,
           {
@@ -299,7 +310,6 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        // Mapear el detalle unificado al arreglo de la interfaz
         itemsDetalle = factura.items.map((d) => ({
           id: d.id || Date.now() + Math.random(),
           descripcion: d.descripcion,
@@ -388,7 +398,7 @@
       calcularTotales();
     }
 
-    // 2. Transfiere el payload estructurado directamente a la Edge Function "tally_editarFactura"
+    // 2. Guarda los cambios hacia la Edge Function "tally_editarFactura"
     async function guardarCambios() {
       const btn = document.getElementById("btnActualizarFactura");
       const nombre = document
@@ -421,7 +431,6 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Expiró la autenticación");
 
-        // Construir el cuerpo con la estructura exacta que procesará tu Edge Function de guardado
         const payload = {
           factura_id: idFacturaActiva,
           cliente_nombre: nombre,
