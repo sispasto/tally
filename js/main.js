@@ -45,20 +45,34 @@ function gestionarEdicionFactura(idFactura) {
 
   // Limpia el contenedor principal usando tu helper global
   removeALLChilds(main);
+
   // Instancia el componente espejo de edición
   const frmEditar = document.createElement("editar-factura");
   frmEditar.setAttribute("container", "#App"); // <-- Pasas el parámetro del contenedor
   main.appendChild(frmEditar);
-  // Le damos un respiro mínimo (50ms) para que el componente se conecte al DOM
-  // y el script de la vista esté disponible globalmente antes de inyectar los datos
-  setTimeout(() => {
-    if (
+
+  // Función interna recursiva para esperar a que TODO esté listo (Scripts + Supabase)
+  function intentarCargar(intentos = 0) {
+    const supabseListo =
+      typeof SUPABASE_KEY !== "undefined" && SUPABASE_KEY !== "";
+    const namespaceListo =
       typeof nsEditarFactura !== "undefined" &&
-      nsEditarFactura.cargarDatosFactura
-    ) {
+      nsEditarFactura.cargarDatosFactura;
+
+    if (supabseListo && namespaceListo) {
       nsEditarFactura.cargarDatosFactura(idFactura);
+    } else if (intentos < 10) {
+      // Si no está listo, reintenta cada 50ms (máximo 500ms total) para darle tiempo al sistema tras el reload
+      setTimeout(() => intentarCargar(intentos + 1), 50);
+    } else {
+      console.error(
+        "No se pudo cargar la factura: Las dependencias de Supabase o los scripts no iniciaron a tiempo.",
+      );
     }
-  }, 50);
+  }
+
+  // Iniciamos la verificación segura
+  intentarCargar();
 }
 
 /*******************************************************************************/
