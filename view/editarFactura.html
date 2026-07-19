@@ -36,7 +36,6 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
   }
 
-  /* NUEVO ESTILO DE BOTÓN CON ÍCONO BOOTSTRAP RELLENO */
   .btn-back-icon-tally {
     background: transparent !important;
     border: none !important;
@@ -52,49 +51,40 @@
     font-size: 1.65rem;
     line-height: 1;
   }
-  .btn-back-icon-tally:hover {
-    color: #0d6efd !important;
-    transform: translateX(-3px);
+
+  /* Vista de bloques para celular (Oculta por defecto en PC) */
+  .items-mobile-container {
+    display: none;
   }
 
-  /* ESTILOS DE LA COLUMNA DE ACCIÓN PARA EVITAR DESAPARECER */
-  .col-eliminar-tally {
-    width: 45px !important;
-    min-width: 45px !important;
-    text-align: center !important;
-    padding-right: 10px !important;
+  .item-mobile-card {
+    background: #ffffff;
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .item-mobile-card:last-child {
+    border-bottom: none;
   }
 
-  /* OPTIMIZACIONES EXCLUSIVAS PARA CELULARES */
+  /* OPTIMIZACIONES PARA DISPOSITIVOS MÓVILES */
   @media (max-width: 768px) {
     .factura-container {
       margin-top: 0 !important;
       padding-left: 0.25rem !important;
       padding-right: 0.25rem !important;
     }
-    .factura-container .card {
-      border-radius: 8px !important;
-    }
     .factura-container .card-body {
-      padding: 1rem 0.5rem !important; /* Aprovecha más espacio lateral en el celular */
-    }
-    .factura-container .card-header {
-      background-color: #fbc02d !important;
-      border-bottom: 1px solid #e0a800 !important;
+      padding: 1rem 0.5rem !important;
     }
 
-    /* Forzar que la tabla respire y no se comprima al extremo */
-    .tabla-factura {
-      min-width: 460px !important;
-      font-size: 0.88rem !important;
-    }
-
-    /* Contenedor con scroll horizontal garantizado */
+    /* Ocultamos la tabla clásica en celular */
     .table-responsive-tally {
-      overflow-x: auto !important;
-      display: block;
-      width: 100%;
-      -webkit-overflow-scrolling: touch;
+      display: none !important;
+    }
+
+    /* Mostramos la vista de lista/tarjetas adaptable */
+    .items-mobile-container {
+      display: block !important;
     }
   }
 </style>
@@ -237,31 +227,37 @@
             </div>
           </div>
 
-          <!-- TABLA -->
-          <div class="table-responsive-tally rounded-2 border mb-4">
-            <table class="table table-hover mb-0 tabla-factura">
-              <thead class="table-light border-bottom">
-                <tr
-                  class="text-muted"
-                  style="font-size: 0.8rem; font-weight: 700"
-                >
-                  <th class="ps-2 text-uppercase" style="width: 40%">
-                    Descripción
-                  </th>
-                  <th class="text-center text-uppercase" style="width: 15%">
-                    Cant.
-                  </th>
-                  <th class="text-end text-uppercase" style="width: 20%">
-                    Precio
-                  </th>
-                  <th class="text-end text-uppercase" style="width: 20%">
-                    Total
-                  </th>
-                  <th class="col-eliminar-tally"></th>
-                </tr>
-              </thead>
-              <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
-            </table>
+          <!-- CONTENEDOR DE ITEMS ADAPTABLE -->
+          <div class="border rounded-2 mb-4 overflow-hidden">
+            <!-- VISTA EN TABLA (SÓLO PARA PC / TABLET) -->
+            <div class="table-responsive-tally">
+              <table class="table table-hover mb-0 tabla-factura">
+                <thead class="table-light border-bottom">
+                  <tr
+                    class="text-muted"
+                    style="font-size: 0.8rem; font-weight: 700"
+                  >
+                    <th class="ps-3 text-uppercase" style="width: 40%">
+                      Descripción
+                    </th>
+                    <th class="text-center text-uppercase" style="width: 15%">
+                      Cantidad
+                    </th>
+                    <th class="text-end text-uppercase" style="width: 20%">
+                      Precio Und
+                    </th>
+                    <th class="text-end text-uppercase" style="width: 20%">
+                      Total
+                    </th>
+                    <th style="width: 50px"></th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyEditarFacturaItems" class="border-0"></tbody>
+              </table>
+            </div>
+
+            <!-- VISTA VERTICAL EN TARJETAS (SÓLO PARA CELULARES) -->
+            <div id="itemsMobileContainer" class="items-mobile-container"></div>
           </div>
 
           <!-- TOTAL -->
