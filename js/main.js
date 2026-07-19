@@ -14,6 +14,14 @@ function gestionarCotizaciones() {
   main.appendChild(frmCotizacion);
 }
 
+function abonaraFactura() {
+  let main = document.getElementById("App");
+  removeALLChilds(main);
+  const frmAbonarFactura = document.createElement("adicionar-abono");
+  frmAbonarFactura.setAttribute("container", "#App"); // <-- aquí pasas el parámetro
+  main.appendChild(frmAbonarFactura);
+}
+
 function consultarCotizaciones() {
   let main = document.getElementById("App");
   removeALLChilds(main);
