@@ -7,4 +7,4 @@ import "./historialCotizaciones.js";
 import "./factura.js";
 import "./historialFacturas.js";
 import "./adicionarAbono.js";
-import "./editarfactura.js";
+import "./editarFactura.js";
