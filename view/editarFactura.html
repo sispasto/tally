@@ -261,7 +261,7 @@
         `$ ${totalGeneral.toLocaleString("es-CO")}`;
     }
 
-    // 1. Carga los datos actuales desde Supabase saltando caché gracias a lo aprendido del Service Worker
+    // 1. Carga los datos usando de forma unificada la Edge Function segura "tally_leerFactura"
     async function cargarDatosFactura(idFactura) {
       idFacturaActiva = idFactura;
       itemsDetalle = [];
@@ -272,34 +272,24 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Sesión inválida");
 
-        // Traer datos del encabezado (maestro)
-        const resMaestro = await fetch(
-          `${SUPABASE_URL}/rest/v1/tally_facturas?id=eq.${idFactura}&_t=${Date.now()}`,
+        // Consumo directo de la Edge Function por GET pasando el ID de la factura
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/tally_leerFactura?id=${idFactura}&_t=${Date.now()}`,
           {
+            method: "GET",
             headers: {
               Authorization: `Bearer ${session.access_token}`,
-              apikey: SUPABASE_KEY,
             },
           },
         );
-        const [factura] = await resMaestro.json();
 
-        if (!factura)
-          throw new Error("No se encontró el registro de la factura");
+        const result = await response.json();
+        if (!result.ok)
+          throw new Error(result.error || "No se pudo recuperar la factura");
 
-        // Traer el desglose actual (detalle)
-        const resDetalle = await fetch(
-          `${SUPABASE_URL}/rest/v1/tally_facturas_detalle?factura_id=eq.${idFactura}&_t=${Date.now()}`,
-          {
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-              apikey: SUPABASE_KEY,
-            },
-          },
-        );
-        const detalles = await resDetalle.json();
+        const factura = result.factura;
 
-        // Settear campos en UI
+        // Setear campos en UI
         document.getElementById("editFactNumero").innerText =
           factura.numero_factura;
         document.getElementById("editFactClienteNombre").value =
@@ -309,8 +299,8 @@
         document.getElementById("editFactClienteTelefono").value =
           factura.cliente_telefono || "";
 
-        // Mapear detalles al array con la misma estructura reactiva de tu componente anterior
-        itemsDetalle = detalles.map((d) => ({
+        // Mapear el detalle unificado al arreglo de la interfaz
+        itemsDetalle = factura.items.map((d) => ({
           id: d.id || Date.now() + Math.random(),
           descripcion: d.descripcion,
           amount: parseInt(d.cantidad),
@@ -346,7 +336,7 @@
       }
 
       itemsDetalle.push({
-        id: Date.now(),
+        id: Date.now() + Math.random(),
         descripcion: desc.toUpperCase(),
         amount: cant,
         price: precio,
@@ -398,7 +388,7 @@
       calcularTotales();
     }
 
-    // 2. Ejecuta la actualización segura atómica directa en Supabase REST sin arriesgar datos dinámicos
+    // 2. Transfiere el payload estructurado directamente a la Edge Function "tally_editarFactura"
     async function guardarCambios() {
       const btn = document.getElementById("btnActualizarFactura");
       const nombre = document
@@ -411,16 +401,18 @@
         .getElementById("editFactClienteTelefono")
         .value.trim();
 
-      if (!nombre || !direccion)
+      if (!nombre || !direccion) {
         return mostrarMensaje(
           "Rellene campos mandatorios de identidad.",
           "danger",
         );
-      if (!itemsDetalle.length)
+      }
+      if (!itemsDetalle.length) {
         return mostrarMensaje(
           "Debe existir al menos un registro en la grilla.",
           "danger",
         );
+      }
 
       try {
         btn.disabled = true;
@@ -429,65 +421,35 @@
         } = await supabaseClient.auth.getSession();
         if (!session) throw new Error("Expiró la autenticación");
 
-        // A. PATCH al Maestro
-        const resMaestro = await fetch(
-          `${SUPABASE_URL}/rest/v1/tally_facturas?id=eq.${idFacturaActiva}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${session.access_token}`,
-              apikey: SUPABASE_KEY,
-            },
-            body: JSON.stringify({
-              cliente_nombre: nombre,
-              cliente_direccion: direccion,
-              cliente_telefono: telefono || null,
-              total_factura: totalGeneral,
-            }),
-          },
-        );
-
-        if (!resMaestro.ok)
-          throw new Error("Fallo en la actualización primaria");
-
-        // B. DELETE de los ítems obsoletos
-        await fetch(
-          `${SUPABASE_URL}/rest/v1/tally_facturas_detalle?factura_id=eq.${idFacturaActiva}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${session.access_token}`,
-              apikey: SUPABASE_KEY,
-            },
-          },
-        );
-
-        // C. POST re-insertando el detalle nuevo depurado
-        const nuevosRenglones = itemsDetalle.map((item) => ({
+        // Construir el cuerpo con la estructura exacta que procesará tu Edge Function de guardado
+        const payload = {
           factura_id: idFacturaActiva,
-          user_id: session.user.id,
-          descripcion: item.descripcion,
-          cantidad: item.amount,
-          precio_unitario: item.price,
-          total_linea: item.total,
-        }));
+          cliente_nombre: nombre,
+          cliente_direccion: direccion,
+          cliente_telefono: telefono || null,
+          total_factura: totalGeneral,
+          items: itemsDetalle.map((item) => ({
+            descripcion: item.descripcion,
+            cantidad: item.amount,
+            precio: item.price,
+          })),
+        };
 
-        const resInsert = await fetch(
-          `${SUPABASE_URL}/rest/v1/tally_facturas_detalle`,
+        const response = await fetch(
+          `${SUPABASE_URL}/functions/v1/tally_editarFactura`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${session.access_token}`,
-              apikey: SUPABASE_KEY,
             },
-            body: JSON.stringify(nuevosRenglones),
+            body: JSON.stringify(payload),
           },
         );
 
-        if (!resInsert.ok)
-          throw new Error("No fue posible reestructurar las líneas de detalle");
+        const result = await response.json();
+        if (!result.ok)
+          throw new Error(result.error || "Error al procesar la actualización");
 
         mostrarMensaje("¡Factura modificada con éxito!", "success");
 
